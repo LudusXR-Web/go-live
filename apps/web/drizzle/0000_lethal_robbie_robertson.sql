@@ -1,28 +1,22 @@
 CREATE TABLE IF NOT EXISTS "golive_accounts" (
-	"id" varchar(255) PRIMARY KEY NOT NULL,
 	"user_id" varchar(255) NOT NULL,
-	"account_id" varchar(255) NOT NULL,
-	"provider_id" varchar(255) NOT NULL,
-	"access_token" varchar(255),
-	"refresh_token" varchar(255),
-	"access_token_expires_at" timestamp,
-	"refresh_token_expires_at" timestamp,
+	"type" varchar(255) NOT NULL,
+	"provider" varchar(255) NOT NULL,
+	"provider_account_id" varchar(255) NOT NULL,
+	"refresh_token" text,
+	"access_token" text,
+	"expires_at" integer,
+	"token_type" varchar(255),
 	"scope" varchar(255),
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "golive_accounts_account_id_unique" UNIQUE("account_id")
+	"id_token" text,
+	"session_state" varchar(255),
+	CONSTRAINT "golive_accounts_provider_provider_account_id_pk" PRIMARY KEY("provider","provider_account_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "golive_sessions" (
-	"id" varchar(255) PRIMARY KEY NOT NULL,
+	"session_token" varchar(255) PRIMARY KEY NOT NULL,
 	"user_id" varchar(255) NOT NULL,
-	"token" varchar(255) NOT NULL,
-	"expires_at" timestamp NOT NULL,
-	"ip_address" varchar(255),
-	"user_agent" varchar(255),
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "golive_sessions_token_unique" UNIQUE("token")
+	"expires_at" timestamp NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "golive_users" (
@@ -47,3 +41,6 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "account_user_id_idx" ON "golive_accounts" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "session_user_id_idx" ON "golive_sessions" USING btree ("user_id");
