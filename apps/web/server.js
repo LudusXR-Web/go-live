@@ -15,6 +15,11 @@ app.prepare().then(() => {
 
   const io = new Server(httpServer);
 
+  //TODO implement authentication middleware
+  io.use((_socket, next) => {
+    next();
+  });
+
   io.on("connection", (socket) => {
     socket.send("Hello World!");
   });
