@@ -21,7 +21,9 @@ export default async function Home() {
         </form>
 
         {!!session && (
-          <pre className="h-max">{JSON.stringify(session, null, 2)}</pre>
+          <>
+            <pre className="h-max">{JSON.stringify(session, null, 2)}</pre>
+          </>
         )}
       </main>
     </HydrateClient>
