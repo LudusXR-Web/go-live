@@ -16,7 +16,7 @@ app.prepare().then(() => {
   const io = new Server(httpServer);
 
   io.on("connection", (socket) => {
-    socket.emit("Hello World!");
+    socket.send("Hello World!");
   });
 
   httpServer
