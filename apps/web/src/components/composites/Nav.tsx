@@ -1,17 +1,25 @@
-import { Button } from "@repo/ui/button";
+import type { Session } from "next-auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
-const Nav: React.FC = () => {
+type NavProps = {
+  session: Session;
+};
+
+const Nav: React.FC<NavProps> = async ({ session }) => {
   return (
-    <nav className="flex justify-between">
-      <div>branding here</div>
-      <div className="flex gap-4">
-        <Button>Example</Button>
-        <Button>Example</Button>
-        <Button>Example</Button>
-        <Button>Example</Button>
-        <Button>Example</Button>
+    <nav className="flex items-center justify-between border-b px-6 py-3">
+      <h1 className="text-2xl font-semibold">Branding here</h1>
+      <div className="inline-grid grid-flow-col items-center gap-3">
+        <Avatar className="transition-shadow hover:shadow">
+          <AvatarImage
+            src={session.user.image ?? undefined}
+            alt="Profile Avatar Image"
+          />
+          <AvatarFallback>
+            {session.user.name.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
       </div>
-      <div className="">language switcher</div>
     </nav>
   );
 };
