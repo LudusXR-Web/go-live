@@ -1,11 +1,17 @@
+import type { DetailedHTMLProps, ButtonHTMLAttributes } from "react";
+import { Button, type ButtonProps } from "@repo/ui/button";
+
 import { signIn } from "~/server/auth";
-import { Button } from "@repo/ui/button";
 
 type SignInButtonProps = {
   children?: React.ReactNode;
-};
+} & DetailedHTMLProps<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+> &
+  ButtonProps;
 
-const SignInButton: React.FC<SignInButtonProps> = ({ children }) => {
+const SignInButton: React.FC<SignInButtonProps> = ({ children, ...props }) => {
   return (
     <form
       action={async () => {
@@ -14,7 +20,9 @@ const SignInButton: React.FC<SignInButtonProps> = ({ children }) => {
         return signIn("google");
       }}
     >
-      <Button type="submit">{children ?? "Sign In with Google"}</Button>
+      <Button type="submit" {...props}>
+        {children ?? "Sign In with Google"}
+      </Button>
     </form>
   );
 };

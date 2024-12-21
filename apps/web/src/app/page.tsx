@@ -7,13 +7,7 @@ export default async function Home() {
   return (
     <div>
       <Nav session={session} />
-      <main className="grid h-full w-full content-center justify-center p-6">
-        {!!session && (
-          <>
-            <pre className="h-max">{JSON.stringify(session, null, 2)}</pre>
-          </>
-        )}
-      </main>
+      <main className="grid h-full w-full content-center justify-center p-6"></main>
     </div>
   );
 }
