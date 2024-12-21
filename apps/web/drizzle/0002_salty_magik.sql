@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS "course_author_id_idx" ON "golive_courses" USING btree ("author_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "course_tags_idx" ON "golive_courses" USING btree ("tags");

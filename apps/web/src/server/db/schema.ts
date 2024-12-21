@@ -92,3 +92,22 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
+
+export const courses = createTable(
+  "courses",
+  {
+    id: varchar("id", { length: 255 })
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: varchar("description", { length: 255 }).default(""),
+    authorId: varchar("author_id", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    tags: varchar("tags", { length: 255 }).array().default([]),
+  },
+  (course) => ({
+    authorIdIdx: index("course_author_id_idx").on(course.authorId),
+    tagsIdx: index("course_tags_idx").on(course.tags),
+  }),
+);
