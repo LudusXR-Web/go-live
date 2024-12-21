@@ -6,7 +6,7 @@ export default async function Home() {
 
   return (
     <div>
-      <Nav session={session} />
+      <Nav session={session!} />
       <main className="grid h-full w-full content-center justify-center p-6"></main>
     </div>
   );
