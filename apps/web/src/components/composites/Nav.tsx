@@ -2,7 +2,8 @@ import type { Session } from "next-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
 import Search from "~/components/nav/Search";
-import SignInButton from "../auth/SignInButton";
+import SignInButton from "~/components/auth/SignInButton";
+import LanguageSelector from "~/components/composites/LanguageSelector";
 
 type NavProps = {
   session: Session;
@@ -12,14 +13,15 @@ const Nav: React.FC<NavProps> = async ({ session }) => {
   return (
     <nav className="border-b px-6 py-3">
       <div className="mx-auto flex max-w-[2200px] items-center justify-between">
-        <h1 className="text-2xl font-semibold">Branding here</h1>
-        <div className="relative w-[50%] after:absolute after:left-0.5 after:top-0.5 after:-z-10 after:h-12 after:w-full after:rounded-md after:bg-primary">
+        <h1 className="text-2xl font-semibold">Branding</h1>
+        <div className="relative w-[50%] after:absolute after:left-0.5 after:top-0.5 after:-z-10 after:h-12 after:w-full after:rounded-md after:bg-accent">
           <Search
             placeholder="Search for courses tailored to your needs"
-            className="h-12 w-full min-w-full border-primary bg-white focus-visible:ring-0"
+            className="h-12 w-full min-w-full border-accent bg-white focus-visible:ring-0"
           />
         </div>
         <div className="inline-grid grid-flow-col items-center gap-3">
+          <LanguageSelector defaultLocale="en" />
           {session ? (
             <Avatar className="transition-shadow hover:shadow">
               <AvatarImage
