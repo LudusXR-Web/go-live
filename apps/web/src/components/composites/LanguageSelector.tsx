@@ -38,7 +38,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       <SelectContent>
         {Object.keys(localeNames).map((lang) => {
           return (
-            <SelectItem key={lang} value={lang}>
+            <SelectItem key={lang} value={lang} className="focus:bg-primary/60">
               {localeNames[lang as keyof typeof localeNames]}
             </SelectItem>
           );

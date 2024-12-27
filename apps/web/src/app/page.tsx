@@ -5,9 +5,9 @@ export default async function Home() {
   const session = await auth();
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <Nav session={session!} />
-      <main className="grid h-full w-full content-center justify-center p-6"></main>
+      <main className="grid w-full grow content-center justify-center bg-secondary p-6"></main>
     </div>
   );
 }
