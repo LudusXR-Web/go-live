@@ -3,12 +3,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "react": ["./node_modules/@types/react"],
+      "react-dom": ["./node_modules/@types/react-dom"]
     },
-    "noEmit": true
   },
   "include": [
-    "src",
+    ".",
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
