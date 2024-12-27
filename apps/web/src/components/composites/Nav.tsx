@@ -13,22 +13,26 @@ import {
 import Search from "~/components/nav/Search";
 import SignInButton from "~/components/auth/SignInButton";
 import LanguageSelector from "~/components/composites/LanguageSelector";
+import Image from "next/image";
 
 type NavProps = {
   session: Session;
+  hideSearchBar?: boolean;
 };
 
-const Nav: React.FC<NavProps> = async ({ session }) => {
+const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
   return (
     <nav className="px-6 py-4">
       <div className="mx-auto flex max-w-[2200px] items-center justify-between">
-        <h1 className="text-2xl font-semibold">Branding</h1>
-        <div className="relative w-[50%] after:absolute after:left-0.5 after:top-0.5 after:-z-10 after:h-12 after:w-full after:rounded-md after:bg-accent">
-          <Search
-            placeholder="Search for courses tailored to your needs"
-            className="h-12 w-full min-w-full border-accent bg-white focus-visible:ring-0"
-          />
-        </div>
+        <Image
+          src="/logo.png"
+          alt="Going Live Logo"
+          width={200 / 2.5}
+          height={132 / 2.5}
+        />
+        {!hideSearchBar && (
+          <Search placeholder="Search for courses tailored to your needs" />
+        )}
         <div className="inline-grid grid-flow-col items-center gap-3">
           <LanguageSelector defaultLocale="en" />
           {session ? (
@@ -80,6 +84,12 @@ const Nav: React.FC<NavProps> = async ({ session }) => {
       </div>
     </nav>
   );
+};
+
+type StyledSearchProps = {
+  className?: string;
+  searchClassName?: string;
+  placeholder?: string;
 };
 
 export default Nav;
