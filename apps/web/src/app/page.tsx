@@ -12,19 +12,11 @@ export default async function Home() {
       <Nav session={session!} hideSearchBar />
       <main className="w-full grow border-b border-b-slate-200 p-6">
         <div className="flex flex-col items-center justify-center gap-10">
-          <div className="flex items-center gap-5">
-            <h1 className="border-b-8 border-primary text-6xl font-black tracking-tighter">
-              Find your dream course today!
-            </h1>
-            <Image
-              src="/logo.png"
-              alt="Going Live Logo"
-              width={200 / 1.75}
-              height={132 / 1.75}
-            />
-          </div>
+          <h1 className="border-b-8 border-primary text-6xl font-black tracking-tighter">
+            Find your dream course today!
+          </h1>
           <Search
-            className="w-[35%] after:h-16 [&>input]:py-6 [&>input]:text-2xl [&>input]:font-medium"
+            className="w-[35%] after:h-16 [&>input]:py-6 [&>input]:text-2xl [&>input]:font-medium [&>span]:py-6 [&>span]:text-2xl [&>span]:font-medium"
             searchClassName="h-16"
           />
         </div>

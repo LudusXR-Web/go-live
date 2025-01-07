@@ -6,6 +6,7 @@ import {
   type DetailedHTMLProps,
   type InputHTMLAttributes,
 } from "react";
+import { TypeAnimation } from "react-type-animation";
 import { Input } from "@repo/ui/input";
 
 import { cn, sleep } from "~/lib/utils";
@@ -24,9 +25,13 @@ type SearchProps = Exclude<
 const inputName = "query";
 const placeholderOptions = [
   "Bartending...",
+  1000,
   "Cooking...",
+  1000,
   "Entertainment...",
+  1000,
   "Childcare...",
+  1000,
 ];
 
 const Search: React.FC<SearchProps> = ({
@@ -37,36 +42,7 @@ const Search: React.FC<SearchProps> = ({
 }) => {
   const query = useSearchParams().get("q");
 
-  const [placeholder, setPlaceholder] = useState(defaultPlaceholder ?? "");
-
-  useEffect(() => {
-    if (defaultPlaceholder) return () => {};
-
-    let index = 0;
-    let internalIndex = 1;
-    let up = true;
-
-    const interval = setInterval(async () => {
-      if (index >= placeholderOptions.length) index = 0;
-
-      setPlaceholder(placeholderOptions.at(index)!.slice(0, internalIndex));
-
-      if (internalIndex >= placeholderOptions.at(index)!.length) {
-        up = false;
-        await sleep(600);
-      }
-      if (internalIndex === 0) await sleep(300);
-
-      up ? internalIndex++ : internalIndex--;
-
-      if (internalIndex === 0) {
-        index++;
-        up = true;
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
+  const [searchValue, setSearchValue] = useState(query ?? "");
 
   return (
     <form
@@ -81,14 +57,23 @@ const Search: React.FC<SearchProps> = ({
     >
       <Input
         name={inputName}
-        defaultValue={query ?? ""}
-        placeholder={placeholder}
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
         className={cn(
-          "h-12 w-full min-w-full border-accent bg-white focus-visible:ring-0",
+          "absolute h-12 w-full min-w-full border-accent bg-white focus-visible:ring-0",
           searchClassName,
         )}
         {...props}
       />
+      {!searchValue && (
+        <TypeAnimation
+          sequence={placeholderOptions}
+          wrapper="span"
+          speed={50}
+          repeat={Infinity}
+          className="absolute -top-2 left-3 text-muted-foreground"
+        />
+      )}
     </form>
   );
 };
