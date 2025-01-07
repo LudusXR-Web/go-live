@@ -19,7 +19,7 @@ type SearchProps = Exclude<
 > & {
   className?: string;
   searchClassName?: string;
-  placeholder?: string;
+  typeWriterClassName?: string;
 };
 
 const inputName = "query";
@@ -37,7 +37,7 @@ const placeholderOptions = [
 const Search: React.FC<SearchProps> = ({
   className,
   searchClassName,
-  placeholder: defaultPlaceholder,
+  typeWriterClassName,
   ...props
 }) => {
   const query = useSearchParams().get("q");
@@ -71,7 +71,10 @@ const Search: React.FC<SearchProps> = ({
           wrapper="span"
           speed={50}
           repeat={Infinity}
-          className="absolute -top-2 left-3 text-muted-foreground"
+          className={cn(
+            "absolute -top-2 left-3 text-muted-foreground",
+            typeWriterClassName,
+          )}
         />
       )}
     </form>

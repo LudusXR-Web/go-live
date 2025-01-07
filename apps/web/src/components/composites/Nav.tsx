@@ -31,7 +31,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
           height={132 / 2.5}
         />
         {!hideSearchBar && (
-          <Search placeholder="Search for courses tailored to your needs" />
+          <Search searchClassName="relative" typeWriterClassName="top-3" />
         )}
         <div className="inline-grid grid-flow-col items-center gap-3">
           <LanguageSelector defaultLocale="en" />
