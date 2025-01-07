@@ -8,7 +8,7 @@ export default async function Home() {
   const session = await auth();
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="container m-auto flex h-full w-full flex-col">
       <Nav session={session!} hideSearchBar />
       <main className="w-full grow border-b border-b-slate-200 p-6">
         <div className="flex flex-col items-center justify-center gap-10">
