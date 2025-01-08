@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { Input } from "@repo/ui/input";
 
 import { auth } from "~/server/auth";
+import ChangeAvatar from "./ChangeAvatar";
 
 const ProfilePage = async () => {
   const session = await auth();
@@ -37,17 +38,7 @@ const ProfilePage = async () => {
               />
             </div>
           </div>
-          <div>
-            <Avatar className="size-40 transition-shadow hover:shadow">
-              <AvatarImage
-                src={session.user.image ?? undefined}
-                alt="Profile Avatar Image"
-              ></AvatarImage>
-              <AvatarFallback>
-                {session.user.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </div>
+          <ChangeAvatar user={session.user} />
         </div>
       </div>
     </main>

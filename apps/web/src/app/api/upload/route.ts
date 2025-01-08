@@ -1,13 +1,12 @@
-import { S3Client } from "@aws-sdk/client-s3";
 import { createUploadRouteHandler, route } from "better-upload/server";
 
-const s3 = new S3Client();
+import { s3 } from "~/server/aws/s3";
 
 export const { POST } = createUploadRouteHandler({
   client: s3,
   bucketName: "ludus-golive",
   routes: {
-    demo: route({
+    avatar: route({
       fileTypes: ["image/*"],
     }),
   },
