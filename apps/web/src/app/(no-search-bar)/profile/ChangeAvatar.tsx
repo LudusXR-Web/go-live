@@ -4,7 +4,7 @@ import { useState } from "react";
 import { type Session } from "next-auth";
 import { useUploadFile } from "better-upload/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
-import { LoaderCircleIcon } from "lucide-react";
+import { ImageUpIcon, LoaderCircleIcon } from "lucide-react";
 
 import { api } from "~/trpc/react";
 import { env } from "~/env";
@@ -18,7 +18,8 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
   const mutation = api.users.updateAvatar.useMutation();
 
   const { isPending, upload } = useUploadFile({
-    route: "avatar",
+    route: "image",
+    api: "/api/upload/profile-pictures",
     onUploadError: (error) =>
       console.error(`[UPLOAD_ERROR] ${error.type}\n${error.message}`),
     onUploadComplete: ({ file }) => {
@@ -42,7 +43,10 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
           className="absolute z-20 grid h-full w-full content-center justify-center rounded-full bg-black/60 font-medium text-white opacity-0 transition-opacity data-[loading=true]:opacity-100"
         >
           {!isPending ? (
-            "Change picture"
+            <div className="flex items-center gap-2">
+              <span>Change</span>
+              <ImageUpIcon />
+            </div>
           ) : (
             <LoaderCircleIcon className="animate-spin" />
           )}
@@ -52,7 +56,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
           accept="image/*"
           name="avatar"
           id="avatar_image"
-          className="sr-only"
+          className="sr-only ml-8 mt-16"
           onChange={(e) => {
             if (e.target.files?.[0]) {
               upload(e.target.files[0], {

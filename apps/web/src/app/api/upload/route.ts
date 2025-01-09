@@ -6,7 +6,7 @@ export const { POST } = createUploadRouteHandler({
   client: s3,
   bucketName: "ludus-golive",
   routes: {
-    avatar: route({
+    image: route({
       fileTypes: ["image/*"],
     }),
   },

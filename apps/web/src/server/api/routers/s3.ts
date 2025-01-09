@@ -1,28 +1,37 @@
+import { DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import z from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { s3 } from "~/server/aws/s3";
-import { DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { env } from "~/env";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 const s3Router = createTRPCRouter({
   getObjectByKey: protectedProcedure
-    .input(z.string())
+    .input(
+      z.object({
+        bucket: z.string(),
+        key: z.string(),
+      }),
+    )
     .query(async ({ input }) => {
       return await s3.send(
         new GetObjectCommand({
-          Bucket: env.NEXT_PUBLIC_AWS_BUCKET_NAME,
-          Key: input,
+          Bucket: input.bucket,
+          Key: input.key,
         }),
       );
     }),
   deleteObjectByKey: protectedProcedure
-    .input(z.string())
+    .input(
+      z.object({
+        bucket: z.string(),
+        key: z.string(),
+      }),
+    )
     .query(async ({ input }) => {
       return await s3.send(
         new DeleteObjectCommand({
-          Bucket: env.NEXT_PUBLIC_AWS_BUCKET_NAME,
-          Key: input,
+          Bucket: input.bucket,
+          Key: input.key,
         }),
       );
     }),
