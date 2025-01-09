@@ -17,11 +17,13 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
   const [avatarUrl, setAvatarUrl] = useState(user.image);
   const mutation = api.users.updateAvatar.useMutation();
 
-  const { isPending, upload } = useUploadFile({
+  const { isPending, upload, reset } = useUploadFile({
     route: "image",
     api: "/api/upload/profile-pictures",
-    onUploadError: (error) =>
-      console.error(`[UPLOAD_ERROR] ${error.type}\n${error.message}`),
+    onUploadError: (error) => {
+      console.log(`[UPLOAD_ERROR] ${error.type}\n${error.message}`);
+      reset();
+    },
     onUploadComplete: ({ file }) => {
       mutation.mutate({
         id: user.id,
