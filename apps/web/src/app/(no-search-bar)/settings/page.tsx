@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
+import { UserPenIcon } from "lucide-react";
 
 import { auth } from "~/server/auth";
 import PersonalDetailsForm from "./PersonalDetailsForm";
-import { UserPenIcon } from "lucide-react";
 
 const ProfilePage = async () => {
   const session = await auth();

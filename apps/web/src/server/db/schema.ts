@@ -61,12 +61,12 @@ export const accounts = createTable(
     id_token: text("id_token"),
     session_state: varchar("session_state", { length: 255 }),
   },
-  (account) => ({
-    compoundKey: primaryKey({
+  (account) => [
+    primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-    userIdIdx: index("account_user_id_idx").on(account.userId),
-  }),
+    index("account_user_id_idx").on(account.userId),
+  ],
 );
 
 export const sessions = createTable(
@@ -80,9 +80,7 @@ export const sessions = createTable(
       .references(() => users.id),
     expires: timestamp("expires_at").notNull(),
   },
-  (session) => ({
-    userIdIdx: index("session_user_id_idx").on(session.userId),
-  }),
+  (session) => [index("session_user_id_idx").on(session.userId)],
 );
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -110,8 +108,8 @@ export const courses = createTable(
       .references(() => users.id),
     tags: varchar("tags", { length: 255 }).array().default([]),
   },
-  (course) => ({
-    authorIdIdx: index("course_author_id_idx").on(course.authorId),
-    tagsIdx: index("course_tags_idx").on(course.tags),
-  }),
+  (course) => [
+    index("course_author_id_idx").on(course.authorId),
+    index("course_tags_idx").on(course.tags),
+  ],
 );
