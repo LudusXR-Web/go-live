@@ -20,7 +20,7 @@ const ProfilePage = async () => {
         </div>
       </div>
       <div className="relative flex-[3] pl-6 pr-20">
-        <PersonalDetailsForm session={session} />
+        <PersonalDetailsForm serverSession={session} />
       </div>
     </main>
   );

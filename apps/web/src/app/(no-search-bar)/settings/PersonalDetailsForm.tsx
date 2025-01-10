@@ -1,11 +1,14 @@
 "use client";
 
-import { type Session } from "next-auth";
-import { useMemo } from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useEffect, useState } from "react";
+import { Session } from "next-auth";
+import { motion } from "motion/react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2Icon } from "lucide-react";
 import { Input } from "@repo/ui/input";
+import { Button } from "@repo/ui/button";
 import { Switch } from "@repo/ui/switch";
 import {
   Form,
@@ -18,8 +21,7 @@ import {
 } from "@repo/ui/form";
 
 import ChangeAvatar from "./ChangeAvatar";
-import { cn } from "~/lib/utils";
-import { Button } from "@repo/ui/button";
+import { api } from "~/trpc/react";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -28,31 +30,50 @@ const formSchema = z.object({
 });
 
 type PersonalDetailsFormProps = {
-  session: Session;
+  serverSession: Session;
 };
 
 const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
-  session,
+  serverSession,
 }) => {
+  const mutation = api.users.update.useMutation();
+  const sessionQuery = api.session.getSession.useQuery();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: session.user.name,
-      email: session.user.email,
-      profileType: session.user.type === "teacher",
+      name: serverSession.user.name ?? "",
+      email: serverSession.user.email ?? "",
+      profileType: serverSession.user.type === "teacher",
+    },
+    values: {
+      name: sessionQuery.data?.user.name ?? "",
+      email: sessionQuery.data?.user.email ?? "",
+      profileType:
+        (sessionQuery.data?.user.type ?? serverSession.user.type) === "teacher",
     },
   });
 
-  function onSubmit(schema: z.infer<typeof formSchema>) {}
+  async function onSubmit({
+    name,
+    email,
+    profileType,
+  }: z.infer<typeof formSchema>) {
+    await mutation.mutateAsync({
+      id: sessionQuery.data!.user.id,
+      name,
+      email,
+      type: profileType ? "teacher" : "student",
+    });
+
+    await sessionQuery.refetch();
+  }
 
   return (
     <>
-      <div className="space-y-4">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex items-center justify-between gap-12"
-          >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="flex items-center justify-between gap-12">
             <div className="w-full space-y-4 [&>*>label]:font-medium">
               <FormField
                 control={form.control}
@@ -88,8 +109,8 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                 )}
               />
             </div>
-            <ChangeAvatar user={session.user} />
-          </form>
+            <ChangeAvatar user={serverSession.user} />
+          </div>
           <FormField
             control={form.control}
             name="profileType"
@@ -102,6 +123,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                     <Switch
                       className="inline data-[state=checked]:bg-accent data-[state=unchecked]:bg-primary"
                       defaultChecked={form.formState.defaultValues?.profileType}
+                      checked={field.value}
                       onClick={() => {
                         form.setValue(
                           "profileType",
@@ -129,15 +151,19 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
               </FormItem>
             )}
           />
-        </Form>
-      </div>
-      <div
-        className={cn(
-          "absolute bottom-0 space-x-6 rounded-sm border px-2 py-1 shadow-md",
-          form.formState.isDirty
-            ? "ease-out animate-in slide-in-from-bottom-16 fill-mode-forwards"
-            : "ease-in animate-out slide-out-to-bottom-16 fill-mode-forwards",
-        )}
+        </form>
+      </Form>
+      <motion.div
+        className="absolute bottom-0 space-x-6 rounded-sm border px-2 py-1 shadow-md"
+        initial={{ translateY: "5rem" }}
+        animate={{
+          translateY: form.formState.isDirty ? "0" : "5rem",
+        }}
+        transition={{
+          type: "spring",
+          ease: "easeInOut",
+          duration: 0.55,
+        }}
       >
         <span className="inline font-medium">Unsaved changes detected!</span>
         <span className="space-x-2">
@@ -148,9 +174,19 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
           >
             Reset
           </Button>
-          <Button className="inline">Save</Button>
+          <Button
+            type="submit"
+            className="inline"
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {form.formState.isLoading ? (
+              <Loader2Icon className="animate-spin" size={20} />
+            ) : (
+              "Save"
+            )}
+          </Button>
         </span>
-      </div>
+      </motion.div>
     </>
   );
 };

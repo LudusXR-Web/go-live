@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 
 import { HydrateClient } from "~/trpc/server";
 import { TRPCReactProvider } from "~/trpc/react";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "Go Live",
@@ -18,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="h-dvh bg-primary-foreground">
-        <TRPCReactProvider>
-          <HydrateClient>{children}</HydrateClient>
-        </TRPCReactProvider>
+        <SessionProvider>
+          <TRPCReactProvider>
+            <HydrateClient>{children}</HydrateClient>
+          </TRPCReactProvider>
+        </SessionProvider>
       </body>
     </html>
   );
