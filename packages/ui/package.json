@@ -10,7 +10,8 @@
     "./input": "./src/components/input.tsx",
     "./label": "./src/components/label.tsx",
     "./menubar": "./src/components/menubar.tsx",
-    "./select": "./src/components/select.tsx"
+    "./select": "./src/components/select.tsx",
+    "./switch": "./src/components/switch.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
@@ -20,11 +21,11 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@turbo/gen": "^1.13.4",
-    "@types/node": "^20.17.10",
-    "@types/react": "18.3.0",
-    "@types/react-dom": "18.3.1",
-    "typescript": "5.5.4"
+    "@turbo/gen": "^2.3.3",
+    "@types/node": "^22.10.5",
+    "@types/react": "19.0.4",
+    "@types/react-dom": "19.0.2",
+    "typescript": "5.7.3"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -33,13 +34,14 @@
     "@radix-ui/react-menubar": "^1.1.4",
     "@radix-ui/react-select": "^2.1.4",
     "@radix-ui/react-slot": "^1.1.1",
+    "@radix-ui/react-switch": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.462.0",
-    "react": "19.0.0-rc-5c56b873-20241107",
-    "react-dom": "19.0.0-rc-5c56b873-20241107",
+    "lucide-react": "^0.469.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-hook-form": "^7.54.2",
-    "tailwind-merge": "^2.5.5",
+    "tailwind-merge": "^2.6.0",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.1"

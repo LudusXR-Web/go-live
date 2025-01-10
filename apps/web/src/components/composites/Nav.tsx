@@ -1,6 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Session } from "next-auth";
-import { UserIcon } from "lucide-react";
+import { SettingsIcon, UserIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import {
   Menubar,
@@ -13,7 +14,6 @@ import {
 import Search from "~/components/nav/Search";
 import SignInButton from "~/components/auth/SignInButton";
 import LanguageSelector from "~/components/composites/LanguageSelector";
-import Image from "next/image";
 
 type NavProps = {
   session: Session;
@@ -24,12 +24,14 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
   return (
     <nav className="px-6 py-4">
       <div className="mx-auto flex max-w-[2200px] items-center justify-between">
-        <Image
-          src="/logo.png"
-          alt="Going Live Logo"
-          width={200 / 2.5}
-          height={132 / 2.5}
-        />
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            alt="Going Live Logo"
+            width={200 / 2.5}
+            height={132 / 2.5}
+          />
+        </Link>
         {!hideSearchBar && (
           <Search searchClassName="relative" typeWriterClassName="top-3" />
         )}
@@ -67,6 +69,15 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                     <Link href="/profile" className="flex justify-between">
                       Profile
                       <UserIcon className="opacity-50" size={20} />
+                    </Link>
+                  </MenubarItem>
+                  <MenubarItem
+                    asChild
+                    className="transition-colors focus:bg-muted"
+                  >
+                    <Link href="/settings" className="flex justify-between">
+                      Settings
+                      <SettingsIcon className="opacity-50" size={20} />
                     </Link>
                   </MenubarItem>
                 </MenubarContent>

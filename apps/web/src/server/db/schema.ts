@@ -4,6 +4,7 @@
 import {
   index,
   integer,
+  pgEnum,
   pgTableCreator,
   primaryKey,
   text,
@@ -22,6 +23,8 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `golive_${name}`);
 
+export const userTypeEnum = pgEnum("user_type_enum", ["student", "teacher"]);
+
 export const users = createTable("users", {
   id: varchar("id", { length: 255 })
     .$defaultFn(() => createId())
@@ -34,6 +37,7 @@ export const users = createTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: timestamp("email_verified"),
   image: text("image"),
+  type: userTypeEnum("user_type").notNull().default("student"),
 });
 
 export const accounts = createTable(

@@ -15,7 +15,7 @@ type ChangeAvatarProps = {
 
 const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
   const [avatarUrl, setAvatarUrl] = useState(user.image);
-  const mutation = api.users.updateAvatar.useMutation();
+  const mutation = api.users.update.useMutation();
 
   const { isPending, upload, reset } = useUploadFile({
     route: "image",
@@ -27,8 +27,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
     onUploadComplete: ({ file }) => {
       mutation.mutate({
         id: user.id,
-        timestamp: Date.now(),
-        url: env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey,
+        image: env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey,
       });
 
       setAvatarUrl(env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey);
@@ -37,7 +36,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
 
   return (
     <div>
-      <Avatar className="size-40 hover:[&>label]:first:opacity-100">
+      <Avatar className="size-40 border hover:[&>label]:first:opacity-100">
         <label
           id="overlay"
           htmlFor="avatar_image"
