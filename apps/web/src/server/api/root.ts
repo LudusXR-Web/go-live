@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import userRouter from "./routers/users";
 import s3Router from "./routers/s3";
 import sessionRourter from "./routers/session";
+import courseRouter from "./routers/courses";
 
 /**
  * This is the primary router for your server.
@@ -11,6 +12,7 @@ import sessionRourter from "./routers/session";
 export const appRouter = createTRPCRouter({
   session: sessionRourter,
   users: userRouter,
+  courses: courseRouter,
   s3: s3Router,
 });
 
