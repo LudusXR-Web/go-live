@@ -1,0 +1,52 @@
+import Image from "next/image";
+
+import Generic from "~/img/generic.webp";
+import MotionWrapper from "~/components/utils/MotionWrapper";
+import { cn } from "~/lib/utils";
+
+type FeatureCardProps = {
+  isLoggedIn?: boolean;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  side?: "left" | "right";
+};
+
+const FeatureCard: React.FC<FeatureCardProps> = ({
+  isLoggedIn = false,
+  title = "Title",
+  description = "Lorem Ipsum! Lorem Ipsum! Lorem Ipsum!",
+  side = "left",
+}) => {
+  return (
+    <div className="flex-1">
+      <form
+        className={cn(
+          "flex overflow-hidden rounded-2xl bg-slate-100",
+          side === "left" ? "flex-row" : "flex-row-reverse",
+        )}
+      >
+        <MotionWrapper
+          whileHover={{ translateX: side === "left" ? "-1rem" : "1rem" }}
+        >
+          <Image
+            src={Generic}
+            alt="generic"
+            width={1280}
+            height={720}
+            className={cn(
+              side === "left" ? "clip-diagonal-to-tr" : "clip-diagonal-to-br",
+            )}
+          />
+        </MotionWrapper>
+        <div className="space-y-3 p-3">
+          <h2 className="text-center text-lg font-bold lg:text-xl xl:text-2xl">
+            {title}
+          </h2>
+          <p className="text-base lg:text-lg">{description}</p>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default FeatureCard;

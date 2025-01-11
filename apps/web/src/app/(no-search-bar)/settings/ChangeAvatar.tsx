@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { type Session } from "next-auth";
 import { useUploadFile } from "better-upload/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { ImageUpIcon, LoaderCircleIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
 import { api } from "~/trpc/react";
 import { env } from "~/env";
@@ -41,7 +41,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
           id="overlay"
           htmlFor="avatar_image"
           data-loading={isPending ? "true" : "false"}
-          className="absolute z-20 grid h-full w-full content-center justify-center rounded-full bg-black/60 font-medium text-white opacity-0 transition-opacity data-[loading=true]:opacity-100"
+          className="absolute z-20 grid h-full w-full cursor-pointer content-center justify-center rounded-full bg-black/60 font-medium text-white opacity-0 transition-opacity data-[loading=true]:opacity-100"
         >
           {!isPending ? (
             <div className="flex items-center gap-2">

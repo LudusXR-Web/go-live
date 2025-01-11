@@ -57,3 +57,12 @@
     @apply bg-background font-sans text-foreground antialiased;
   }
 }
+
+@layer utilities {
+  .clip-diagonal-to-tr {
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+  }
+  .clip-diagonal-to-br {
+    clip-path: polygon(0 0, 100% 1%, 100% 100%, 20% 100%);
+  }
+}

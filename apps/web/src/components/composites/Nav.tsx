@@ -16,14 +16,14 @@ import SignInButton from "~/components/auth/SignInButton";
 import LanguageSelector from "~/components/composites/LanguageSelector";
 
 type NavProps = {
-  session: Session;
+  session: Session | null;
   hideSearchBar?: boolean;
 };
 
 const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
   return (
-    <nav className="px-6 py-4">
-      <div className="mx-auto flex max-w-[2200px] items-center justify-between">
+    <header className="px-6 py-4">
+      <nav className="mx-auto flex max-w-[2200px] items-center justify-between">
         <Link href="/">
           <Image
             src="/logo.png"
@@ -94,8 +94,8 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
             </SignInButton>
           )}
         </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 

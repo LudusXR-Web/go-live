@@ -1,9 +1,9 @@
 "use client";
 
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Session } from "next-auth";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
@@ -22,6 +22,7 @@ import {
 
 import ChangeAvatar from "./ChangeAvatar";
 import { api } from "~/trpc/react";
+import { exposedRevalidatePath as revalidatePath } from "~/server/actions/exposedRevalidate";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -38,6 +39,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
 }) => {
   const mutation = api.users.update.useMutation();
   const sessionQuery = api.session.getSession.useQuery();
+  const pathname = usePathname();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,6 +69,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     });
 
     await sessionQuery.refetch();
+    revalidatePath(pathname);
   }
 
   return (
@@ -153,40 +156,47 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
           />
         </form>
       </Form>
-      <motion.div
-        className="absolute bottom-0 space-x-6 rounded-sm border px-2 py-1 shadow-md"
-        initial={{ translateY: "5rem" }}
-        animate={{
-          translateY: form.formState.isDirty ? "0" : "5rem",
-        }}
-        transition={{
-          type: "spring",
-          ease: "easeInOut",
-          duration: 0.55,
-        }}
-      >
-        <span className="inline font-medium">Unsaved changes detected!</span>
-        <span className="space-x-2">
-          <Button
-            className="inline hover:bg-slate-200/50"
-            variant="ghost"
-            onClick={() => form.reset()}
+      <AnimatePresence>
+        {form.formState.isDirty && (
+          <motion.div
+            className="absolute bottom-0 space-x-6 rounded-sm border px-2 py-1 shadow-md"
+            initial={{ translateY: "5rem" }}
+            animate={{
+              translateY: "0",
+            }}
+            exit={{ translateY: "5rem" }}
+            transition={{
+              type: "spring",
+              ease: "easeInOut",
+              duration: 0.55,
+            }}
           >
-            Reset
-          </Button>
-          <Button
-            type="submit"
-            className="inline"
-            onClick={form.handleSubmit(onSubmit)}
-          >
-            {form.formState.isLoading ? (
-              <Loader2Icon className="animate-spin" size={20} />
-            ) : (
-              "Save"
-            )}
-          </Button>
-        </span>
-      </motion.div>
+            <span className="inline font-medium">
+              Unsaved changes detected!
+            </span>
+            <span className="space-x-2">
+              <Button
+                className="inline hover:bg-slate-200/50"
+                variant="ghost"
+                onClick={() => form.reset()}
+              >
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                className="inline"
+                onClick={form.handleSubmit(onSubmit)}
+              >
+                {form.formState.isLoading ? (
+                  <Loader2Icon className="animate-spin" size={20} />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
