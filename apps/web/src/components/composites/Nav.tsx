@@ -48,7 +48,9 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                   <div className="inline-flex cursor-pointer items-center space-x-2 rounded px-1.5 py-1 ring-1 ring-primary/20 transition-shadow hover:shadow-md">
                     <div className="divide-y divide-primary/70 *:text-right *:text-sm">
                       <p className="font-medium">{session.user.name}</p>
-                      <p className="font-light">Student</p>
+                      <p className="font-light capitalize">
+                        {session.user.type}
+                      </p>
                     </div>
                     <Avatar className="transition-shadow hover:shadow">
                       <AvatarImage

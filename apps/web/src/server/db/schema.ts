@@ -85,6 +85,7 @@ export const sessions = createTable(
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  usersToCourses: many(usersToCourses),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -113,3 +114,39 @@ export const courses = createTable(
     index("course_tags_idx").on(course.tags),
   ],
 );
+
+export const usersToCourses = createTable(
+  "users_to_courses",
+  {
+    userId: varchar("user_id", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    courseId: varchar("course_id", { length: 255 })
+      .notNull()
+      .references(() => courses.id),
+  },
+  (link) => [
+    primaryKey({
+      columns: [link.userId, link.courseId],
+    }),
+  ],
+);
+
+export const coursesRelations = relations(courses, ({ one, many }) => ({
+  author: one(users, {
+    fields: [courses.authorId],
+    references: [users.id],
+  }),
+  usersToCourses: many(usersToCourses),
+}));
+
+export const usersToCoursesRelations = relations(usersToCourses, ({ one }) => ({
+  user: one(users, {
+    fields: [usersToCourses.userId],
+    references: [users.id],
+  }),
+  course: one(courses, {
+    fields: [usersToCourses.courseId],
+    references: [courses.id],
+  }),
+}));
