@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Button } from "@repo/ui/button";
 
 import { auth } from "~/server/auth";
 import Nav from "~/components/composites/Nav";
@@ -22,8 +22,15 @@ export default async function Home() {
           />
         </div>
         <div className="w-full space-y-8">
-          <FeatureCard title="Learn New Skills!" />
-          <FeatureCard title="Share Your Knowledge!" side="right" />
+          <FeatureCard
+            title="Learn New Skills!"
+            actionButton={<Button>Learn cooking!</Button>}
+          />
+          <FeatureCard
+            title="Share Your Knowledge!"
+            side="right"
+            actionButton={<Button>Or maybe bartending...</Button>}
+          />
         </div>
       </main>
     </div>

@@ -36,7 +36,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
 
   return (
     <div>
-      <Avatar className="size-40 border hover:[&>label]:first:opacity-100">
+      <Avatar className="group size-40 border hover:[&>label]:first:opacity-100">
         <label
           id="overlay"
           htmlFor="avatar_image"
@@ -70,7 +70,11 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
             }
           }}
         />
-        <AvatarImage src={avatarUrl ?? undefined} alt="Profile Avatar Image" />
+        <AvatarImage
+          src={avatarUrl ?? undefined}
+          alt="Profile Avatar Image"
+          className="transition-[filter] group-hover:blur-sm"
+        />
         <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
     </div>

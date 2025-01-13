@@ -1,20 +1,22 @@
 import Image from "next/image";
+import { Button } from "@repo/ui/button";
 
 import Generic from "~/img/generic.webp";
 import MotionWrapper from "~/components/utils/MotionWrapper";
 import { cn } from "~/lib/utils";
+import React from "react";
 
 type FeatureCardProps = {
-  isLoggedIn?: boolean;
   title?: React.ReactNode;
   description?: React.ReactNode;
+  actionButton?: React.ReactNode;
   side?: "left" | "right";
 };
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
-  isLoggedIn = false,
   title = "Title",
   description = "Lorem Ipsum! Lorem Ipsum! Lorem Ipsum!",
+  actionButton = <Button>Join GoingLive Today!</Button>,
   side = "left",
 }) => {
   return (
@@ -38,11 +40,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
             )}
           />
         </MotionWrapper>
-        <div className="space-y-3 p-3">
-          <h2 className="text-center text-lg font-bold lg:text-xl xl:text-2xl">
-            {title}
-          </h2>
-          <p className="text-base lg:text-lg">{description}</p>
+        <div className="flex flex-col justify-between p-3">
+          <div className="space-y-3">
+            <h2 className="text-center text-lg font-bold lg:text-xl xl:text-2xl">
+              {title}
+            </h2>
+            <p className="text-base lg:text-lg">{description}</p>
+          </div>
+          {actionButton}
         </div>
       </form>
     </div>
