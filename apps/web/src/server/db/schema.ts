@@ -40,6 +40,16 @@ export const users = createTable("users", {
   type: userTypeEnum("user_type").notNull().default("student"),
 });
 
+export const personalDetails = createTable("personal_details", {
+  userId: varchar("user_id", { length: 255 })
+    .references(() => users.id)
+    .primaryKey(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+
+  pronouns: varchar("pronouns", { length: 16 }),
+  bio: varchar("bio", { length: 255 }),
+});
+
 export const accounts = createTable(
   "accounts",
   {
@@ -83,9 +93,13 @@ export const sessions = createTable(
   (session) => [index("session_user_id_idx").on(session.userId)],
 );
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   usersToCourses: many(usersToCourses),
+  details: one(personalDetails, {
+    fields: [users.id],
+    references: [personalDetails.userId],
+  }),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -95,6 +109,16 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
+
+export const personalDetailsRelations = relations(
+  personalDetails,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [personalDetails.userId],
+      references: [users.id],
+    }),
+  }),
+);
 
 export const courses = createTable(
   "courses",

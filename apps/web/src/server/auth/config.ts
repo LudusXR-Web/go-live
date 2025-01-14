@@ -7,7 +7,7 @@ import { createId } from "@paralleldrive/cuid2";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
-import { accounts, sessions, users } from "~/server/db/schema";
+import { accounts, sessions, users, personalDetails } from "~/server/db/schema";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -64,6 +64,11 @@ export const authConfig = {
           id: user.id,
         },
       };
+    },
+  },
+  events: {
+    createUser: async ({ user }) => {
+      await db.insert(personalDetails).values({ userId: user.id! });
     },
   },
 } satisfies NextAuthConfig;

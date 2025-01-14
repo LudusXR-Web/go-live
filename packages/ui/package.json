@@ -11,7 +11,8 @@
     "./label": "./src/components/label.tsx",
     "./menubar": "./src/components/menubar.tsx",
     "./select": "./src/components/select.tsx",
-    "./switch": "./src/components/switch.tsx"
+    "./switch": "./src/components/switch.tsx",
+    "./textarea": "./src/components/textarea.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

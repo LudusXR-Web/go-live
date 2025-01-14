@@ -1,6 +1,7 @@
 "use client";
 
 import { z } from "zod";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Session } from "next-auth";
 import { AnimatePresence, motion } from "motion/react";
@@ -10,6 +11,7 @@ import { Loader2Icon } from "lucide-react";
 import { Input } from "@repo/ui/input";
 import { Button } from "@repo/ui/button";
 import { Switch } from "@repo/ui/switch";
+import { Textarea } from "@repo/ui/textarea";
 import {
   Form,
   FormControl,
@@ -22,24 +24,42 @@ import {
 
 import ChangeAvatar from "./ChangeAvatar";
 import { api } from "~/trpc/react";
+import { type personalDetails } from "~/server/db/schema";
 import { exposedRevalidatePath as revalidatePath } from "~/server/actions/exposedRevalidate";
+import { cn } from "~/lib/utils";
 
 const formSchema = z.object({
-  name: z.string().min(2).max(50),
+  name: z
+    .string()
+    .min(2, "Your name must be at least 2 characters long")
+    .max(50, "YYour pronouns must not be longer than 50 characters"),
   email: z.string().email().readonly(),
   profileType: z.boolean(),
+
+  pronouns: z
+    .string()
+    .max(16, "Your pronouns must not be longer than 16 characters")
+    .optional(),
+  bio: z.string().max(200, "Your bio may not exceed 200 characters").optional(),
 });
 
 type PersonalDetailsFormProps = {
   serverSession: Session;
+  userDetails: typeof personalDetails.$inferSelect;
 };
 
 const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   serverSession,
+  userDetails,
 }) => {
-  const mutation = api.users.update.useMutation();
+  const updateUser = api.users.update.useMutation();
+  const updatePersonalDetails = api.users.updatePersonalDetails.useMutation();
   const sessionQuery = api.session.getSession.useQuery();
+  const detailsQuery = api.users.getPersonalDetailsById.useQuery(
+    serverSession.user.id,
+  );
   const pathname = usePathname();
+  const [bioLength, setBioLength] = useState(userDetails.bio?.length ?? 0);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,28 +67,41 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
       name: serverSession.user.name ?? "",
       email: serverSession.user.email ?? "",
       profileType: serverSession.user.type === "teacher",
+
+      pronouns: userDetails.pronouns ?? "",
+      bio: userDetails.bio ?? "",
     },
     values: {
-      name: sessionQuery.data?.user.name ?? "",
-      email: sessionQuery.data?.user.email ?? "",
+      name: sessionQuery.data?.user.name ?? serverSession.user.name ?? "",
+      email: sessionQuery.data?.user.email ?? serverSession.user.email ?? "",
       profileType:
         (sessionQuery.data?.user.type ?? serverSession.user.type) === "teacher",
+
+      pronouns: detailsQuery.data?.pronouns ?? userDetails.pronouns ?? "",
+      bio: detailsQuery.data?.bio ?? userDetails.bio ?? "",
     },
   });
 
+  const bioRef = form.watch("bio");
+  useEffect(() => setBioLength(bioRef?.length ?? 0), [bioRef]);
+
   async function onSubmit({
-    name,
-    email,
     profileType,
+    ...data
   }: z.infer<typeof formSchema>) {
-    await mutation.mutateAsync({
-      id: sessionQuery.data!.user.id,
-      name,
-      email,
+    await updateUser.mutateAsync({
+      id: serverSession.user.id,
       type: profileType ? "teacher" : "student",
+      ...data,
+    });
+
+    await updatePersonalDetails.mutateAsync({
+      userId: serverSession.user.id,
+      ...data,
     });
 
     await sessionQuery.refetch();
+    await detailsQuery.refetch();
     revalidatePath(pathname);
   }
 
@@ -85,7 +118,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input className="w-full" {...field} />
+                      <Input {...field} className="w-full" maxLength={50} />
                     </FormControl>
                     <FormDescription>
                       This is your public display name.
@@ -149,6 +182,54 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                 <FormDescription>
                   Your <span className="text-accent">GoingLive</span> experience
                   will be adjusted based on this setting.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="pronouns"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pronouns</FormLabel>
+                <FormControl>
+                  <Input {...field} className="max-w-[16ch]" maxLength={16} />
+                </FormControl>
+                <FormDescription>
+                  Your pronouns (if specified) will be shown in your public
+                  profile.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="bio"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bio</FormLabel>
+                <FormControl>
+                  <div>
+                    <Textarea
+                      {...field}
+                      className="max-w-[75ch]"
+                      maxLength={200}
+                    />
+                    <span
+                      className={cn(
+                        "text-sm font-light",
+                        bioLength >= 200 ? "text-red-400" : "text-slate-300",
+                      )}
+                    >
+                      {bioLength}/200
+                    </span>
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  Tell us about yourself! This bio will also be visible in your
+                  public profile.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

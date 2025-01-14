@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { UserPenIcon } from "lucide-react";
 
 import { auth } from "~/server/auth";
+import { api } from "~/trpc/server";
 import PersonalDetailsForm from "./PersonalDetailsForm";
 
 const ProfilePage = async () => {
@@ -10,6 +11,10 @@ const ProfilePage = async () => {
   if (!session) {
     return notFound();
   }
+
+  const personalDetails = await api.users.getPersonalDetailsById(
+    session.user.id,
+  );
 
   return (
     <main className="flex h-full w-full divide-x-2 divide-accent/55 overflow-y-hidden !px-14">
@@ -20,7 +25,10 @@ const ProfilePage = async () => {
         </div>
       </div>
       <div className="relative flex-[3] pl-6 pr-20">
-        <PersonalDetailsForm serverSession={session} />
+        <PersonalDetailsForm
+          serverSession={session}
+          userDetails={personalDetails}
+        />
       </div>
     </main>
   );

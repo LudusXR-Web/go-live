@@ -36,6 +36,20 @@
       "when": 1736558119822,
       "tag": "0004_yielding_dark_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1736884468204,
+      "tag": "0005_melodic_corsair",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1736885459673,
+      "tag": "0006_strong_flatman",
+      "breakpoints": true
     }
   ]
 }
