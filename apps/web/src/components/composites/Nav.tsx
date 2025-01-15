@@ -1,13 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Session } from "next-auth";
-import { SettingsIcon, UserIcon } from "lucide-react";
+import {
+  BlocksIcon,
+  GraduationCapIcon,
+  SettingsIcon,
+  UserIcon,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import {
   Menubar,
   MenubarContent,
   MenubarItem,
   MenubarMenu,
+  MenubarSeparator,
   MenubarTrigger,
 } from "@repo/ui/menubar";
 
@@ -80,6 +86,28 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                     <Link href="/settings" className="flex justify-between">
                       Settings
                       <SettingsIcon className="opacity-50" size={20} />
+                    </Link>
+                  </MenubarItem>
+                  <MenubarSeparator />
+                  <MenubarItem
+                    asChild
+                    className="transition-colors focus:bg-muted"
+                  >
+                    <Link href="/my-courses" className="flex justify-between">
+                      My Courses
+                      <GraduationCapIcon className="opacity-50" size={20} />
+                    </Link>
+                  </MenubarItem>
+                  <MenubarItem
+                    asChild
+                    className="transition-colors focus:bg-muted"
+                  >
+                    <Link
+                      href="/course-builder"
+                      className="flex justify-between"
+                    >
+                      Course Builder
+                      <BlocksIcon className="opacity-50" size={20} />
                     </Link>
                   </MenubarItem>
                 </MenubarContent>
