@@ -24,7 +24,7 @@ const ProfilePage = async () => {
           <span>Personal Details</span>
         </div>
       </div>
-      <div className="relative flex-[3] pl-6 pr-20">
+      <div className="relative flex-[3] pb-16 pl-6 pr-20">
         <PersonalDetailsForm
           serverSession={session}
           userDetails={personalDetails}

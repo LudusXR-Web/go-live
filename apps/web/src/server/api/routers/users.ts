@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { personalDetails, users } from "~/server/db/schema";
+import { personalDetails, users, userTypeEnum } from "~/server/db/schema";
 
 const userRouter = createTRPCRouter({
   update: protectedProcedure
@@ -19,6 +19,7 @@ const userRouter = createTRPCRouter({
             id: z.string().cuid2(),
             email: z.string().email().optional(),
             image: z.string().url().optional(),
+            type: z.enum(userTypeEnum.enumValues).optional(),
           }),
         ),
     )

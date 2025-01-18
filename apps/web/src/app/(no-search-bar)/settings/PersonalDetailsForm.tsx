@@ -10,7 +10,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import { Input } from "@repo/ui/input";
 import { Button } from "@repo/ui/button";
-import { Switch } from "@repo/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui/select";
 import { Textarea } from "@repo/ui/textarea";
 import {
   Form,
@@ -24,7 +30,7 @@ import {
 
 import ChangeAvatar from "./ChangeAvatar";
 import { api } from "~/trpc/react";
-import { type personalDetails } from "~/server/db/schema";
+import { userTypeEnum, type personalDetails } from "~/server/db/schema";
 import { exposedRevalidatePath as revalidatePath } from "~/server/actions/exposedRevalidate";
 import { cn } from "~/lib/utils";
 
@@ -32,9 +38,9 @@ const formSchema = z.object({
   name: z
     .string()
     .min(2, "Your name must be at least 2 characters long")
-    .max(50, "YYour pronouns must not be longer than 50 characters"),
+    .max(50, "Your pronouns must not be longer than 50 characters"),
   email: z.string().email().readonly(),
-  profileType: z.boolean(),
+  type: z.enum(userTypeEnum.enumValues),
 
   pronouns: z
     .string()
@@ -66,7 +72,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     defaultValues: {
       name: serverSession.user.name ?? "",
       email: serverSession.user.email ?? "",
-      profileType: serverSession.user.type === "teacher",
+      type: serverSession.user.type,
 
       pronouns: userDetails.pronouns ?? "",
       bio: userDetails.bio ?? "",
@@ -74,8 +80,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     values: {
       name: sessionQuery.data?.user.name ?? serverSession.user.name ?? "",
       email: sessionQuery.data?.user.email ?? serverSession.user.email ?? "",
-      profileType:
-        (sessionQuery.data?.user.type ?? serverSession.user.type) === "teacher",
+      type: sessionQuery.data?.user.type ?? serverSession.user.type,
 
       pronouns: detailsQuery.data?.pronouns ?? userDetails.pronouns ?? "",
       bio: detailsQuery.data?.bio ?? userDetails.bio ?? "",
@@ -85,13 +90,9 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   const bioRef = form.watch("bio");
   useEffect(() => setBioLength(bioRef?.length ?? 0), [bioRef]);
 
-  async function onSubmit({
-    profileType,
-    ...data
-  }: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     await updateUser.mutateAsync({
       id: serverSession.user.id,
-      type: profileType ? "teacher" : "student",
       ...data,
     });
 
@@ -109,7 +110,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex items-center justify-between gap-12">
+          <div className="flex items-start justify-between gap-12">
             <div className="w-full space-y-4 [&>*>label]:font-medium">
               <FormField
                 control={form.control}
@@ -118,7 +119,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input {...field} className="w-full" maxLength={50} />
+                      <Input className="w-full" maxLength={50} {...field} />
                     </FormControl>
                     <FormDescription>
                       This is your public display name.
@@ -144,66 +145,64 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Preferred Experience</FormLabel>
+                    <FormControl>
+                      <Select {...field} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {userTypeEnum.enumValues.map((t) => (
+                            <SelectItem
+                              className="focus:bg-muted"
+                              key={t}
+                              value={t}
+                            >
+                              {/* text-transform doesn't work here for some reason */}
+                              {t.slice(0, 1).toUpperCase()}
+                              {t.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormDescription>
+                      Your <span className="text-accent">GoingLive</span>{" "}
+                      experience will be adjusted based on this setting.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="pronouns"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pronouns</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="max-w-[16ch]"
+                        maxLength={16}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Your pronouns (if specified) will be shown in your public
+                      profile.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <ChangeAvatar user={serverSession.user} />
           </div>
-          <FormField
-            control={form.control}
-            name="profileType"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Preferred Experience</FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-2 text-sm">
-                    Student
-                    <Switch
-                      className="inline data-[state=checked]:bg-accent data-[state=unchecked]:bg-primary"
-                      defaultChecked={form.formState.defaultValues?.profileType}
-                      checked={field.value}
-                      onClick={() => {
-                        form.setValue(
-                          "profileType",
-                          !form.getValues("profileType"),
-                          {
-                            shouldTouch: true,
-                            shouldDirty: true,
-                          },
-                        );
-                      }}
-                      disabled={field.disabled}
-                      name={field.name}
-                      onBlur={field.onBlur}
-                      onChange={field.onChange}
-                      ref={field.ref}
-                    />
-                    Teacher
-                  </div>
-                </FormControl>
-                <FormDescription>
-                  Your <span className="text-accent">GoingLive</span> experience
-                  will be adjusted based on this setting.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="pronouns"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Pronouns</FormLabel>
-                <FormControl>
-                  <Input {...field} className="max-w-[16ch]" maxLength={16} />
-                </FormControl>
-                <FormDescription>
-                  Your pronouns (if specified) will be shown in your public
-                  profile.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="bio"
@@ -213,9 +212,9 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                 <FormControl>
                   <div>
                     <Textarea
-                      {...field}
                       className="max-w-[75ch]"
                       maxLength={200}
+                      {...field}
                     />
                     <span
                       className={cn(

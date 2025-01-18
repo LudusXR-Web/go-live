@@ -23,7 +23,11 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `golive_${name}`);
 
-export const userTypeEnum = pgEnum("user_type_enum", ["student", "teacher"]);
+export const userTypeEnum = pgEnum("user_type_enum", [
+  "student",
+  "teacher",
+  "VET",
+]);
 
 export const users = createTable("users", {
   id: varchar("id", { length: 255 })
