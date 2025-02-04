@@ -21,6 +21,7 @@ import { Button } from "@repo/ui/button";
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
+import { type courses } from "~/server/db/schema";
 
 const formSchema = z.object({
   title: z.string().min(3).max(50),
@@ -30,15 +31,25 @@ const formSchema = z.object({
 
 type NewCourseFormProps = {
   serverSession: Session;
+  defaultValues?: typeof courses.$inferSelect;
 };
 
-const NewCourseForm: React.FC<NewCourseFormProps> = ({ serverSession }) => {
+const NewCourseForm: React.FC<NewCourseFormProps> = ({
+  serverSession,
+  defaultValues,
+}) => {
   const createCourse = api.courses.create.useMutation();
+  const updateCourse = api.courses.update.useMutation();
   const [descriptionLength, setDescriptionLength] = useState(0);
   const [tags, setTags] = useState<Set<string>>(new Set<string>());
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: defaultValues?.title,
+      description: defaultValues?.description ?? "",
+      tags: new Set(defaultValues?.tags),
+    },
     values: {
       title: "",
       description: "",
@@ -53,6 +64,13 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({ serverSession }) => {
   );
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    if (defaultValues)
+      return await updateCourse.mutateAsync({
+        ...data,
+        id: defaultValues.id,
+        tags: [...data.tags],
+      });
+
     await createCourse.mutateAsync({
       ...data,
       tags: [...data.tags],
