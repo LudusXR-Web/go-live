@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { arrayOverlaps } from "drizzle-orm";
+import { arrayOverlaps, eq } from "drizzle-orm";
+import { createInsertSchema } from "drizzle-zod";
 
+import { courses } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const courseRouter = createTRPCRouter({
@@ -8,6 +10,12 @@ const courseRouter = createTRPCRouter({
     async ({ ctx, input }) =>
       await ctx.db.query.courses.findFirst({
         where: (course, { eq }) => eq(course.id, input),
+      }),
+  ),
+  getByAuthorId: protectedProcedure.input(z.string().cuid2()).query(
+    async ({ ctx, input }) =>
+      await ctx.db.query.courses.findMany({
+        where: (course, { eq }) => eq(course.authorId, input),
       }),
   ),
   getByDetails: publicProcedure
@@ -27,6 +35,38 @@ const courseRouter = createTRPCRouter({
               arrayOverlaps(course.tags, input.tags),
             ),
         }),
+    ),
+  create: protectedProcedure
+    .input(createInsertSchema(courses).omit({ id: true }))
+    .output(z.string().cuid2())
+    .mutation(
+      async ({ ctx, input }) =>
+        (
+          await ctx.db
+            .insert(courses)
+            .values({ ...input })
+            .returning({ id: courses.id })
+        ).at(0)!.id,
+    ),
+  update: protectedProcedure
+    .input(
+      createInsertSchema(courses)
+        .partial()
+        .merge(
+          z.object({
+            id: z.string().cuid2(),
+          }),
+        ),
+    )
+    .mutation(
+      async ({ ctx, input }) =>
+        await ctx.db
+          .update(courses)
+          .set({
+            ...input,
+            id: undefined,
+          })
+          .where(eq(courses.id, input.id)),
     ),
 });
 

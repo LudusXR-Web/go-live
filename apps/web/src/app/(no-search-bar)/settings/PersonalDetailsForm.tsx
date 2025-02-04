@@ -88,7 +88,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   });
 
   const bioRef = form.watch("bio");
-  useEffect(() => setBioLength(bioRef?.length ?? 0), [bioRef]);
+  useEffect(() => setBioLength(bioRef?.length ?? 0), [bioRef?.length]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     await updateUser.mutateAsync({
