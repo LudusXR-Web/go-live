@@ -1,6 +1,7 @@
 "use client";
 
 import z from "zod";
+import { useRouter } from "next/navigation";
 import { type Session } from "next-auth";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -42,18 +43,14 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({
   const updateCourse = api.courses.update.useMutation();
   const [descriptionLength, setDescriptionLength] = useState(0);
   const [tags, setTags] = useState<Set<string>>(new Set<string>());
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: defaultValues?.title,
-      description: defaultValues?.description ?? "",
-      tags: new Set(defaultValues?.tags),
-    },
     values: {
-      title: "",
-      description: "",
-      tags: tags,
+      title: defaultValues?.title ?? "",
+      description: defaultValues?.description ?? "",
+      tags: new Set(defaultValues?.tags ?? tags),
     },
   });
 
@@ -71,11 +68,13 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({
         tags: [...data.tags],
       });
 
-    await createCourse.mutateAsync({
+    const newCourseId = await createCourse.mutateAsync({
       ...data,
       tags: [...data.tags],
       authorId: serverSession.user.id,
     });
+
+    router.push(`/course-builder/${newCourseId}`);
   }
 
   return (

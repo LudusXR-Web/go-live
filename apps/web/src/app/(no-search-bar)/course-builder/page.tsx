@@ -7,7 +7,7 @@ import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import NewCourseModal from "~/components/modals/NewCourse";
 
-export default async function CourseBuilderPage() {
+export default async function CourseListPage() {
   const session = await auth();
 
   if (!session) notFound();
