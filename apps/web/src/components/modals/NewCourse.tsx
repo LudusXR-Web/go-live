@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@repo/ui/dialog";
 
-import NewCourseForm from "~/components/modals/NewCourseForm";
+import NewCourseForm from "~/components/forms/NewCourseForm";
 
 type NewCourseModalProps = {
   session: Session;

@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from "@repo/ui/form";
 
-import ChangeAvatar from "./ChangeAvatar";
+import ChangeAvatar from "../../app/(no-search-bar)/settings/ChangeAvatar";
 import { api } from "~/trpc/react";
 import { userTypeEnum, type personalDetails } from "~/server/db/schema";
 import { exposedRevalidatePath as revalidatePath } from "~/server/actions/exposedRevalidate";

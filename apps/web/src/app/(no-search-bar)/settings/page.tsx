@@ -3,7 +3,7 @@ import { UserPenIcon } from "lucide-react";
 
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
-import PersonalDetailsForm from "./PersonalDetailsForm";
+import PersonalDetailsForm from "~/components/forms/PersonalDetailsForm";
 
 const ProfilePage = async () => {
   const session = await auth();
