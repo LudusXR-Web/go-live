@@ -4,6 +4,7 @@
 import {
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTableCreator,
   primaryKey,
@@ -132,6 +133,7 @@ export const courses = createTable(
       .primaryKey(),
     title: varchar("title", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }).default(""),
+    image: text("image"),
     authorId: varchar("author_id", { length: 255 })
       .notNull()
       .references(() => users.id),
@@ -142,6 +144,33 @@ export const courses = createTable(
     index("course_tags_idx").on(course.tags),
   ],
 );
+
+type CourseSection = {
+  id: string;
+  title: string;
+  children: string[];
+};
+
+type CourseText = {
+  id: `text-${string}`;
+  content: string;
+};
+
+type CourseMedia = {
+  id: `media-${string}`;
+  type: "image" | "attachment";
+  content: string;
+};
+
+type CourseContent = CourseText | CourseMedia;
+
+export const courseContents = createTable("course_contents", {
+  courseId: varchar("courseId", { length: 255 })
+    .primaryKey()
+    .references(() => courses.id),
+  sections: jsonb("sections").$type<CourseSection>().array().default([]),
+  content: jsonb("content").$type<CourseContent>().array().default([]),
+});
 
 export const usersToCourses = createTable(
   "users_to_courses",

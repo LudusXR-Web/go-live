@@ -177,7 +177,12 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({
             </FormItem>
           )}
         />
-        <Button type="submit">Go Live!</Button>
+        <Button
+          type="submit"
+          disabled={createCourse.isPending || updateCourse.isPending}
+        >
+          Go Live!
+        </Button>
       </form>
     </Form>
   );
