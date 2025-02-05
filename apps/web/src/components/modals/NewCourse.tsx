@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@repo/ui/dialog";
 
-import NewCourseForm from "~/components/forms/NewCourseForm";
+import CourseDetailsForm from "~/components/forms/CourseDetailsForm";
 
 type NewCourseModalProps = {
   session: Session;
@@ -31,7 +31,7 @@ const NewCourseModal: React.FC<NewCourseModalProps> = ({
             journey starts here!
           </DialogDescription>
         </DialogHeader>
-        <NewCourseForm serverSession={session} />
+        <CourseDetailsForm serverSession={session} />
       </DialogContent>
     </Dialog>
   );

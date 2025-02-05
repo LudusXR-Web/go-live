@@ -6,7 +6,7 @@ import { type Session } from "next-auth";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { XIcon } from "lucide-react";
+import { LoaderCircleIcon, XIcon } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -30,19 +30,21 @@ const formSchema = z.object({
   tags: z.set(z.string().min(2).max(32)),
 });
 
-type NewCourseFormProps = {
+type CourseDetailsFormProps = {
   serverSession: Session;
   defaultValues?: typeof courses.$inferSelect;
 };
 
-const NewCourseForm: React.FC<NewCourseFormProps> = ({
+const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
   serverSession,
   defaultValues,
 }) => {
   const createCourse = api.courses.create.useMutation();
   const updateCourse = api.courses.update.useMutation();
   const [descriptionLength, setDescriptionLength] = useState(0);
-  const [tags, setTags] = useState<Set<string>>(new Set<string>());
+  const [tags, setTags] = useState<Set<string>>(
+    new Set<string>(defaultValues?.tags ?? []),
+  );
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -50,7 +52,7 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({
     values: {
       title: defaultValues?.title ?? "",
       description: defaultValues?.description ?? "",
-      tags: new Set(defaultValues?.tags ?? tags),
+      tags: new Set(tags),
     },
   });
 
@@ -76,6 +78,8 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({
 
     router.push(`/course-builder/${newCourseId}`);
   }
+
+  const pending = createCourse.status !== "idle" || updateCourse.isPending;
 
   return (
     <Form {...form}>
@@ -138,9 +142,17 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({
                         <button
                           type="button"
                           className="h-full px-1 transition-colors hover:bg-primary/50"
-                          onClick={() =>
-                            setTags(new Set(array.filter((_, i) => i !== idx)))
-                          }
+                          onClick={() => {
+                            const newTags = new Set(
+                              array.filter((_, i) => i !== idx),
+                            );
+
+                            setTags(newTags);
+                            form.setValue("tags", newTags, {
+                              shouldDirty: true,
+                              shouldTouch: true,
+                            });
+                          }}
                         >
                           <XIcon size={16} />
                         </button>
@@ -165,7 +177,10 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({
 
                         const tempTags = tags;
                         tempTags.add(e.currentTarget.value);
-                        form.setValue("tags", tempTags);
+                        form.setValue("tags", tempTags, {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                        });
 
                         e.currentTarget.value = "";
                       }
@@ -179,13 +194,14 @@ const NewCourseForm: React.FC<NewCourseFormProps> = ({
         />
         <Button
           type="submit"
-          disabled={createCourse.isPending || updateCourse.isPending}
+          disabled={pending}
+          className={pending ? "px-[2.5ch]" : ""}
         >
-          Go Live!
+          {pending ? <LoaderCircleIcon className="animate-spin" /> : "Save"}
         </Button>
       </form>
     </Form>
   );
 };
 
-export default NewCourseForm;
+export default CourseDetailsForm;
