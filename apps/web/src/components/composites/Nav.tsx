@@ -58,7 +58,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                         {session.user.type}
                       </p>
                     </div>
-                    <Avatar className="transition-shadow hover:shadow">
+                    <Avatar className="transition-shadow hover:shadow-sm">
                       <AvatarImage
                         src={session.user.image ?? undefined}
                         alt="Profile Avatar Image"

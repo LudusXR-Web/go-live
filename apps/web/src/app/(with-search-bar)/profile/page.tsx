@@ -19,7 +19,7 @@ export default async function ProfilePage() {
     <main className="flex w-full justify-center">
       <div
         id="personal-details"
-        className="max-w-screen-lg space-y-3 divide-y-2 divide-accent"
+        className="max-w-(--breakpoint-lg) space-y-3 divide-y-2 divide-accent"
       >
         <div
           id="avatar-banner"
@@ -32,7 +32,7 @@ export default async function ProfilePage() {
             <Image src={Generic} alt="generic" width={1280} />
           </div>
           <div id="avatar-container">
-            <Avatar className="absolute left-10 top-[8rem] size-44 border-[8px] border-primary-foreground hover:shadow">
+            <Avatar className="absolute left-10 top-[8rem] size-44 border-[8px] border-primary-foreground hover:shadow-sm">
               <AvatarImage
                 src={session.user.image ?? undefined}
                 alt="Profile Avatar Image"

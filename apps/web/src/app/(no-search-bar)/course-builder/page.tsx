@@ -37,7 +37,7 @@ export default async function CourseListPage() {
         {!!memberCourses.length ? (
           memberCourses.map((course) => (
             <Link key={course.id} href={`/course-builder/${course.id}`}>
-              <div className="max-w-80 rounded shadow transition-shadow hover:shadow-lg">
+              <div className="max-w-80 rounded shadow-sm transition-shadow hover:shadow-lg">
                 {course.image ? (
                   <Image
                     src={course.image}

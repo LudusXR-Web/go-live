@@ -137,7 +137,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                     <FormControl>
                       <Input
                         disabled
-                        className="w-full !cursor-not-allowed"
+                        className="w-full cursor-not-allowed!"
                         {...field}
                       />
                     </FormControl>

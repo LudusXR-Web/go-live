@@ -13,7 +13,7 @@ type CourseBuilderPageProps = {
 };
 
 const tabsTriggerStyle =
-  "relative flex w-full select-none items-center gap-4 rounded-sm border-b bg-slate-200/20 px-2 py-1.5 text-sm outline-none transition-all data-[disabled]:pointer-events-none data-[state=active]:bg-slate-200 data-[disabled]:opacity-50 data-[state=active]:shadow";
+  "relative flex w-full select-none items-center gap-4 rounded-sm border-b bg-slate-200/20 px-2 py-1.5 text-sm outline-hidden transition-all data-disabled:pointer-events-none data-[state=active]:bg-slate-200 data-disabled:opacity-50 data-[state=active]:shadow-sm";
 
 export default async function CourseBuilderPage({
   params,
@@ -48,7 +48,7 @@ export default async function CourseBuilderPage({
             <span>Content Editor</span>
           </TabsTrigger>
         </TabsList>
-        <div className="relative flex-[4] pb-16 pl-6 pr-20">
+        <div className="relative flex-4 pb-16 pl-6 pr-20">
           <TabsContent value="basic" className="space-y-3">
             <ChangeCourseBanner course={course} />
             <CourseDetailsForm serverSession={session} defaultValues={course} />

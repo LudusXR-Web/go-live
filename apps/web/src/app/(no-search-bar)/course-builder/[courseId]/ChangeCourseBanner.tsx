@@ -38,7 +38,7 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
   return (
     <div
       className={cn(
-        "group relative h-60 w-full overflow-hidden rounded hover:[&>label]:first:opacity-100",
+        "group relative h-60 w-full overflow-hidden rounded first:[&>label]:hover:opacity-100",
         imageUrl ? "bg-slate-50" : "bg-slate-200",
       )}
     >
@@ -81,7 +81,7 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
           alt={course.title}
           width={1280}
           height={720}
-          className="m-auto h-full w-fit transition-[filter] group-hover:blur-sm"
+          className="m-auto h-full w-fit transition-[filter] group-hover:blur-xs"
         />
       )}
     </div>

@@ -36,7 +36,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
 
   return (
     <div>
-      <Avatar className="group size-40 border hover:[&>label]:first:opacity-100">
+      <Avatar className="group size-40 border first:[&>label]:hover:opacity-100">
         <label
           id="overlay"
           htmlFor="avatar_image"
@@ -57,7 +57,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
           accept="image/*"
           name="avatar"
           id="avatar_image"
-          className="sr-only ml-8 mt-16"
+          className="sr-only mt-16 ml-8"
           onChange={(e) => {
             if (e.target.files?.[0]) {
               upload(e.target.files[0], {
@@ -73,7 +73,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
         <AvatarImage
           src={avatarUrl ?? undefined}
           alt="Profile Avatar Image"
-          className="transition-[filter] group-hover:blur-sm"
+          className="transition-[filter] group-hover:blur-xs"
         />
         <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
