@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PlusIcon } from "lucide-react";
+import { CameraOffIcon, PlusIcon } from "lucide-react";
 import { Button } from "@repo/ui/button";
 
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import NewCourseModal from "~/components/modals/NewCourse";
+import Image from "next/image";
 
 export default async function CourseListPage() {
   const session = await auth();
@@ -32,11 +33,36 @@ export default async function CourseListPage() {
           </Button>
         </Link>
       </div>
-      {!!memberCourses.length ? (
-        <>//TODO Show the courses created by the given member</>
-      ) : (
-        <></>
-      )}
+      <div className="pt-4">
+        {!!memberCourses.length ? (
+          memberCourses.map((course) => (
+            <Link key={course.id} href={`/course-builder/${course.id}`}>
+              <div className="max-w-80 rounded shadow transition-shadow hover:shadow-lg">
+                {course.image ? (
+                  <Image
+                    src={course.image}
+                    alt={course.title}
+                    width={1280}
+                    height={720}
+                    className="py-3"
+                  />
+                ) : (
+                  <div className="flex h-32 w-full select-none items-center justify-center gap-2 bg-slate-200">
+                    <CameraOffIcon size={20} />
+                    <span className="text-sm">No Course Banner Selected</span>
+                  </div>
+                )}
+                <div className="p-2">
+                  <h2 className="text-lg font-semibold">{course.title}</h2>
+                  <p className="font-light">{course.description}</p>
+                </div>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <></>
+        )}
+      </div>
     </main>
   );
 }
