@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MonitorIcon, TableOfContentsIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
@@ -8,8 +8,10 @@ import { api } from "~/trpc/server";
 import CourseDetailsForm from "~/components/forms/CourseDetailsForm";
 import ChangeCourseBanner from "./ChangeCourseBanner";
 
+type CourseBuilderMode = "basic" | "content";
+
 type CourseBuilderPageProps = {
-  params: Promise<{ courseId: string }>;
+  params: Promise<{ courseId: string; mode: CourseBuilderMode }>;
 };
 
 const tabsTriggerStyle =
@@ -18,7 +20,7 @@ const tabsTriggerStyle =
 export default async function CourseBuilderPage({
   params,
 }: CourseBuilderPageProps) {
-  const { courseId } = await params;
+  const { courseId, mode } = await params;
   const session = await auth();
 
   if (!session) notFound();
@@ -28,32 +30,44 @@ export default async function CourseBuilderPage({
   if (!course || course.authorId !== session.user.id) notFound();
 
   return (
-    <Tabs defaultValue="basic" asChild>
-      <main className="flex h-full w-full divide-x-2 divide-accent/55 overflow-y-hidden">
-        <TabsList disableDefaultStyles className="flex-1 space-y-2 pr-6 pt-2">
+    <Tabs value={mode} asChild>
+      <main className="divide-accent/55 flex h-full w-full divide-x-2 overflow-y-hidden">
+        <TabsList disableDefaultStyles className="flex-1 space-y-2 pt-2 pr-6">
           <TabsTrigger
+            asChild
             disableDefaultStyles
             value="basic"
             className={tabsTriggerStyle}
           >
-            <MonitorIcon className="opacity-50" size={20} />
-            <span>Basic Information</span>
+            <Link href={`/course-builder/${courseId}/basic`}>
+              <MonitorIcon className="opacity-50" size={20} />
+              <span>Basic Information</span>
+            </Link>
           </TabsTrigger>
           <TabsTrigger
+            asChild
             disableDefaultStyles
             value="content"
             className={tabsTriggerStyle}
           >
-            <TableOfContentsIcon className="opacity-50" size={20} />
-            <span>Content Editor</span>
+            <Link href={`/course-builder/${courseId}/content`}>
+              <TableOfContentsIcon className="opacity-50" size={20} />
+              <span>Content Editor</span>
+            </Link>
           </TabsTrigger>
         </TabsList>
-        <div className="relative flex-4 pb-16 pl-6 pr-20">
+        <div className="relative flex-4 pr-20 pb-16 pl-6">
           <TabsContent value="basic" className="space-y-3">
             <ChangeCourseBanner course={course} />
             <CourseDetailsForm serverSession={session} defaultValues={course} />
           </TabsContent>
-          <TabsContent value="content">2</TabsContent>
+          <TabsContent value="content">
+            <TabsList disableDefaultStyles>
+              <TabsTrigger disableDefaultStyles value="chapter-1">
+                Test
+              </TabsTrigger>
+            </TabsList>
+          </TabsContent>
         </div>
       </main>
     </Tabs>
