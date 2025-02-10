@@ -27,13 +27,13 @@ export default async function CourseListPage() {
         <Link href="/search">
           <Button
             variant="link"
-            className="font-medium text-secondary-foreground"
+            className="text-secondary-foreground font-medium"
           >
             See courses by other users...
           </Button>
         </Link>
       </div>
-      <div className="pt-4">
+      <div className="flex flex-wrap gap-2 pt-2">
         {!!memberCourses.length ? (
           memberCourses.map((course) => (
             <Link key={course.id} href={`/course-builder/${course.id}`}>
@@ -47,12 +47,12 @@ export default async function CourseListPage() {
                     className="py-3"
                   />
                 ) : (
-                  <div className="flex h-32 w-full select-none items-center justify-center gap-2 bg-slate-200">
+                  <div className="flex h-32 w-full items-center justify-center gap-2 bg-slate-200 select-none">
                     <CameraOffIcon size={20} />
                     <span className="text-sm">No Course Banner Selected</span>
                   </div>
                 )}
-                <div className="p-2">
+                <div className="px-4 py-2">
                   <h2 className="text-lg font-semibold">{course.title}</h2>
                   <p className="font-light">{course.description}</p>
                 </div>

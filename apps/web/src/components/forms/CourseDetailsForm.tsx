@@ -136,12 +136,12 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
                   <div className="flex flex-wrap gap-2">
                     {[...tags].map((t, idx, array) => (
                       <span
-                        className="flex w-fit items-center overflow-hidden rounded-lg border bg-primary/20 pr-2"
+                        className="bg-primary/20 flex w-fit items-center overflow-hidden rounded-lg border pr-2"
                         key={idx}
                       >
                         <button
                           type="button"
-                          className="h-full px-1 transition-colors hover:bg-primary/50"
+                          className="hover:bg-primary/50 h-full cursor-pointer px-1 transition-colors"
                           onClick={() => {
                             const newTags = new Set(
                               array.filter((_, i) => i !== idx),
@@ -156,7 +156,7 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
                         >
                           <XIcon size={16} />
                         </button>
-                        <span className="pl-1">{t}</span>
+                        <span className="pl-1 select-none">{t}</span>
                       </span>
                     ))}
                   </div>
