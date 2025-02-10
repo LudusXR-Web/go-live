@@ -7,6 +7,7 @@ import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import CourseDetailsForm from "~/components/forms/CourseDetailsForm";
 import ChangeCourseBanner from "./ChangeCourseBanner";
+import CourseEditor from "./CourseEditor";
 
 type CourseBuilderMode = "basic" | "content";
 
@@ -61,12 +62,8 @@ export default async function CourseBuilderPage({
             <ChangeCourseBanner course={course} />
             <CourseDetailsForm serverSession={session} defaultValues={course} />
           </TabsContent>
-          <TabsContent value="content">
-            <TabsList disableDefaultStyles>
-              <TabsTrigger disableDefaultStyles value="chapter-1">
-                Test
-              </TabsTrigger>
-            </TabsList>
+          <TabsContent value="content" className="">
+            <CourseEditor />
           </TabsContent>
         </div>
       </main>

@@ -145,24 +145,24 @@ export const courses = createTable(
   ],
 );
 
-type CourseSection = {
+export type CourseSection = {
   id: string;
   title: string;
   children: string[];
 };
 
-type CourseText = {
+export type CourseText = {
   id: `text-${string}`;
   content: string;
 };
 
-type CourseMedia = {
+export type CourseMedia = {
   id: `media-${string}`;
   type: "image" | "attachment";
   content: string;
 };
 
-type CourseContent = CourseText | CourseMedia;
+export type CourseContent = CourseText | CourseMedia;
 
 export const courseContents = createTable("course_contents", {
   courseId: varchar("courseId", { length: 255 })
