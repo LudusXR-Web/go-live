@@ -152,17 +152,18 @@ export type CourseSection = {
 };
 
 export type CourseText = {
-  id: `text-${string}`;
+  type: "text";
   content: string;
 };
 
 export type CourseMedia = {
-  id: `media-${string}`;
   type: "image" | "attachment";
   content: string;
 };
 
-export type CourseContent = CourseText | CourseMedia;
+export type CourseContent = {
+  id: `${CourseContent["type"]}-${string}`;
+} & (CourseText | CourseMedia);
 
 export const courseContents = createTable("course_contents", {
   courseId: varchar("courseId", { length: 255 })

@@ -19,13 +19,13 @@ const MenubarRadioGroup = MenubarPrimitive.RadioGroup;
 const Menubar = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Root> & {
-    disableDefaultClassName?: boolean;
+    disableDefaultStyles?: boolean;
   }
->(({ className, disableDefaultClassName, ...props }, ref) => (
+>(({ className, disableDefaultStyles, ...props }, ref) => (
   <MenubarPrimitive.Root
     ref={ref}
     className={cn(
-      !disableDefaultClassName
+      !disableDefaultStyles
         ? "flex h-10 items-center space-x-1 rounded-md border bg-background p-1"
         : "",
       className

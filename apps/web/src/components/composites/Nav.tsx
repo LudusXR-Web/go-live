@@ -44,15 +44,15 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
         <div className="inline-grid grid-flow-col items-center gap-3">
           <LanguageSelector defaultLocale="en" />
           {session ? (
-            <Menubar disableDefaultClassName>
+            <Menubar disableDefaultStyles>
               <MenubarMenu>
                 <MenubarTrigger
                   asChild
                   disableDefaultClassName
                   className="peer"
                 >
-                  <div className="inline-flex cursor-pointer items-center space-x-2 rounded px-1.5 py-1 ring-1 ring-primary/20 transition-shadow hover:shadow-md">
-                    <div className="divide-y divide-primary/70 *:text-right *:text-sm">
+                  <div className="ring-primary/20 inline-flex cursor-pointer items-center space-x-2 rounded px-1.5 py-1 ring-1 transition-shadow hover:shadow-md">
+                    <div className="divide-primary/70 divide-y *:text-right *:text-sm">
                       <p className="font-medium">{session.user.name}</p>
                       <p className="font-light capitalize">
                         {session.user.type}
@@ -72,7 +72,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                 <MenubarContent align="end">
                   <MenubarItem
                     asChild
-                    className="transition-colors focus:bg-muted"
+                    className="focus:bg-muted transition-colors"
                   >
                     <Link href="/profile" className="flex justify-between">
                       Profile
@@ -81,7 +81,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                   </MenubarItem>
                   <MenubarItem
                     asChild
-                    className="transition-colors focus:bg-muted"
+                    className="focus:bg-muted transition-colors"
                   >
                     <Link href="/settings" className="flex justify-between">
                       Settings
@@ -91,7 +91,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                   <MenubarSeparator />
                   <MenubarItem
                     asChild
-                    className="transition-colors focus:bg-muted"
+                    className="focus:bg-muted transition-colors"
                   >
                     <Link href="/my-courses" className="flex justify-between">
                       My Courses
@@ -100,7 +100,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                   </MenubarItem>
                   <MenubarItem
                     asChild
-                    className="transition-colors focus:bg-muted"
+                    className="focus:bg-muted transition-colors"
                   >
                     <Link
                       href="/course-builder"
@@ -116,7 +116,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
           ) : (
             <SignInButton
               variant="ghost"
-              className="h-12 text-lg font-bold hover:bg-primary/25"
+              className="hover:bg-primary/25 h-12 text-lg font-bold"
             >
               Go Live!
             </SignInButton>

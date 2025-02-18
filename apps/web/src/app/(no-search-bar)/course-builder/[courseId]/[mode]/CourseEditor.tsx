@@ -8,15 +8,25 @@ import {
   ArrowUpIcon,
   CircleArrowRightIcon,
   CirclePlusIcon,
+  FileUpIcon,
+  ImageUpIcon,
+  PlusIcon,
   TrashIcon,
+  TypeIcon,
   Undo2Icon,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@repo/ui/menubar";
 import { Button } from "@repo/ui/button";
 import { Input } from "@repo/ui/input";
 
 import { type CourseContent, type CourseSection } from "~/server/db/schema";
-import { useEffect, useState } from "react";
 
 type CourseContentStoreState = {
   sections: CourseSection[];
@@ -31,6 +41,8 @@ type CourseContentStoreActions = {
     oldIdx: `${T}` extends `-${string}` ? never : T,
     newIdx: `${T}` extends `-${string}` ? never : T,
   ) => void;
+
+  createElement: (type: CourseContent["type"], sectionId: string) => void;
 };
 
 type CourseContentStore = CourseContentStoreState & CourseContentStoreActions;
@@ -41,8 +53,8 @@ export const useCourseContent = create<CourseContentStore>()(
       sections: [] as CourseSection[],
       elements: [] as CourseContent[],
 
-      createSection: () =>
-        set((state) => ({
+      createSection() {
+        return set((state) => ({
           sections: [
             ...state.sections,
             {
@@ -51,14 +63,22 @@ export const useCourseContent = create<CourseContentStore>()(
               children: [],
             },
           ],
-        })),
-      deleteSection: (id) =>
-        set((state) => ({
+        }));
+      },
+      deleteSection(id) {
+        return set((state) => ({
           sections: state.sections.filter((s) => s.id !== id),
-        })),
-      updateSection: (data) =>
-        set((state) => {
+        }));
+      },
+      updateSection(data) {
+        return set((state) => {
           const idx = state.sections.findIndex((s) => s.id === data.id);
+
+          if (idx < 0)
+            throw new Error(
+              "Could not update course section as it does not exist.",
+            );
+
           const newSections = [...state.sections];
 
           newSections[idx] = data;
@@ -66,9 +86,10 @@ export const useCourseContent = create<CourseContentStore>()(
           return {
             sections: newSections,
           };
-        }),
-      moveSection: (oldIdx, newIdx) =>
-        set((state) => {
+        });
+      },
+      moveSection(oldIdx, newIdx) {
+        return set((state) => {
           const section = state.sections.at(oldIdx)!;
           state.sections.splice(oldIdx, 1);
           state.sections.splice(newIdx, 0, section);
@@ -76,7 +97,35 @@ export const useCourseContent = create<CourseContentStore>()(
           return {
             sections: state.sections,
           };
-        }),
+        });
+      },
+      createElement(type, sectionId) {
+        return set((state) => {
+          const id = (type + "-" + createId()) as CourseContent["id"];
+          const section = state.sections.find((s) => s.id === sectionId);
+
+          if (!section)
+            throw new Error(
+              "Could not create element as its parent section does not exist.",
+            );
+
+          this.updateSection({
+            ...section,
+            children: [...section.children, id],
+          });
+
+          return {
+            elements: [
+              ...state.elements,
+              {
+                id,
+                type,
+                content: "",
+              },
+            ],
+          };
+        });
+      },
     }),
     {
       name: "course-content",
@@ -84,9 +133,76 @@ export const useCourseContent = create<CourseContentStore>()(
   ),
 );
 
+type CourseContentTabStore = {
+  tab: string;
+  setTab: (tab: string) => void;
+};
+
+export const useCourseContentTab = create<CourseContentTabStore>()(
+  persist(
+    (set) => ({
+      tab: "sections",
+      setTab: (tab: string) => set({ tab }),
+    }),
+    {
+      name: "course-content-tab",
+    },
+  ),
+);
+
+type CreateElementMenuProps = {
+  sectionId: string;
+};
+
+const CreateElementMenu: React.FC<CreateElementMenuProps> = ({ sectionId }) => {
+  const courseContent = useCourseContent();
+
+  return (
+    <Menubar disableDefaultStyles>
+      <MenubarMenu>
+        <MenubarTrigger asChild>
+          <Button
+            variant="outline"
+            className="mx-auto rounded-full hover:bg-slate-100 focus:bg-slate-100"
+          >
+            <div className="bg-border absolute -z-10 h-0.5 w-11/12"></div>
+            <span>Add Element</span>
+            <PlusIcon />
+          </Button>
+        </MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem
+            onSelect={() => courseContent.createElement("text", sectionId)}
+            className="focus:bg-muted flex justify-between transition-colors"
+          >
+            <span>Text</span>
+            <TypeIcon className="opacity-50" size={20} />
+          </MenubarItem>
+          <MenubarItem
+            onSelect={() => courseContent.createElement("image", sectionId)}
+            className="focus:bg-muted flex justify-between transition-colors"
+          >
+            <span>Media</span>
+            <ImageUpIcon className="opacity-50" size={20} />
+          </MenubarItem>
+          <MenubarItem
+            onSelect={() =>
+              courseContent.createElement("attachment", sectionId)
+            }
+            className="focus:bg-muted flex justify-between transition-colors"
+          >
+            <span>File</span>
+            <FileUpIcon className="opacity-50" size={20} />
+          </MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+    </Menubar>
+  );
+};
+
 const CourseEditor: React.FC = () => {
   const courseContent = useCourseContent();
-  const [tab, setTab] = useState("sections");
+  const { tab, setTab } = useCourseContentTab();
 
   let timer: NodeJS.Timeout;
 
@@ -211,7 +327,19 @@ const CourseEditor: React.FC = () => {
       </TabsContent>
       {courseContent.sections.map((section) => (
         <TabsContent value={section.id} key={section.id}>
-          <h2>{section.title}</h2>
+          <h2 className="text-center text-xl font-semibold">{section.title}</h2>
+          <div className="pt-2">
+            {section.children.length ? (
+              section.children.map((id) => {
+                const child = courseContent.elements.find((e) => e.id === id);
+
+                if (!child) return null;
+                return null;
+              })
+            ) : (
+              <CreateElementMenu sectionId={section.id} />
+            )}
+          </div>
         </TabsContent>
       ))}
     </Tabs>
