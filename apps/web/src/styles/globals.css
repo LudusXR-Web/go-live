@@ -1,6 +1,8 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @config '../../tailwind.config.ts';
+
+@plugin '@tailwindcss/typography';
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -80,6 +82,6 @@
     @apply border-border;
   }
   body {
-    @apply bg-background font-sans text-foreground antialiased;
+    @apply bg-background text-foreground font-sans antialiased;
   }
 }

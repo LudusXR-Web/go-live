@@ -46,11 +46,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
           {session ? (
             <Menubar disableDefaultStyles>
               <MenubarMenu>
-                <MenubarTrigger
-                  asChild
-                  disableDefaultClassName
-                  className="peer"
-                >
+                <MenubarTrigger asChild disableDefaultStyles className="peer">
                   <div className="ring-primary/20 inline-flex cursor-pointer items-center space-x-2 rounded px-1.5 py-1 ring-1 transition-shadow hover:shadow-md">
                     <div className="divide-primary/70 divide-y *:text-right *:text-sm">
                       <p className="font-medium">{session.user.name}</p>

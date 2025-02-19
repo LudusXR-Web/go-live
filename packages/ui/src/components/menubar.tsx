@@ -38,13 +38,13 @@ Menubar.displayName = MenubarPrimitive.Root.displayName;
 const MenubarTrigger = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Trigger> & {
-    disableDefaultClassName?: boolean;
+    disableDefaultStyles?: boolean;
   }
->(({ className, disableDefaultClassName, ...props }, ref) => (
+>(({ className, disableDefaultStyles, ...props }, ref) => (
   <MenubarPrimitive.Trigger
     ref={ref}
     className={cn(
-      !disableDefaultClassName
+      !disableDefaultStyles
         ? "flex cursor-default select-none items-center rounded-sm px-3 py-1.5 text-sm font-medium outline-hidden focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
         : "",
       className

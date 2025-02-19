@@ -1,5 +1,5 @@
 import { type Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
+import theme from "tailwindcss/defaultTheme";
 import animate from "tailwindcss-animate";
 import sharedConfig from "@repo/tailwind-config";
 
@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+        sans: ["var(--font-geist-sans)", ...theme.fontFamily.sans],
       },
       colors: {
         border: "hsl(var(--border))",

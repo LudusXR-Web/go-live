@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { createId } from "@paralleldrive/cuid2";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -26,7 +27,9 @@ import {
 import { Button } from "@repo/ui/button";
 import { Input } from "@repo/ui/input";
 
+import { cn } from "~/lib/utils";
 import { type CourseContent, type CourseSection } from "~/server/db/schema";
+import RichEditor from "~/components/composites/RichEditor";
 
 type CourseContentStoreState = {
   sections: CourseSection[];
@@ -152,25 +155,36 @@ export const useCourseContentTab = create<CourseContentTabStore>()(
 
 type CreateElementMenuProps = {
   sectionId: string;
+  buttonHidden?: boolean;
 };
 
-const CreateElementMenu: React.FC<CreateElementMenuProps> = ({ sectionId }) => {
+const CreateElementMenu: React.FC<CreateElementMenuProps> = ({
+  sectionId,
+  buttonHidden,
+}) => {
   const courseContent = useCourseContent();
 
   return (
-    <Menubar disableDefaultStyles>
+    <Menubar disableDefaultStyles className="w-full">
       <MenubarMenu>
-        <MenubarTrigger asChild>
-          <Button
-            variant="outline"
-            className="mx-auto rounded-full hover:bg-slate-100 focus:bg-slate-100"
-          >
-            <div className="bg-border absolute -z-10 h-0.5 w-11/12"></div>
-            <span>Add Element</span>
-            <PlusIcon />
-          </Button>
+        <MenubarTrigger disableDefaultStyles asChild>
+          <div className="group relative mx-auto flex w-full items-center py-4 select-none">
+            <div className="bg-border absolute -z-10 h-0.5 w-full"></div>
+            <Button
+              variant="outline"
+              className={cn(
+                "mx-auto rounded-full hover:bg-slate-100 data-[state=open]:bg-slate-100",
+                buttonHidden
+                  ? "opacity-0 transition-opacity group-hover:opacity-100"
+                  : "",
+              )}
+            >
+              <span>Add Element</span>
+              <PlusIcon />
+            </Button>
+          </div>
         </MenubarTrigger>
-        <MenubarContent>
+        <MenubarContent align="center">
           <MenubarItem
             onSelect={() => courseContent.createElement("text", sectionId)}
             className="focus:bg-muted flex justify-between transition-colors"
@@ -298,7 +312,7 @@ const CourseEditor: React.FC = () => {
                         ...section,
                         title: e.target.value ?? "",
                       }),
-                    750,
+                    500,
                   );
                 }}
               />
@@ -330,12 +344,34 @@ const CourseEditor: React.FC = () => {
           <h2 className="text-center text-xl font-semibold">{section.title}</h2>
           <div className="pt-2">
             {section.children.length ? (
-              section.children.map((id) => {
-                const child = courseContent.elements.find((e) => e.id === id);
+              <>
+                <CreateElementMenu buttonHidden sectionId={section.id} />
 
-                if (!child) return null;
-                return null;
-              })
+                {section.children.map((id, idx) => {
+                  const child = courseContent.elements.find((e) => e.id === id);
+
+                  if (!child) return null;
+
+                  switch (child.type) {
+                    case "text":
+                      return (
+                        <Fragment key={id}>
+                          <RichEditor />
+                          <CreateElementMenu
+                            buttonHidden={idx + 1 !== section.children.length}
+                            sectionId={section.id}
+                          />
+                        </Fragment>
+                      );
+                    case "attachment":
+                      return null;
+                    case "image":
+                      return null;
+                    default:
+                      return null;
+                  }
+                })}
+              </>
             ) : (
               <CreateElementMenu sectionId={section.id} />
             )}
