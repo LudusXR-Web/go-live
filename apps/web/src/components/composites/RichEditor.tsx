@@ -14,9 +14,13 @@ import { ToggleGroup, ToggleGroupItem } from "@repo/ui/toggle-group";
 
 type TextEditorProps = {
   defaultContent?: string;
+  onUpdate?: (content: string) => void;
 };
 
-const TextEditor: React.FC<TextEditorProps> = ({ defaultContent }) => {
+const TextEditor: React.FC<TextEditorProps> = ({
+  defaultContent,
+  onUpdate,
+}) => {
   const editor = useEditor({
     content: defaultContent,
     extensions: [
@@ -36,11 +40,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ defaultContent }) => {
         class: "focus:outline-none p-2 prose max-w-full **:m-0",
       },
     },
-    onUpdate: (e) => setInputValue(e.editor.getHTML()),
+    onUpdate: onUpdate ? (e) => onUpdate(e.editor.getHTML()) : undefined,
     immediatelyRender: false,
   });
 
-  const [inputValue, setInputValue] = useState(defaultContent ?? "");
   const [bubbleState, setBubbleState] = useState<string[]>([]);
   const [showLinkPopover, setShowLinkPopover] = useState(false);
 
@@ -155,7 +158,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ defaultContent }) => {
         spellCheck
         required
       />
-      <textarea name="text" value={inputValue} readOnly hidden />
     </>
   );
 };

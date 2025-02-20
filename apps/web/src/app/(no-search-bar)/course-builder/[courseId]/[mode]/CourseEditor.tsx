@@ -37,6 +37,9 @@ type CourseContentStoreState = {
 };
 
 type CourseContentStoreActions = {
+  loadState: (state: CourseContentStoreState) => void;
+  clearState: () => void;
+
   createSection: () => void;
   deleteSection: (id: string) => void;
   updateSection: (data: CourseSection) => void;
@@ -50,6 +53,10 @@ type CourseContentStoreActions = {
     sectionId: string,
     insertIndex: `${T}` extends `-${string}` ? never : T,
   ) => void;
+  updateElement: (
+    id: CourseContent["id"],
+    content: CourseContent["content"],
+  ) => void;
 };
 
 type CourseContentStore = CourseContentStoreState & CourseContentStoreActions;
@@ -59,6 +66,16 @@ export const useCourseContent = create<CourseContentStore>()(
     (set) => ({
       sections: [] as CourseSection[],
       elements: [] as CourseContent[],
+
+      loadState(state) {
+        return set(state);
+      },
+      clearState() {
+        return set({
+          sections: [],
+          elements: [],
+        });
+      },
 
       createSection() {
         return set((state) => ({
@@ -132,6 +149,20 @@ export const useCourseContent = create<CourseContentStore>()(
                 content: "",
               },
             ],
+          };
+        });
+      },
+      updateElement(id, content) {
+        return set((state) => {
+          const idx = state.elements.findIndex((e) => e.id === id);
+
+          if (idx < 0 || !state.elements[idx])
+            throw new Error("Cannot update element that does not exist.");
+
+          state.elements[idx].content = content;
+
+          return {
+            elements: state.elements,
           };
         });
       },
@@ -368,7 +399,13 @@ const CourseEditor: React.FC = () => {
                     case "text":
                       return (
                         <div key={id}>
-                          <RichEditor />
+                          <RichEditor
+                            defaultContent={child.content}
+                            onUpdate={courseContent.updateElement.bind(
+                              null,
+                              id as CourseContent["id"],
+                            )}
+                          />
                           <CreateElementMenu
                             buttonHidden={idx + 1 !== section.children.length}
                             insertIndex={idx + 1}

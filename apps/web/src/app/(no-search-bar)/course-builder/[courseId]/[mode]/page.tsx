@@ -26,7 +26,7 @@ export default async function CourseBuilderPage({
 
   if (!session) notFound();
 
-  const course = await api.courses.getById(courseId);
+  const course = await api.courses.getFullCourseById(courseId);
 
   if (!course || course.authorId !== session.user.id) notFound();
 
@@ -62,7 +62,7 @@ export default async function CourseBuilderPage({
             <ChangeCourseBanner course={course} />
             <CourseDetailsForm serverSession={session} defaultValues={course} />
           </TabsContent>
-          <TabsContent value="content" className="">
+          <TabsContent value="content">
             <CourseEditor />
           </TabsContent>
         </div>

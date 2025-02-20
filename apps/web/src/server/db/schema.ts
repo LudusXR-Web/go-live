@@ -170,7 +170,7 @@ export const courseContents = createTable("course_contents", {
     .primaryKey()
     .references(() => courses.id),
   sections: jsonb("sections").$type<CourseSection>().array().default([]),
-  content: jsonb("content").$type<CourseContent>().array().default([]),
+  elements: jsonb("content").$type<CourseContent>().array().default([]),
 });
 
 export const usersToCourses = createTable(
@@ -195,7 +195,18 @@ export const coursesRelations = relations(courses, ({ one, many }) => ({
     fields: [courses.authorId],
     references: [users.id],
   }),
+  content: one(courseContents, {
+    fields: [courses.id],
+    references: [courseContents.courseId],
+  }),
   usersToCourses: many(usersToCourses),
+}));
+
+export const courseContentRelations = relations(courseContents, ({ one }) => ({
+  course: one(courses, {
+    fields: [courseContents.courseId],
+    references: [courses.id],
+  }),
 }));
 
 export const usersToCoursesRelations = relations(usersToCourses, ({ one }) => ({

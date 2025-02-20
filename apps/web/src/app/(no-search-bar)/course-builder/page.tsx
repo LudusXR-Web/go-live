@@ -47,7 +47,7 @@ export default async function CourseListPage() {
                     className="py-3"
                   />
                 ) : (
-                  <div className="flex h-32 w-full items-center justify-center gap-2 bg-slate-200 select-none">
+                  <div className="flex h-36 w-full items-center justify-center gap-2 bg-slate-200 px-10 select-none">
                     <CameraOffIcon size={20} />
                     <span className="text-sm">No Course Banner Selected</span>
                   </div>

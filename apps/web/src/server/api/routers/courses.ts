@@ -18,6 +18,25 @@ const courseRouter = createTRPCRouter({
         where: (course, { eq }) => eq(course.authorId, input),
       }),
   ),
+  getCourseContentById: protectedProcedure.input(z.string().cuid2()).query(
+    async ({ ctx, input }) =>
+      await ctx.db.query.courseContents.findFirst({
+        where: (content, { eq }) => eq(content.courseId, input),
+      }),
+  ),
+  getFullCourseById: protectedProcedure.input(z.string().cuid2()).query(
+    async ({ ctx, input }) =>
+      await ctx.db.query.courses.findFirst({
+        where: (course, { eq }) => eq(course.id, input),
+        with: {
+          content: {
+            columns: {
+              courseId: false,
+            },
+          },
+        },
+      }),
+  ),
   getByDetails: publicProcedure
     .input(
       z.object({
