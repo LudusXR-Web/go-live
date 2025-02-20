@@ -11,10 +11,13 @@
     "./input": "./src/components/input.tsx",
     "./label": "./src/components/label.tsx",
     "./menubar": "./src/components/menubar.tsx",
+    "./popover": "./src/components/popover.tsx",
     "./select": "./src/components/select.tsx",
     "./switch": "./src/components/switch.tsx",
     "./tabs": "./src/components/tabs.tsx",
-    "./textarea": "./src/components/textarea.tsx"
+    "./textarea": "./src/components/textarea.tsx",
+    "./toggle": "./src/components/toggle.tsx",
+    "./toggle-group": "./src/components/toggle-group.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
@@ -36,10 +39,13 @@
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-popover": "^1.1.6",
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-switch": "^1.1.3",
     "@radix-ui/react-tabs": "^1.1.3",
+    "@radix-ui/react-toggle": "^1.1.2",
+    "@radix-ui/react-toggle-group": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.475.0",

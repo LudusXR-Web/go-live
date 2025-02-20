@@ -45,7 +45,11 @@ type CourseContentStoreActions = {
     newIdx: `${T}` extends `-${string}` ? never : T,
   ) => void;
 
-  createElement: (type: CourseContent["type"], sectionId: string) => void;
+  createElement: <T extends number>(
+    type: CourseContent["type"],
+    sectionId: string,
+    insertIndex: `${T}` extends `-${string}` ? never : T,
+  ) => void;
 };
 
 type CourseContentStore = CourseContentStoreState & CourseContentStoreActions;
@@ -102,7 +106,7 @@ export const useCourseContent = create<CourseContentStore>()(
           };
         });
       },
-      createElement(type, sectionId) {
+      createElement(type, sectionId, insertIndex) {
         return set((state) => {
           const id = (type + "-" + createId()) as CourseContent["id"];
           const section = state.sections.find((s) => s.id === sectionId);
@@ -112,9 +116,11 @@ export const useCourseContent = create<CourseContentStore>()(
               "Could not create element as its parent section does not exist.",
             );
 
+          section.children.splice(insertIndex, 0, id);
+
           this.updateSection({
             ...section,
-            children: [...section.children, id],
+            children: section.children,
           });
 
           return {
@@ -153,13 +159,15 @@ export const useCourseContentTab = create<CourseContentTabStore>()(
   ),
 );
 
-type CreateElementMenuProps = {
+type CreateElementMenuProps<T extends number> = {
   sectionId: string;
+  insertIndex?: `${T}` extends `-${string}` ? never : T;
   buttonHidden?: boolean;
 };
 
-const CreateElementMenu: React.FC<CreateElementMenuProps> = ({
+const CreateElementMenu: React.FC<CreateElementMenuProps<number>> = ({
   sectionId,
+  insertIndex = 0,
   buttonHidden,
 }) => {
   const courseContent = useCourseContent();
@@ -186,14 +194,18 @@ const CreateElementMenu: React.FC<CreateElementMenuProps> = ({
         </MenubarTrigger>
         <MenubarContent align="center">
           <MenubarItem
-            onSelect={() => courseContent.createElement("text", sectionId)}
+            onSelect={() =>
+              courseContent.createElement("text", sectionId, insertIndex)
+            }
             className="focus:bg-muted flex justify-between transition-colors"
           >
             <span>Text</span>
             <TypeIcon className="opacity-50" size={20} />
           </MenubarItem>
           <MenubarItem
-            onSelect={() => courseContent.createElement("image", sectionId)}
+            onSelect={() =>
+              courseContent.createElement("image", sectionId, insertIndex)
+            }
             className="focus:bg-muted flex justify-between transition-colors"
           >
             <span>Media</span>
@@ -201,7 +213,7 @@ const CreateElementMenu: React.FC<CreateElementMenuProps> = ({
           </MenubarItem>
           <MenubarItem
             onSelect={() =>
-              courseContent.createElement("attachment", sectionId)
+              courseContent.createElement("attachment", sectionId, insertIndex)
             }
             className="focus:bg-muted flex justify-between transition-colors"
           >
@@ -355,13 +367,14 @@ const CourseEditor: React.FC = () => {
                   switch (child.type) {
                     case "text":
                       return (
-                        <Fragment key={id}>
+                        <div key={id}>
                           <RichEditor />
                           <CreateElementMenu
                             buttonHidden={idx + 1 !== section.children.length}
+                            insertIndex={idx + 1}
                             sectionId={section.id}
                           />
-                        </Fragment>
+                        </div>
                       );
                     case "attachment":
                       return null;
