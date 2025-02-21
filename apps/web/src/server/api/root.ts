@@ -3,6 +3,7 @@ import userRouter from "./routers/users";
 import s3Router from "./routers/s3";
 import sessionRourter from "./routers/session";
 import courseRouter from "./routers/courses";
+import mediaRouter from "./routers/media";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   users: userRouter,
   courses: courseRouter,
   s3: s3Router,
+  media: mediaRouter,
 });
 
 // export type definition of API

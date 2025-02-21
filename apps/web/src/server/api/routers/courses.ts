@@ -1,8 +1,13 @@
 import { z } from "zod";
 import { arrayOverlaps, eq } from "drizzle-orm";
-import { createInsertSchema } from "drizzle-zod";
+import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 
-import { courses } from "~/server/db/schema";
+import {
+  courseContents,
+  courses,
+  type CourseSection,
+  type CourseContent,
+} from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const courseRouter = createTRPCRouter({
@@ -56,26 +61,37 @@ const courseRouter = createTRPCRouter({
         }),
     ),
   create: protectedProcedure
-    .input(createInsertSchema(courses).omit({ id: true }))
-    .output(z.string().cuid2())
-    .mutation(
-      async ({ ctx, input }) =>
-        (
-          await ctx.db
-            .insert(courses)
-            .values({ ...input })
-            .returning({ id: courses.id })
-        ).at(0)!.id,
-    ),
-  update: protectedProcedure
     .input(
       createInsertSchema(courses)
-        .partial()
+        .omit({ id: true })
         .merge(
           z.object({
-            id: z.string().cuid2(),
+            autorId: z.string().cuid2().optional(),
           }),
         ),
+    )
+    .output(z.string().cuid2())
+    .mutation(async ({ ctx, input }) => {
+      const id = (
+        await ctx.db
+          .insert(courses)
+          .values({ ...input, authorId: ctx.session.user.id })
+          .returning({ id: courses.id })
+      ).at(0)!.id;
+
+      await ctx.db.insert(courseContents).values({
+        courseId: id,
+      });
+
+      return id;
+    }),
+  update: protectedProcedure
+    .input(
+      createUpdateSchema(courses).merge(
+        z.object({
+          id: z.string().cuid2(),
+        }),
+      ),
     )
     .mutation(
       async ({ ctx, input }) =>
@@ -86,6 +102,25 @@ const courseRouter = createTRPCRouter({
             id: undefined,
           })
           .where(eq(courses.id, input.id)),
+    ),
+  updateContent: protectedProcedure
+    .input(
+      createUpdateSchema(courseContents).merge(
+        z.object({
+          courseId: z.string().cuid2(),
+        }),
+      ),
+    )
+    .mutation(
+      async ({ ctx, input }) =>
+        await ctx.db
+          .update(courseContents)
+          .set({
+            sections: input.sections as CourseSection[],
+            elements: input.elements as CourseContent[],
+            courseId: undefined,
+          })
+          .where(eq(courseContents.courseId, input.courseId)),
     ),
 });
 

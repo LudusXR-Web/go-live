@@ -63,7 +63,12 @@ export default async function CourseBuilderPage({
             <CourseDetailsForm serverSession={session} defaultValues={course} />
           </TabsContent>
           <TabsContent value="content">
-            <CourseEditor />
+            <CourseEditor
+              course={{
+                courseId,
+                ...course.content,
+              }}
+            />
           </TabsContent>
         </div>
       </main>

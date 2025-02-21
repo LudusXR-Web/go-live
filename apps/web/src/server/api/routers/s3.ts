@@ -27,7 +27,7 @@ const s3Router = createTRPCRouter({
         key: z.string(),
       }),
     )
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       return await s3.send(
         new DeleteObjectCommand({
           Bucket: input.bucket,

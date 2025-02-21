@@ -16,7 +16,8 @@ type ChangeCourseBannerProps = {
 
 const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
   const [imageUrl, setImageUrl] = useState(course.image);
-  const mutation = api.courses.update.useMutation();
+  const courseMutation = api.courses.update.useMutation();
+  const mediaMutation = api.media.create.useMutation();
 
   const { isPending, upload, reset } = useUploadFile({
     route: "image",
@@ -26,12 +27,20 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
       reset();
     },
     onUploadComplete: ({ file }) => {
-      mutation.mutate({
+      const url = env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey;
+
+      courseMutation.mutate({
         id: course.id,
-        image: env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey,
+        image: url,
       });
 
-      setImageUrl(env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey);
+      mediaMutation.mutate({
+        key: file.objectKey,
+        public: true,
+        url,
+      });
+
+      setImageUrl(url);
     },
   });
 
@@ -62,7 +71,7 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
         accept="image/*"
         name="banner"
         id="course_banner"
-        className="sr-only ml-8 mt-16"
+        className="sr-only mt-16 ml-8"
         onChange={(e) => {
           if (e.target.files?.[0]) {
             upload(e.target.files[0], {

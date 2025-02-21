@@ -1,6 +1,10 @@
 import z from "zod";
 import { eq } from "drizzle-orm";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { personalDetails, users, userTypeEnum } from "~/server/db/schema";
@@ -8,12 +12,11 @@ import { personalDetails, users, userTypeEnum } from "~/server/db/schema";
 const userRouter = createTRPCRouter({
   update: protectedProcedure
     .input(
-      createInsertSchema(users)
+      createUpdateSchema(users)
         .omit({
           createdAt: true,
           updatedAt: true,
         })
-        .partial()
         .merge(
           z.object({
             id: z.string().cuid2(),
@@ -46,11 +49,10 @@ const userRouter = createTRPCRouter({
     ),
   updatePersonalDetails: protectedProcedure
     .input(
-      createInsertSchema(personalDetails)
+      createUpdateSchema(personalDetails)
         .omit({
           updatedAt: true,
         })
-        .partial()
         .merge(
           z.object({
             userId: z.string().cuid2(),

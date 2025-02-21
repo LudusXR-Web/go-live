@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { useEffect, useState } from "react";
 import { createId } from "@paralleldrive/cuid2";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -11,6 +11,7 @@ import {
   CirclePlusIcon,
   FileUpIcon,
   ImageUpIcon,
+  Loader2Icon,
   PlusIcon,
   TrashIcon,
   TypeIcon,
@@ -28,10 +29,13 @@ import { Button } from "@repo/ui/button";
 import { Input } from "@repo/ui/input";
 
 import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
 import { type CourseContent, type CourseSection } from "~/server/db/schema";
 import RichEditor from "~/components/composites/RichEditor";
+import ConfirmationModal from "~/components/modals/ConfirmationModal";
 
 type CourseContentStoreState = {
+  courseId: string;
   sections: CourseSection[];
   elements: CourseContent[];
 };
@@ -64,6 +68,7 @@ type CourseContentStore = CourseContentStoreState & CourseContentStoreActions;
 export const useCourseContent = create<CourseContentStore>()(
   persist(
     (set) => ({
+      courseId: "",
       sections: [] as CourseSection[],
       elements: [] as CourseContent[],
 
@@ -176,13 +181,15 @@ export const useCourseContent = create<CourseContentStore>()(
 type CourseContentTabStore = {
   tab: string;
   setTab: (tab: string) => void;
+  resetTab: () => void;
 };
 
 export const useCourseContentTab = create<CourseContentTabStore>()(
   persist(
     (set) => ({
       tab: "sections",
-      setTab: (tab: string) => set({ tab }),
+      setTab: (tab) => set({ tab }),
+      resetTab: () => set({ tab: "sections" }),
     }),
     {
       name: "course-content-tab",
@@ -239,7 +246,7 @@ const CreateElementMenu: React.FC<CreateElementMenuProps<number>> = ({
             }
             className="focus:bg-muted flex justify-between transition-colors"
           >
-            <span>Media</span>
+            <span>Image</span>
             <ImageUpIcon className="opacity-50" size={20} />
           </MenubarItem>
           <MenubarItem
@@ -257,19 +264,36 @@ const CreateElementMenu: React.FC<CreateElementMenuProps<number>> = ({
   );
 };
 
-const CourseEditor: React.FC = () => {
+type CourseEditorProps = {
+  course: CourseContentStoreState;
+};
+
+const CourseEditor: React.FC<CourseEditorProps> = ({
+  course: defaultCourse,
+}) => {
+  const [course, setCourse] = useState(defaultCourse);
+
   const courseContent = useCourseContent();
-  const { tab, setTab } = useCourseContentTab();
+  const { tab, setTab, resetTab } = useCourseContentTab();
+  const mutation = api.courses.updateContent.useMutation();
+
+  useEffect(() => {
+    resetTab();
+    courseContent.loadState(course);
+  }, []);
 
   let timer: NodeJS.Timeout;
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="space-y-3">
-      <TabsList disableDefaultStyles>
+      <TabsList
+        disableDefaultStyles
+        className="flex items-center justify-between gap-2"
+      >
         {tab === "sections" ? (
           <Button
             variant="outline"
-            className="px-3 py-1.5 hover:bg-slate-200/50"
+            className="px-3 py-1.5 hover:bg-slate-100"
             onClick={courseContent.createSection}
           >
             <span className="sr-only">Create new section</span>
@@ -284,13 +308,40 @@ const CourseEditor: React.FC = () => {
           >
             <Button
               variant="outline"
-              className="px-3 py-1.5 hover:bg-slate-200/50"
+              className="px-3 py-1.5 hover:bg-slate-100"
             >
               <span className="sr-only">Return to the list of sections</span>
               <Undo2Icon />
             </Button>
           </TabsTrigger>
         )}
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            className="inline hover:bg-slate-100"
+            onClick={() => courseContent.loadState(course)}
+          >
+            Reset
+          </Button>
+          <Button
+            disabled={mutation.isPending}
+            className={mutation.isPending ? "px-[2.5ch]" : ""}
+            onClick={async () => {
+              await mutation.mutateAsync(courseContent);
+              setCourse((state) => ({
+                ...state,
+                sections: courseContent.sections,
+                elements: courseContent.elements,
+              }));
+            }}
+          >
+            {mutation.isPending ? (
+              <Loader2Icon className="animate-spin" />
+            ) : (
+              "Save"
+            )}
+          </Button>
+        </div>
       </TabsList>
       <TabsContent value="sections">
         <TabsList disableDefaultStyles className="flex flex-col gap-y-2">
@@ -302,7 +353,7 @@ const CourseEditor: React.FC = () => {
               {idx === 0 ? (
                 <button
                   onClick={() => courseContent.moveSection(idx, idx + 1)}
-                  className="rounded-md border px-[1.375rem] py-1.5 transition-colors hover:bg-slate-200/50"
+                  className="rounded-md border px-[1.375rem] py-1.5 transition-colors hover:bg-slate-100"
                 >
                   <span className="sr-only">
                     Move down section {section.title}
@@ -312,7 +363,7 @@ const CourseEditor: React.FC = () => {
               ) : idx === courseContent.sections.length - 1 ? (
                 <button
                   onClick={() => courseContent.moveSection(idx, idx - 1)}
-                  className="rounded-md border px-[1.375rem] py-1.5 transition-colors hover:bg-slate-200/50"
+                  className="rounded-md border px-[1.375rem] py-1.5 transition-colors hover:bg-slate-100"
                 >
                   <span className="sr-only">
                     Move up section {section.title}
@@ -323,7 +374,7 @@ const CourseEditor: React.FC = () => {
                 <span className="flex rounded-md border">
                   <button
                     onClick={() => courseContent.moveSection(idx, idx - 1)}
-                    className="p-1.5 transition-colors hover:bg-slate-200/50"
+                    className="p-1.5 transition-colors hover:bg-slate-100"
                   >
                     <span className="sr-only">
                       Move up section {section.title}
@@ -332,7 +383,7 @@ const CourseEditor: React.FC = () => {
                   </button>
                   <button
                     onClick={() => courseContent.moveSection(idx, idx + 1)}
-                    className="p-1.5 transition-colors hover:bg-slate-200/50"
+                    className="p-1.5 transition-colors hover:bg-slate-100"
                   >
                     <span className="sr-only">
                       Move down section {section.title}
@@ -359,21 +410,43 @@ const CourseEditor: React.FC = () => {
                   );
                 }}
               />
-              <button
-                onClick={() => courseContent.deleteSection(section.id)}
-                className="cursor-pointer rounded-md p-1.5 text-red-400 transition-colors hover:bg-red-100"
-              >
-                <span className="sr-only">Delete section {section.title}</span>
+              {section.children.length ? (
+                <ConfirmationModal
+                  question={
+                    <>
+                      Are you sure you wish to delete section
+                      <br />"{section.title}"?
+                    </>
+                  }
+                  onConfirm={courseContent.deleteSection.bind(null, section.id)}
+                >
+                  <button className="cursor-pointer rounded-md p-1.5 text-red-400 transition-colors hover:bg-red-100">
+                    <span className="sr-only">
+                      Delete section {section.title}
+                    </span>
 
-                <TrashIcon size={20} />
-              </button>
+                    <TrashIcon size={20} />
+                  </button>
+                </ConfirmationModal>
+              ) : (
+                <button
+                  onClick={() => courseContent.deleteSection(section.id)}
+                  className="cursor-pointer rounded-md p-1.5 text-red-400 transition-colors hover:bg-red-100"
+                >
+                  <span className="sr-only">
+                    Delete section {section.title}
+                  </span>
+
+                  <TrashIcon size={20} />
+                </button>
+              )}
               <TabsTrigger
                 asChild
                 disableDefaultStyles
                 value={section.id}
                 className="cursor-pointer"
               >
-                <button className="rounded-md p-1.5 transition-colors hover:bg-slate-200/50">
+                <button className="rounded-md p-1.5 transition-colors hover:bg-slate-100">
                   <span className="sr-only">Edit section {section.title}</span>
                   <CircleArrowRightIcon size={20} />
                 </button>

@@ -2,6 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import {
+  boolean,
   index,
   integer,
   jsonb,
@@ -100,6 +101,7 @@ export const sessions = createTable(
 
 export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
+  media: many(media),
   usersToCourses: many(usersToCourses),
   details: one(personalDetails, {
     fields: [users.id],
@@ -137,7 +139,7 @@ export const courses = createTable(
     authorId: varchar("author_id", { length: 255 })
       .notNull()
       .references(() => users.id),
-    tags: varchar("tags", { length: 255 }).array().default([]),
+    tags: varchar("tags", { length: 255 }).array().notNull().default([]),
   },
   (course) => [
     index("course_author_id_idx").on(course.authorId),
@@ -169,8 +171,16 @@ export const courseContents = createTable("course_contents", {
   courseId: varchar("courseId", { length: 255 })
     .primaryKey()
     .references(() => courses.id),
-  sections: jsonb("sections").$type<CourseSection>().array().default([]),
-  elements: jsonb("content").$type<CourseContent>().array().default([]),
+  sections: jsonb("sections")
+    .array()
+    .$type<CourseSection[]>()
+    .notNull()
+    .default([]),
+  elements: jsonb("content")
+    .array()
+    .$type<CourseContent[]>()
+    .notNull()
+    .default([]),
 });
 
 export const usersToCourses = createTable(
@@ -217,5 +227,24 @@ export const usersToCoursesRelations = relations(usersToCourses, ({ one }) => ({
   course: one(courses, {
     fields: [usersToCourses.courseId],
     references: [courses.id],
+  }),
+}));
+
+export const media = createTable("media", {
+  id: varchar("id", { length: 255 })
+    .$defaultFn(() => createId())
+    .primaryKey(),
+  authorId: varchar("author_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  url: text("url").notNull(),
+  key: text("key").notNull(),
+  public: boolean("public").notNull().default(false),
+});
+
+export const mediaRelations = relations(media, ({ one }) => ({
+  author: one(users, {
+    fields: [media.authorId],
+    references: [users.id],
   }),
 }));

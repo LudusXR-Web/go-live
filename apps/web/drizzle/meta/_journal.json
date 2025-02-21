@@ -64,6 +64,20 @@
       "when": 1738764938753,
       "tag": "0008_ancient_drax",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1740088931405,
+      "tag": "0009_common_warpath",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1740098732103,
+      "tag": "0010_lovely_shockwave",
+      "breakpoints": true
     }
   ]
 }
