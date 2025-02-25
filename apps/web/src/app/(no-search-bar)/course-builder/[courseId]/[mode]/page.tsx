@@ -32,7 +32,7 @@ export default async function CourseBuilderPage({
 
   return (
     <Tabs value={mode} asChild>
-      <main className="divide-accent/55 flex h-full w-full divide-x-2 overflow-y-hidden">
+      <main className="divide-accent/55 flex h-full w-full divide-x-2">
         <TabsList disableDefaultStyles className="flex-1 space-y-2 pt-2 pr-6">
           <TabsTrigger
             asChild

@@ -2,13 +2,14 @@ import { DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import z from "zod";
 
 import { s3 } from "~/server/aws/s3";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { env } from "~/env";
 
 const s3Router = createTRPCRouter({
-  getObjectByKey: protectedProcedure
+  getObjectByKey: publicProcedure
     .input(
       z.object({
-        bucket: z.string(),
+        bucket: z.string().default(env.NEXT_PUBLIC_AWS_BUCKET_NAME),
         key: z.string(),
       }),
     )
@@ -23,7 +24,7 @@ const s3Router = createTRPCRouter({
   deleteObjectByKey: protectedProcedure
     .input(
       z.object({
-        bucket: z.string(),
+        bucket: z.string().default(env.NEXT_PUBLIC_AWS_BUCKET_NAME),
         key: z.string(),
       }),
     )

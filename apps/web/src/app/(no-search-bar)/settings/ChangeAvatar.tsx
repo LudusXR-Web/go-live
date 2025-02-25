@@ -73,7 +73,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
                 metadata: {
                   userId: user.id,
                   timestamp: Date.now(),
-                  path: "avatar-images",
+                  path: "profile-pictures",
                 },
               });
             }

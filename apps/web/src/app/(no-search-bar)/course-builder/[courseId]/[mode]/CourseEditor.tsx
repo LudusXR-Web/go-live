@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { type PropsWithChildren, useEffect, useState } from "react";
 import { createId } from "@paralleldrive/cuid2";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -33,6 +33,12 @@ import { api } from "~/trpc/react";
 import { type CourseContent, type CourseSection } from "~/server/db/schema";
 import RichEditor from "~/components/composites/RichEditor";
 import ConfirmationModal from "~/components/modals/ConfirmationModal";
+import ChangeImageElement from "./ChangeImageElement";
+
+type PendingUpload = {
+  id: string;
+  execute: () => void;
+};
 
 type CourseContentStoreState = {
   courseId: string;
@@ -43,6 +49,11 @@ type CourseContentStoreState = {
 type CourseContentStoreActions = {
   loadState: (state: CourseContentStoreState) => void;
   clearState: () => void;
+
+  pendingUploads: PendingUpload[];
+  createPendingUpload: (id: string, uploadFunction: () => void) => void;
+  deletePendingUpload: (id: string) => void;
+  clearPendingUploads: () => void;
 
   createSection: () => void;
   deleteSection: (id: string) => void;
@@ -57,9 +68,15 @@ type CourseContentStoreActions = {
     sectionId: string,
     insertIndex: `${T}` extends `-${string}` ? never : T,
   ) => void;
+  deleteElement: (id: string) => void;
   updateElement: (
     id: CourseContent["id"],
     content: CourseContent["content"],
+  ) => void;
+  moveElement: <T extends number>(
+    id: string,
+    oldIdx: `${T}` extends `-${string}` ? never : T,
+    newIdx: `${T}` extends `-${string}` ? never : T,
   ) => void;
 };
 
@@ -71,6 +88,38 @@ export const useCourseContent = create<CourseContentStore>()(
       courseId: "",
       sections: [] as CourseSection[],
       elements: [] as CourseContent[],
+
+      pendingUploads: [] as PendingUpload[],
+      createPendingUpload(id, uploadFunction) {
+        return set((state) => {
+          const isUploadInList = state.pendingUploads.findIndex(
+            (u) => u.id === id,
+          );
+
+          if (isUploadInList >= 0) {
+            state.pendingUploads[isUploadInList]!.execute = uploadFunction;
+          } else {
+            state.pendingUploads.push({ id, execute: uploadFunction });
+          }
+
+          return {
+            pendingUploads: state.pendingUploads,
+          };
+        });
+      },
+      deletePendingUpload(id) {
+        return set((state) => {
+          const uploadIdx = state.pendingUploads.findIndex((u) => u.id === id);
+          state.pendingUploads.splice(uploadIdx, 1);
+
+          return {
+            pendingUploads: state.pendingUploads,
+          };
+        });
+      },
+      clearPendingUploads() {
+        return set({ pendingUploads: [] });
+      },
 
       loadState(state) {
         return set(state);
@@ -128,6 +177,7 @@ export const useCourseContent = create<CourseContentStore>()(
           };
         });
       },
+
       createElement(type, sectionId, insertIndex) {
         return set((state) => {
           const id = (type + "-" + createId()) as CourseContent["id"];
@@ -157,6 +207,24 @@ export const useCourseContent = create<CourseContentStore>()(
           };
         });
       },
+      deleteElement(id: string) {
+        return set((state) => {
+          const elementIdx = state.elements.findIndex((e) => e.id === id);
+          const sectionIdx = state.sections.findIndex((s) =>
+            s.children.some((c) => c === id),
+          );
+          const elementIdxInSection =
+            state.sections[sectionIdx]!.children.indexOf(id);
+
+          state.elements.splice(elementIdx, 1);
+          state.sections[sectionIdx]!.children.splice(elementIdxInSection, 1);
+
+          return {
+            sections: state.sections,
+            elements: state.elements,
+          };
+        });
+      },
       updateElement(id, content) {
         return set((state) => {
           const idx = state.elements.findIndex((e) => e.id === id);
@@ -168,6 +236,19 @@ export const useCourseContent = create<CourseContentStore>()(
 
           return {
             elements: state.elements,
+          };
+        });
+      },
+      moveElement(id, oldIdx, newIdx) {
+        return set((state) => {
+          const sectionIdx = state.sections.findIndex((s) =>
+            s.children.some((c) => c === id),
+          );
+          state.sections.at(sectionIdx)!.children.splice(oldIdx, 1);
+          state.sections.at(sectionIdx)!.children.splice(newIdx, 0, id);
+
+          return {
+            sections: state.sections,
           };
         });
       },
@@ -219,9 +300,9 @@ const CreateElementMenu: React.FC<CreateElementMenuProps<number>> = ({
             <Button
               variant="outline"
               className={cn(
-                "mx-auto rounded-full hover:bg-slate-100 data-[state=open]:bg-slate-100",
+                "mx-auto rounded-full transition-all group-data-[state=open]:bg-slate-100 hover:bg-slate-100",
                 buttonHidden
-                  ? "opacity-0 transition-opacity group-hover:opacity-100"
+                  ? "opacity-0 group-hover:opacity-100 group-data-[state=open]:opacity-100"
                   : "",
               )}
             >
@@ -264,6 +345,73 @@ const CreateElementMenu: React.FC<CreateElementMenuProps<number>> = ({
   );
 };
 
+type CourseElementProps = {
+  section: CourseSection;
+  element: CourseContent;
+  index: number;
+} & PropsWithChildren;
+
+const CourseElement: React.FC<CourseElementProps> = ({
+  section,
+  element,
+  index: idx,
+  children,
+}) => {
+  const courseContent = useCourseContent();
+
+  return (
+    <div>
+      <div className="flex items-center gap-x-2">
+        {children}
+        <div className="flex shrink flex-col gap-y-1.5">
+          <button
+            disabled={idx === 0}
+            onClick={() => courseContent.moveElement(element.id, idx, idx - 1)}
+            className="rounded-md border px-[1.375rem] py-1.5 transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50"
+          >
+            <span className="sr-only">Move up text element</span>
+            <ArrowUpIcon size={20} />
+          </button>
+
+          {element.content.length > 10 ? (
+            <ConfirmationModal
+              question="Are you sure you want to delete this element?"
+              onConfirm={courseContent.deleteElement.bind(null, element.id)}
+            >
+              <button className="rounded-md border border-red-100 px-[1.375rem] py-1.5 text-red-400 transition-colors hover:bg-red-100 disabled:pointer-events-none disabled:opacity-50">
+                <span className="sr-only">Remove text element</span>
+                <TrashIcon size={20} />
+              </button>
+            </ConfirmationModal>
+          ) : (
+            <button
+              onClick={() => courseContent.deleteElement(element.id)}
+              className="rounded-md border border-red-100 px-[1.375rem] py-1.5 text-red-400 transition-colors hover:bg-red-100 disabled:pointer-events-none disabled:opacity-50"
+            >
+              <span className="sr-only">Remove text element</span>
+              <TrashIcon size={20} />
+            </button>
+          )}
+
+          <button
+            disabled={idx === section.children.length - 1}
+            onClick={() => courseContent.moveElement(element.id, idx, idx + 1)}
+            className="rounded-md border px-[1.375rem] py-1.5 transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50"
+          >
+            <span className="sr-only">Move down text element</span>
+            <ArrowDownIcon size={20} />
+          </button>
+        </div>
+      </div>
+      <CreateElementMenu
+        buttonHidden={idx + 1 !== section.children.length}
+        insertIndex={idx + 1}
+        sectionId={section.id}
+      />
+    </div>
+  );
+};
+
 type CourseEditorProps = {
   course: CourseContentStoreState;
 };
@@ -277,15 +425,30 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
   const { tab, setTab, resetTab } = useCourseContentTab();
   const mutation = api.courses.updateContent.useMutation();
 
+  let timer: NodeJS.Timeout;
+
   useEffect(() => {
     resetTab();
     courseContent.loadState(course);
   }, []);
 
-  let timer: NodeJS.Timeout;
+  async function saveCourseContent() {
+    await mutation.mutateAsync(courseContent);
+
+    for (const upload of courseContent.pendingUploads) {
+      upload.execute();
+      courseContent.deletePendingUpload(upload.id);
+    }
+
+    setCourse((state) => ({
+      ...state,
+      sections: courseContent.sections,
+      elements: courseContent.elements,
+    }));
+  }
 
   return (
-    <Tabs value={tab} onValueChange={setTab} className="space-y-3">
+    <Tabs value={tab} onValueChange={setTab} className="min-h-fit space-y-3">
       <TabsList
         disableDefaultStyles
         className="flex items-center justify-between gap-2"
@@ -326,14 +489,7 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
           <Button
             disabled={mutation.isPending}
             className={mutation.isPending ? "px-[2.5ch]" : ""}
-            onClick={async () => {
-              await mutation.mutateAsync(courseContent);
-              setCourse((state) => ({
-                ...state,
-                sections: courseContent.sections,
-                elements: courseContent.elements,
-              }));
-            }}
+            onClick={saveCourseContent}
           >
             {mutation.isPending ? (
               <Loader2Icon className="animate-spin" />
@@ -464,33 +620,47 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
                 <CreateElementMenu buttonHidden sectionId={section.id} />
 
                 {section.children.map((id, idx) => {
-                  const child = courseContent.elements.find((e) => e.id === id);
+                  const element = courseContent.elements.find(
+                    (e) => e.id === id,
+                  );
 
-                  if (!child) return null;
+                  if (!element) return null;
 
-                  switch (child.type) {
+                  switch (element.type) {
                     case "text":
                       return (
-                        <div key={id}>
+                        <CourseElement
+                          key={id}
+                          section={section}
+                          element={element}
+                          index={idx}
+                        >
                           <RichEditor
-                            defaultContent={child.content}
+                            className="min-h-[7rem]"
+                            containerClassName="grow"
+                            defaultContent={element.content}
                             onUpdate={courseContent.updateElement.bind(
                               null,
-                              id as CourseContent["id"],
+                              element.id,
                             )}
                           />
-                          <CreateElementMenu
-                            buttonHidden={idx + 1 !== section.children.length}
-                            insertIndex={idx + 1}
-                            sectionId={section.id}
-                          />
-                        </div>
+                        </CourseElement>
+                      );
+                    case "image":
+                      return (
+                        <CourseElement
+                          key={id}
+                          section={section}
+                          element={element}
+                          index={idx}
+                        >
+                          <ChangeImageElement element={element} />
+                        </CourseElement>
                       );
                     case "attachment":
                       return null;
-                    case "image":
-                      return null;
                     default:
+                      courseContent.deleteElement(id);
                       return null;
                   }
                 })}

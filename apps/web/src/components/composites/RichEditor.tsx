@@ -12,12 +12,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/popover";
 import { toggleVariants } from "@repo/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@repo/ui/toggle-group";
 
+import { cn } from "~/lib/utils";
+
 type TextEditorProps = {
+  className?: string;
+  containerClassName?: string;
   defaultContent?: string;
   onUpdate?: (content: string) => void;
 };
 
 const TextEditor: React.FC<TextEditorProps> = ({
+  className,
+  containerClassName,
   defaultContent,
   onUpdate,
 }) => {
@@ -48,7 +54,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   const [showLinkPopover, setShowLinkPopover] = useState(false);
 
   return (
-    <>
+    <div className={containerClassName}>
       {editor && (
         <BubbleMenu
           editor={editor}
@@ -154,11 +160,11 @@ const TextEditor: React.FC<TextEditorProps> = ({
       )}
       <EditorContent
         editor={editor}
-        className="overflow-y-auto rounded border"
+        className={cn("overflow-y-auto rounded border", className)}
         spellCheck
         required
       />
-    </>
+    </div>
   );
 };
 
