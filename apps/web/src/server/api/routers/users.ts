@@ -38,15 +38,16 @@ const userRouter = createTRPCRouter({
           .where(eq(users.id, input.id)),
     ),
 
-  getPersonalDetailsById: publicProcedure
-    .input(z.string().cuid2())
-    .output(createSelectSchema(personalDetails))
-    .query(
-      async ({ ctx, input }) =>
-        (await ctx.db.query.personalDetails.findFirst({
-          where: (p, { eq }) => eq(p.userId, input),
-        }))!,
-    ),
+  getPersonalDetailsById:
+    publicProcedure
+      .input(z.string().cuid2())
+      .output(createSelectSchema(personalDetails))
+      .query(
+        async ({ ctx, input }) =>
+          (await ctx.db.query.personalDetails.findFirst({
+            where: (p, { eq }) => eq(p.userId, input),
+          }))!,
+      ) ?? null,
   updatePersonalDetails: protectedProcedure
     .input(
       createUpdateSchema(personalDetails)

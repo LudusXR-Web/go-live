@@ -8,15 +8,15 @@ import { media } from "~/server/db/schema";
 const mediaRouter = createTRPCRouter({
   getById: publicProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
-      await ctx.db.query.media.findFirst({
+      (await ctx.db.query.media.findFirst({
         where: (media, { eq }) => eq(media.id, input),
-      }),
+      })) ?? null,
   ),
   getByKey: publicProcedure.input(z.string()).query(
     async ({ ctx, input }) =>
-      await ctx.db.query.media.findFirst({
+      (await ctx.db.query.media.findFirst({
         where: (media, { eq }) => eq(media.key, input),
-      }),
+      })) ?? null,
   ),
   create: protectedProcedure
     .input(

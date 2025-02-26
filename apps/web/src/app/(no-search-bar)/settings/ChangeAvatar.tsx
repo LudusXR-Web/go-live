@@ -34,6 +34,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
       });
 
       mediaMutation.mutate({
+        fileName: file.name,
         key: file.objectKey,
         public: true,
         url,
@@ -69,6 +70,8 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
           className="sr-only mt-16 ml-8"
           onChange={(e) => {
             if (e.target.files?.[0]) {
+              if (e.target.files[0].size > 4194304) return;
+
               upload(e.target.files[0], {
                 metadata: {
                   userId: user.id,

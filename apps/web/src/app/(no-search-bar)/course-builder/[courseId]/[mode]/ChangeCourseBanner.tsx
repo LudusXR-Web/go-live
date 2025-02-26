@@ -35,6 +35,7 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
       });
 
       mediaMutation.mutate({
+        fileName: file.name,
         key: file.objectKey,
         public: true,
         url,
@@ -74,6 +75,8 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
         className="sr-only mt-16 ml-8"
         onChange={(e) => {
           if (e.target.files?.[0]) {
+            if (e.target.files[0].size > 4194304) return;
+
             upload(e.target.files[0], {
               metadata: {
                 courseId: course.id,

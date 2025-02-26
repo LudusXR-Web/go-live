@@ -34,10 +34,11 @@ import { type CourseContent, type CourseSection } from "~/server/db/schema";
 import RichEditor from "~/components/composites/RichEditor";
 import ConfirmationModal from "~/components/modals/ConfirmationModal";
 import ChangeImageElement from "./ChangeImageElement";
+import ChangeFileElement from "./ChangeFileElement";
 
 type PendingUpload = {
   id: string;
-  execute: () => void;
+  execute: () => Promise<void> | void;
 };
 
 type CourseContentStoreState = {
@@ -51,7 +52,10 @@ type CourseContentStoreActions = {
   clearState: () => void;
 
   pendingUploads: PendingUpload[];
-  createPendingUpload: (id: string, uploadFunction: () => void) => void;
+  createPendingUpload: (
+    id: string,
+    uploadFunction: () => Promise<void> | void,
+  ) => void;
   deletePendingUpload: (id: string) => void;
   clearPendingUploads: () => void;
 
@@ -110,6 +114,9 @@ export const useCourseContent = create<CourseContentStore>()(
       deletePendingUpload(id) {
         return set((state) => {
           const uploadIdx = state.pendingUploads.findIndex((u) => u.id === id);
+
+          if (uploadIdx < 0) return {};
+
           state.pendingUploads.splice(uploadIdx, 1);
 
           return {
@@ -218,6 +225,8 @@ export const useCourseContent = create<CourseContentStore>()(
 
           state.elements.splice(elementIdx, 1);
           state.sections[sectionIdx]!.children.splice(elementIdxInSection, 1);
+
+          this.deletePendingUpload(id);
 
           return {
             sections: state.sections,
@@ -433,12 +442,12 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
   }, []);
 
   async function saveCourseContent() {
-    await mutation.mutateAsync(courseContent);
-
     for (const upload of courseContent.pendingUploads) {
-      upload.execute();
+      await upload.execute();
       courseContent.deletePendingUpload(upload.id);
     }
+
+    await mutation.mutateAsync(courseContent);
 
     setCourse((state) => ({
       ...state,
@@ -658,7 +667,16 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
                         </CourseElement>
                       );
                     case "attachment":
-                      return null;
+                      return (
+                        <CourseElement
+                          key={id}
+                          section={section}
+                          element={element}
+                          index={idx}
+                        >
+                          <ChangeFileElement element={element} />
+                        </CourseElement>
+                      );
                     default:
                       courseContent.deleteElement(id);
                       return null;

@@ -31,6 +31,11 @@ export const userTypeEnum = pgEnum("user_type_enum", [
   "VET",
 ]);
 
+export const contentDispositionEnum = pgEnum("content_disposition_enum", [
+  "inline",
+  "attachment",
+]);
+
 export const users = createTable("users", {
   id: varchar("id", { length: 255 })
     .$defaultFn(() => createId())
@@ -234,12 +239,16 @@ export const media = createTable("media", {
   id: varchar("id", { length: 255 })
     .$defaultFn(() => createId())
     .primaryKey(),
+  fileName: varchar("file_name", { length: 255 }).notNull(),
   authorId: varchar("author_id", { length: 255 })
     .notNull()
     .references(() => users.id),
   url: text("url").notNull(),
   key: text("key").notNull(),
   public: boolean("public").notNull().default(false),
+  disposition: contentDispositionEnum("disposition")
+    .notNull()
+    .default("inline"),
 });
 
 export const mediaRelations = relations(media, ({ one }) => ({

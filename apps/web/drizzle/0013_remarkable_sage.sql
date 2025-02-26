@@ -1,0 +1,1 @@
+ALTER TABLE "golive_media" ALTER COLUMN "file_name" SET NOT NULL;

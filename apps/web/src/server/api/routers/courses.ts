@@ -13,25 +13,25 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 const courseRouter = createTRPCRouter({
   getById: protectedProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
-      await ctx.db.query.courses.findFirst({
+      (await ctx.db.query.courses.findFirst({
         where: (course, { eq }) => eq(course.id, input),
-      }),
+      })) ?? null,
   ),
   getByAuthorId: protectedProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
-      await ctx.db.query.courses.findMany({
+      (await ctx.db.query.courses.findMany({
         where: (course, { eq }) => eq(course.authorId, input),
-      }),
+      })) ?? null,
   ),
   getCourseContentById: protectedProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
-      await ctx.db.query.courseContents.findFirst({
+      (await ctx.db.query.courseContents.findFirst({
         where: (content, { eq }) => eq(content.courseId, input),
-      }),
+      })) ?? null,
   ),
   getFullCourseById: protectedProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
-      await ctx.db.query.courses.findFirst({
+      (await ctx.db.query.courses.findFirst({
         where: (course, { eq }) => eq(course.id, input),
         with: {
           content: {
@@ -40,26 +40,27 @@ const courseRouter = createTRPCRouter({
             },
           },
         },
-      }),
+      })) ?? null,
   ),
-  getByDetails: publicProcedure
-    .input(
-      z.object({
-        query: z.string().min(3).max(50),
-        tags: z.array(z.string()),
-      }),
-    )
-    .query(
-      async ({ ctx, input }) =>
-        await ctx.db.query.courses.findMany({
-          where: (course, { or, ilike }) =>
-            or(
-              ilike(course.title, input.query),
-              ilike(course.description, input.query),
-              arrayOverlaps(course.tags, input.tags),
-            ),
+  getByDetails:
+    publicProcedure
+      .input(
+        z.object({
+          query: z.string().min(3).max(50),
+          tags: z.array(z.string()),
         }),
-    ),
+      )
+      .query(
+        async ({ ctx, input }) =>
+          await ctx.db.query.courses.findMany({
+            where: (course, { or, ilike }) =>
+              or(
+                ilike(course.title, input.query),
+                ilike(course.description, input.query),
+                arrayOverlaps(course.tags, input.tags),
+              ),
+          }),
+      ) ?? null,
   create: protectedProcedure
     .input(
       createInsertSchema(courses)

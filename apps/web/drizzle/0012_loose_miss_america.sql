@@ -1,0 +1,1 @@
+ALTER TABLE "golive_media" ADD COLUMN "file_name" varchar(255);

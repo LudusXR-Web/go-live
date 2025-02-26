@@ -1,0 +1,2 @@
+CREATE TYPE "public"."content_disposition_enum" AS ENUM('inline', 'attachment');--> statement-breakpoint
+ALTER TABLE "golive_media" ADD COLUMN "disposition" "content_disposition_enum" DEFAULT 'inline' NOT NULL;
