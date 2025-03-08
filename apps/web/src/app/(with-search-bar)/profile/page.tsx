@@ -5,6 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import Generic from "~/img/generic.webp";
+import ChangeAvatar from "~/components/media-uploaders/ChangeAvatar";
+import ChangeProfileBanner from "~/components/media-uploaders/ChangeProfileBanner";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -19,7 +21,7 @@ export default async function ProfilePage() {
     <main className="flex w-full justify-center">
       <div
         id="personal-details"
-        className="max-w-(--breakpoint-lg) space-y-3 divide-y-2 divide-accent"
+        className="divide-accent w-(--breakpoint-lg) space-y-3 divide-y-2"
       >
         <div
           id="avatar-banner"
@@ -29,22 +31,17 @@ export default async function ProfilePage() {
             id="banner-container"
             className="max-h-52 w-full overflow-y-hidden"
           >
-            <Image src={Generic} alt="generic" width={1280} />
+            <ChangeProfileBanner personalDetails={personalDetails} />
           </div>
           <div id="avatar-container">
-            <Avatar className="absolute left-10 top-[8rem] size-44 border-[8px] border-primary-foreground hover:shadow-sm">
-              <AvatarImage
-                src={session.user.image ?? undefined}
-                alt="Profile Avatar Image"
-              />
-              <AvatarFallback>
-                {session.user.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <ChangeAvatar
+              user={session.user}
+              className="*:border-primary-foreground absolute top-[7rem] left-10 z-40 size-44 *:border-[8px] *:hover:shadow-sm"
+            />
           </div>
-          <div className="ml-[14.5rem] flex gap-4 divide-x-2">
-            <div>
-              <h1 className="text-nowrap text-3xl font-bold">
+          <div className="flex h-fit pt-16 pb-4">
+            <div className="border-r-2 pr-6">
+              <h1 className="text-3xl font-bold text-nowrap">
                 {session.user.name}
               </h1>{" "}
               {personalDetails.pronouns && (
@@ -53,7 +50,7 @@ export default async function ProfilePage() {
                 </span>
               )}
             </div>
-            <p className="min-h-20 pl-4">
+            <p className="pl-6">
               {personalDetails.bio?.length ? (
                 personalDetails.bio
               ) : (

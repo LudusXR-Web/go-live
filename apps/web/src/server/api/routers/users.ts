@@ -57,6 +57,7 @@ const userRouter = createTRPCRouter({
         .merge(
           z.object({
             userId: z.string().cuid2(),
+            banner: z.string().url().optional(),
           }),
         ),
     )

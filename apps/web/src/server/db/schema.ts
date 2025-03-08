@@ -59,6 +59,7 @@ export const personalDetails = createTable("personal_details", {
 
   pronouns: varchar("pronouns", { length: 16 }),
   bio: varchar("bio", { length: 255 }),
+  banner: text("banner"),
 });
 
 export const accounts = createTable(
@@ -172,21 +173,25 @@ export type CourseContent = {
   id: `${CourseContent["type"]}-${string}`;
 } & (CourseText | CourseMedia);
 
-export const courseContents = createTable("course_contents", {
-  courseId: varchar("courseId", { length: 255 })
-    .primaryKey()
-    .references(() => courses.id),
-  sections: jsonb("sections")
-    .array()
-    .$type<CourseSection[]>()
-    .notNull()
-    .default([]),
-  elements: jsonb("content")
-    .array()
-    .$type<CourseContent[]>()
-    .notNull()
-    .default([]),
-});
+export const courseContents = createTable(
+  "course_contents",
+  {
+    courseId: varchar("courseId", { length: 255 })
+      .primaryKey()
+      .references(() => courses.id),
+    sections: jsonb("sections")
+      .array()
+      .$type<CourseSection[]>()
+      .notNull()
+      .default([]),
+    elements: jsonb("content")
+      .array()
+      .$type<CourseContent[]>()
+      .notNull()
+      .default([]),
+  },
+  (content) => [index("course_id_idx").on(content.courseId)],
+);
 
 export const usersToCourses = createTable(
   "users_to_courses",
@@ -254,6 +259,31 @@ export const media = createTable("media", {
 export const mediaRelations = relations(media, ({ one }) => ({
   author: one(users, {
     fields: [media.authorId],
+    references: [users.id],
+  }),
+}));
+
+export const posts = createTable(
+  "posts",
+  {
+    id: varchar("id", { length: 255 })
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    authorId: varchar("author_id", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    content: text("content").notNull().default(""),
+    attachments: varchar("attachments", { length: 255 })
+      .references(() => media.id)
+      .array()
+      .default([]),
+  },
+  (post) => [index("post_author_id_idx").on(post.authorId)],
+);
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(users, {
+    fields: [posts.authorId],
     references: [users.id],
   }),
 }));

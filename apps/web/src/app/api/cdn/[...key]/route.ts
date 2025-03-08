@@ -14,7 +14,7 @@ export async function GET(
   const query = (await params).key.join("/");
   const isIdQuery = z.string().cuid2().safeParse(query);
 
-  let mediaDetails: typeof media.$inferSelect | undefined;
+  let mediaDetails: typeof media.$inferSelect | null;
 
   try {
     isIdQuery.success

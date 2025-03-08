@@ -1,0 +1,1 @@
+ALTER TABLE "golive_personal_details" RENAME COLUMN "image" TO "banner";

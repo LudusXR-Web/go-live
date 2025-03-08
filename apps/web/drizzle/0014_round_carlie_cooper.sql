@@ -1,0 +1,1 @@
+ALTER TABLE "golive_personal_details" ADD COLUMN "image" text;

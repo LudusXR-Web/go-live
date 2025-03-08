@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type HTMLAttributes, useState } from "react";
 import { type Session } from "next-auth";
 import { useUploadFile } from "better-upload/client";
 import { ImageUpIcon, LoaderCircleIcon } from "lucide-react";
@@ -9,11 +9,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { api } from "~/trpc/react";
 import { env } from "~/env";
 
-type ChangeAvatarProps = {
+type ChangeAvatarProps = HTMLAttributes<HTMLDivElement> & {
   user: Session["user"];
 };
 
-const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
+const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user, ...props }) => {
   const [avatarUrl, setAvatarUrl] = useState(user.image);
   const userMutation = api.users.update.useMutation();
   const mediaMutation = api.media.create.useMutation();
@@ -45,7 +45,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user }) => {
   });
 
   return (
-    <div>
+    <div {...props}>
       <Avatar className="group size-40 border first:[&>label]:hover:opacity-100">
         <label
           id="overlay"
