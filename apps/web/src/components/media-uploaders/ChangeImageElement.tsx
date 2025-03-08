@@ -9,7 +9,7 @@ import { env } from "~/env";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { type CourseContent } from "~/server/db/schema";
-import { useCourseContent } from "./CourseEditor";
+import { useCourseContent } from "~/components/composites/CourseEditor";
 
 type ChangeImageElementProps = {
   element: CourseContent;

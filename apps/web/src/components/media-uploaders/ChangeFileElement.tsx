@@ -14,7 +14,7 @@ import { buttonVariants } from "@repo/ui/button";
 import { env } from "~/env";
 import { api } from "~/trpc/react";
 import { type CourseContent } from "~/server/db/schema";
-import { useCourseContent } from "./CourseEditor";
+import { useCourseContent } from "~/components/composites/CourseEditor";
 
 type ChangeFileElementProps = {
   element: CourseContent;

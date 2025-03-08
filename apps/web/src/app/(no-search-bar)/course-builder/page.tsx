@@ -29,7 +29,7 @@ export default async function CourseListPage() {
             variant="link"
             className="text-secondary-foreground font-medium"
           >
-            See courses by other users...
+            Find courses by other professionals...
           </Button>
         </Link>
       </div>
@@ -44,7 +44,7 @@ export default async function CourseListPage() {
                     alt={course.title}
                     width={1280}
                     height={720}
-                    className="py-3"
+                    className="h-36 py-3"
                   />
                 ) : (
                   <div className="flex h-36 w-full items-center justify-center gap-2 bg-slate-200 px-10 select-none">
@@ -52,9 +52,15 @@ export default async function CourseListPage() {
                     <span className="text-sm">No Course Banner Selected</span>
                   </div>
                 )}
-                <div className="px-4 py-2">
+                <div className="h-18 px-4 py-2">
                   <h2 className="text-lg font-semibold">{course.title}</h2>
-                  <p className="font-light">{course.description}</p>
+                  <p className="truncate text-sm font-light">
+                    {course.description?.length ? (
+                      course.description
+                    ) : (
+                      <em>No description provided</em>
+                    )}
+                  </p>
                 </div>
               </div>
             </Link>

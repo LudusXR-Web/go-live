@@ -1,6 +1,6 @@
 "use client";
 
-import React, { type PropsWithChildren, useEffect, useState } from "react";
+import { type PropsWithChildren, useEffect, useState } from "react";
 import { createId } from "@paralleldrive/cuid2";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -33,8 +33,8 @@ import { api } from "~/trpc/react";
 import { type CourseContent, type CourseSection } from "~/server/db/schema";
 import RichEditor from "~/components/composites/RichEditor";
 import ConfirmationModal from "~/components/modals/ConfirmationModal";
-import ChangeImageElement from "./ChangeImageElement";
-import ChangeFileElement from "./ChangeFileElement";
+import ChangeImageElement from "~/components/media-uploaders/ChangeImageElement";
+import ChangeFileElement from "~/components/media-uploaders/ChangeFileElement";
 
 type PendingUpload = {
   id: string;

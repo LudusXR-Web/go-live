@@ -28,11 +28,11 @@ import {
   FormMessage,
 } from "@repo/ui/form";
 
-import ChangeAvatar from "../../app/(no-search-bar)/settings/ChangeAvatar";
+import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { userTypeEnum, type personalDetails } from "~/server/db/schema";
 import { exposedRevalidatePath as revalidatePath } from "~/server/actions/exposedRevalidate";
-import { cn } from "~/lib/utils";
+import ChangeAvatar from "~/components/media-uploaders/ChangeAvatar";
 
 const formSchema = z.object({
   name: z

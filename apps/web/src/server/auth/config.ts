@@ -47,6 +47,17 @@ export const authConfig = {
   }),
   debug: process.env.NODE_ENV === "development",
   trustHost: true,
+  cookies: {
+    sessionToken: {
+      name: "golive-session",
+    },
+    csrfToken: {
+      name: "golive-csrf",
+    },
+    callbackUrl: {
+      name: "golive-callback",
+    },
+  },
   session: {
     generateSessionToken: () => createId(),
     maxAge: 604800,

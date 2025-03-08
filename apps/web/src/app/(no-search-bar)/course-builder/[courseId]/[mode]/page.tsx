@@ -6,8 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import CourseDetailsForm from "~/components/forms/CourseDetailsForm";
-import ChangeCourseBanner from "./ChangeCourseBanner";
-import CourseEditor from "./CourseEditor";
+import ChangeCourseBanner from "~/components/media-uploaders/ChangeCourseBanner";
+import CourseEditor from "~/components/composites/CourseEditor";
 
 type CourseBuilderMode = "basic" | "content";
 
