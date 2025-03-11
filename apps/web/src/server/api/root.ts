@@ -1,8 +1,9 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import userRouter from "./routers/users";
-import s3Router from "./routers/s3";
 import sessionRourter from "./routers/session";
+import userRouter from "./routers/users";
+import postsRouter from "./routers/posts";
 import courseRouter from "./routers/courses";
+import s3Router from "./routers/s3";
 import mediaRouter from "./routers/media";
 
 /**
@@ -13,6 +14,7 @@ import mediaRouter from "./routers/media";
 export const appRouter = createTRPCRouter({
   session: sessionRourter,
   users: userRouter,
+  posts: postsRouter,
   courses: courseRouter,
   s3: s3Router,
   media: mediaRouter,

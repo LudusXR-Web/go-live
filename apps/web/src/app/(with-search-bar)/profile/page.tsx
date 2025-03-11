@@ -50,7 +50,12 @@ export default async function ProfilePage() {
                 </span>
               )}
             </div>
-            <p className="pl-6">
+            <p
+              className="pl-6"
+              style={{
+                wordBreak: "break-all",
+              }}
+            >
               {personalDetails.bio?.length ? (
                 personalDetails.bio
               ) : (
