@@ -4,9 +4,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
-import Generic from "~/img/generic.webp";
 import ChangeAvatar from "~/components/media-uploaders/ChangeAvatar";
 import ChangeProfileBanner from "~/components/media-uploaders/ChangeProfileBanner";
+import CreatePostForm from "~/components/forms/CreatePostForm";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -68,7 +68,9 @@ export default async function ProfilePage() {
             </p>
           </div>
         </div>
-        <div id="content-details"></div>
+        <div id="content-details">
+          <CreatePostForm />
+        </div>
       </div>
     </main>
   );

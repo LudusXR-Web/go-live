@@ -17,6 +17,7 @@ import { cn } from "~/lib/utils";
 type TextEditorProps = {
   className?: string;
   containerClassName?: string;
+  internalClassAttributes?: string;
   defaultContent?: string;
   onUpdate?: (content: string) => void;
 };
@@ -24,6 +25,7 @@ type TextEditorProps = {
 const TextEditor: React.FC<TextEditorProps> = ({
   className,
   containerClassName,
+  internalClassAttributes,
   defaultContent,
   onUpdate,
 }) => {
@@ -43,7 +45,10 @@ const TextEditor: React.FC<TextEditorProps> = ({
     },
     editorProps: {
       attributes: {
-        class: "focus:outline-none p-2 prose max-w-full **:m-0",
+        class: cn(
+          "focus:outline-none p-2 prose max-w-full **:m-0",
+          internalClassAttributes,
+        ),
       },
     },
     onUpdate: onUpdate ? (e) => onUpdate(e.editor.getHTML()) : undefined,
