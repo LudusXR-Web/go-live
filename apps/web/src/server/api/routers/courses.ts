@@ -64,10 +64,10 @@ const courseRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       createInsertSchema(courses)
-        .omit({ id: true })
+        .omit({ id: true, authorId: true })
         .merge(
           z.object({
-            autorId: z.string().cuid2().optional(),
+            authorId: z.string().cuid2().optional(),
           }),
         ),
     )
@@ -76,7 +76,7 @@ const courseRouter = createTRPCRouter({
       const id = (
         await ctx.db
           .insert(courses)
-          .values({ ...input, authorId: ctx.session.user.id })
+          .values({ ...input, authorId: input.authorId ?? ctx.session.user.id })
           .returning({ id: courses.id })
       ).at(0)!.id;
 

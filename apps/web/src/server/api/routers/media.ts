@@ -21,7 +21,7 @@ const mediaRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       createInsertSchema(media)
-        .omit({ id: true })
+        .omit({ id: true, authorId: true })
         .merge(z.object({ authorId: z.string().cuid2().optional() })),
     )
     .mutation(
@@ -31,7 +31,7 @@ const mediaRouter = createTRPCRouter({
             .insert(media)
             .values({
               ...input,
-              authorId: ctx.session.user.id,
+              authorId: input.authorId ?? ctx.session.user.id,
             })
             .returning({ id: media.id })
         ).at(0)!.id,

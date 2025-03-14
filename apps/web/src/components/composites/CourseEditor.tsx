@@ -647,6 +647,7 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
                           <RichEditor
                             className="min-h-[7rem]"
                             containerClassName="grow"
+                            placeholder="What is this section about?"
                             defaultContent={element.content}
                             onUpdate={courseContent.updateElement.bind(
                               null,

@@ -1,6 +1,4 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
@@ -68,7 +66,7 @@ export default async function ProfilePage() {
             </p>
           </div>
         </div>
-        <div id="content-details">
+        <div id="content-details" className="-mt-3">
           <CreatePostForm />
         </div>
       </div>
