@@ -1,21 +1,65 @@
 "use client";
 
+import { ImageIcon, PaperclipIcon } from "lucide-react";
+import { useUploadFile } from "better-upload/client";
+import { toggleVariants } from "@repo/ui/toggle";
 import { Button } from "@repo/ui/button";
 
+import { env } from "~/env";
 import { api } from "~/trpc/react";
+import { type contentDispositionEnum } from "~/server/db/schema";
 import RichEditor, {
-  EditorMenu,
   useCustomEditor,
 } from "~/components/composites/RichEditor";
-import { ImageIcon, PaperclipIcon } from "lucide-react";
-import { toggleVariants } from "@repo/ui/toggle";
+
+type PendingUpload = {
+  id: string;
+  fileName: string;
+  disposition: (typeof contentDispositionEnum.enumValues)[number];
+  tempUrl: string;
+  execute: () => Promise<void> | void;
+};
+
+type PostAttachmentsState = {
+  pendingUploads: PendingUpload[];
+  createPendingUpload: (
+    id: string,
+    uploadFunction: () => Promise<void> | void,
+  ) => void;
+  deletePendingUpload: (id: string) => void;
+  clearPendingUploads: () => void;
+};
 
 const CreatePostForm: React.FC = () => {
   const editor = useCustomEditor();
   const postMutation = api.posts.create.useMutation({
     onSuccess() {
-      editor!.setOptions({
-        content: "",
+      editor!.commands.clearContent(true);
+    },
+  });
+  const mediaMutation = api.media.create.useMutation();
+
+  const {
+    isPending: isUploadPending,
+    upload,
+    reset,
+  } = useUploadFile({
+    route: "image",
+    api: "/api/upload/post-contents",
+    onUploadError: (error) => {
+      console.log(`[UPLOAD_ERROR] ${error.type}\n${error.message}`);
+      reset();
+    },
+    onUploadComplete: ({ file, metadata }) => {
+      const url = env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey;
+
+      mediaMutation.mutate({
+        fileName: file.name,
+        key: file.objectKey,
+        public: true,
+        disposition:
+          metadata.disposition as (typeof contentDispositionEnum.enumValues)[number],
+        url,
       });
     },
   });
@@ -54,18 +98,30 @@ const CreatePostForm: React.FC = () => {
               <PaperclipIcon />
             </Button>
           </div>
-          <EditorMenu customEditor={editor} />
+          {/* space for additional buttons here */}
         </div>
         <Button
           type="submit"
           className="rounded-full font-medium"
-          disabled={!editor?.getText().length || postMutation.isPending}
+          disabled={
+            !editor?.getText().length ||
+            postMutation.isPending ||
+            isUploadPending
+          }
         >
           Post
         </Button>
       </div>
     </form>
   );
+};
+
+const ImageUploader: React.FC = () => {
+  return null;
+};
+
+const FileUploader: React.FC = () => {
+  return null;
 };
 
 export default CreatePostForm;
