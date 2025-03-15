@@ -96,12 +96,10 @@ export const useCourseContent = create<CourseContentStore>()(
       pendingUploads: [] as PendingUpload[],
       createPendingUpload(id, uploadFunction) {
         return set((state) => {
-          const isUploadInList = state.pendingUploads.findIndex(
-            (u) => u.id === id,
-          );
+          const uploadIdx = state.pendingUploads.findIndex((u) => u.id === id);
 
-          if (isUploadInList >= 0) {
-            state.pendingUploads[isUploadInList]!.execute = uploadFunction;
+          if (uploadIdx >= 0) {
+            state.pendingUploads[uploadIdx]!.execute = uploadFunction;
           } else {
             state.pendingUploads.push({ id, execute: uploadFunction });
           }
@@ -432,7 +430,11 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
 
   const courseContent = useCourseContent();
   const { tab, setTab, resetTab } = useCourseContentTab();
-  const mutation = api.courses.updateContent.useMutation();
+  const updateContentMutation = api.courses.updateContent.useMutation({
+    onSuccess() {
+      courseContent.clearPendingUploads();
+    },
+  });
 
   let timer: NodeJS.Timeout;
 
@@ -444,10 +446,9 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
   async function saveCourseContent() {
     for (const upload of courseContent.pendingUploads) {
       await upload.execute();
-      courseContent.deletePendingUpload(upload.id);
     }
 
-    await mutation.mutateAsync(courseContent);
+    await updateContentMutation.mutateAsync(courseContent);
 
     setCourse((state) => ({
       ...state,
@@ -496,11 +497,11 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
             Reset
           </Button>
           <Button
-            disabled={mutation.isPending}
-            className={mutation.isPending ? "px-[2.5ch]" : ""}
+            disabled={updateContentMutation.isPending}
+            className={updateContentMutation.isPending ? "px-[2.5ch]" : ""}
             onClick={saveCourseContent}
           >
-            {mutation.isPending ? (
+            {updateContentMutation.isPending ? (
               <Loader2Icon className="animate-spin" />
             ) : (
               "Save"

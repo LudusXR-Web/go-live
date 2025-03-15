@@ -1,20 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { useUploadFile } from "better-upload/client";
-import {
-  ArrowDownToLineIcon,
-  FileIcon,
-  FileUpIcon,
-  LoaderCircleIcon,
-} from "lucide-react";
+import { FileUpIcon, LoaderCircleIcon } from "lucide-react";
 import { buttonVariants } from "@repo/ui/button";
 
 import { env } from "~/env";
 import { api } from "~/trpc/react";
 import { type CourseContent } from "~/server/db/schema";
 import { useCourseContent } from "~/components/composites/CourseEditor";
+import FileView from "~/components/media-display/FileView";
 
 type ChangeFileElementProps = {
   element: CourseContent;
@@ -60,21 +55,7 @@ const ChangeFileElement: React.FC<ChangeFileElementProps> = ({ element }) => {
   return (
     <div className="group flex w-full flex-col items-center justify-center gap-y-3">
       <Suspense fallback={<LoaderCircleIcon className="animate-spin" />}>
-        {fileName && (
-          <Link
-            target="_blank"
-            href={fileUrl}
-            download={fileName}
-            className="group/file_display relative flex cursor-pointer items-center gap-x-2 overflow-hidden rounded-lg border p-3"
-          >
-            <FileIcon />
-            <span>{fileName}</span>
-            <div className="absolute top-3 left-0 flex h-full w-full translate-y-full items-center justify-center gap-x-1 rounded-t-[40%_30%] bg-red-400 text-white transition-transform *:-mt-3 group-hover/file_display:translate-0">
-              <ArrowDownToLineIcon size={20} />
-              <span>Download</span>
-            </div>
-          </Link>
-        )}
+        {fileName && <FileView name={fileName} href={fileUrl} />}
         <div className="flex flex-col justify-center gap-y-2">
           <label
             id="overlay"
