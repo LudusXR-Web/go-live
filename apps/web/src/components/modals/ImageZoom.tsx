@@ -21,7 +21,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({ children, image, fileName }) => {
       <DialogContent
         hideCloseButton
         aria-describedby={fileName}
-        className="h-full w-fit max-w-dvw content-center justify-center border-0 bg-transparent p-0 shadow-none focus-visible:outline-none"
+        className="h-fit w-1/2 max-w-dvw content-center justify-center border-0 bg-transparent p-0 shadow-none focus-visible:outline-none"
       >
         <DialogTitle className="sr-only">
           Uploaded image {fileName} zoomed in
@@ -29,7 +29,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({ children, image, fileName }) => {
         <Image
           src={image}
           alt=""
-          className="h-auto w-5/6"
+          className="h-auto w-full"
           width={1280}
           height={720}
         />
