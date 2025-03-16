@@ -153,13 +153,7 @@ const CreatePostForm: React.FC = () => {
   }
 
   return (
-    <form
-      className="border-b-primary rounded-none border-x border-b"
-      onSubmit={(e) => {
-        e.preventDefault();
-        publishPost();
-      }}
-    >
+    <form className="border-b-primary rounded-none border-x border-b">
       <RichEditor
         customEditor={editor}
         className="rounded-none border-0 px-1 py-2.5"
@@ -185,13 +179,13 @@ const CreatePostForm: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => attachments.deletePendingUpload(file.id)}
-                  className="peer/close_button absolute top-1 right-1 z-20 cursor-pointer"
+                  className="peer/close_button absolute top-1 right-1 z-20 cursor-pointer opacity-0 transition-opacity group-hover/image_display:opacity-100"
                 >
                   <XCircleIcon size={20} />
                 </button>
                 <ImageZoom image={file.tempUrl} fileName={file.fileName}>
                   <button type="button" className="z-10">
-                    <div className="absolute inset-0 -z-10 flex h-full w-full items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover/image_display:opacity-100 peer-hover/close_button:opacity-0">
+                    <div className="absolute inset-0 -z-10 flex h-full w-full items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover/image_display:opacity-100">
                       <ZoomInIcon />
                     </div>
                     <Image
@@ -262,6 +256,10 @@ const CreatePostForm: React.FC = () => {
             postMutation.isPending ||
             attachments.uploadInProgress
           }
+          onClick={(e) => {
+            e.preventDefault();
+            publishPost();
+          }}
         >
           Post
         </Button>
@@ -357,6 +355,8 @@ const ImageUploader: React.FC = () => {
 
           fileReader.readAsDataURL(e.target.files[0]);
         }
+
+        e.preventDefault();
       }}
     />
   );
@@ -425,6 +425,8 @@ const FileUploader: React.FC = () => {
             execute: uploadFunction,
           });
         }
+
+        e.preventDefault();
       }}
     />
   );
