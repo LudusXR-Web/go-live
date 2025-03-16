@@ -2,8 +2,8 @@ import z from "zod";
 import { eq } from "drizzle-orm";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { media } from "~/server/db/schema";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const mediaRouter = createTRPCRouter({
   getById: publicProcedure.input(z.string().cuid2()).query(

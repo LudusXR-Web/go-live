@@ -1,0 +1,1 @@
+ALTER TABLE "golive_posts" ALTER COLUMN "attachments" SET NOT NULL;

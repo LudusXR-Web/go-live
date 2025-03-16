@@ -6,8 +6,8 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { personalDetails, users, userTypeEnum } from "~/server/db/schema";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const userRouter = createTRPCRouter({
   update: protectedProcedure

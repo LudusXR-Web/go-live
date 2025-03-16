@@ -17,6 +17,7 @@ import { env } from "~/env";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { type contentDispositionEnum } from "~/server/db/schema";
+import { exposedRevalidatePath as revalidatePath } from "~/server/actions/exposedRevalidate";
 import RichEditor, {
   useCustomEditor,
 } from "~/components/composites/RichEditor";
@@ -131,6 +132,8 @@ const CreatePostForm: React.FC = () => {
     onSuccess() {
       editor!.commands.clearContent(true);
       attachments.clearPendingUploads();
+
+      revalidatePath("/profile");
     },
   });
 
@@ -294,15 +297,14 @@ const ImageUploader: React.FC = () => {
       console.log(`[UPLOAD_ERROR] ${error.type}\n${error.message}`);
       reset();
     },
-    onUploadComplete: ({ file, metadata }) => {
+    onUploadComplete: ({ file }) => {
       const url = env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey;
 
       mediaMutation.mutate({
         fileName: file.name,
         key: file.objectKey,
         public: true,
-        disposition:
-          metadata.disposition as (typeof contentDispositionEnum.enumValues)[number],
+        disposition: "inline",
         url,
       });
 
@@ -377,15 +379,14 @@ const FileUploader: React.FC = () => {
       console.log(`[UPLOAD_ERROR] ${error.type}\n${error.message}`);
       reset();
     },
-    onUploadComplete: ({ file, metadata }) => {
+    onUploadComplete: ({ file }) => {
       const url = env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey;
 
       mediaMutation.mutate({
         fileName: file.name,
         key: file.objectKey,
         public: true,
-        disposition:
-          metadata.disposition as (typeof contentDispositionEnum.enumValues)[number],
+        disposition: "attachment",
         url,
       });
 

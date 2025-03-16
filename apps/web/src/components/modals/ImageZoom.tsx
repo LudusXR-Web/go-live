@@ -15,11 +15,13 @@ type ImageZoomProps = PropsWithChildren & {
 const ImageZoom: React.FC<ImageZoomProps> = ({ children, image, fileName }) => {
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild className="cursor-pointer">
+        {children}
+      </DialogTrigger>
       <DialogContent
         hideCloseButton
         aria-describedby={fileName}
-        className="h-full content-center border-0 bg-transparent p-0 shadow-none"
+        className="h-full w-fit max-w-dvw content-center justify-center border-0 bg-transparent p-0 shadow-none focus-visible:outline-none"
       >
         <DialogTitle className="sr-only">
           Uploaded image {fileName} zoomed in
@@ -27,7 +29,7 @@ const ImageZoom: React.FC<ImageZoomProps> = ({ children, image, fileName }) => {
         <Image
           src={image}
           alt=""
-          className="w-full"
+          className="h-auto w-5/6"
           width={1280}
           height={720}
         />

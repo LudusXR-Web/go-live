@@ -1,9 +1,9 @@
 import { DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import z from "zod";
 
+import { env } from "~/env";
 import { s3 } from "~/server/aws/s3";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { env } from "~/env";
 
 const s3Router = createTRPCRouter({
   getObjectByKey:

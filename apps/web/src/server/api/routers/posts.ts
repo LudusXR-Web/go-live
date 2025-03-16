@@ -16,6 +16,7 @@ const postsRouter = createTRPCRouter({
     async ({ ctx, input }) =>
       (await ctx.db.query.posts.findMany({
         where: (post, { eq }) => eq(post.authorId, input),
+        orderBy: (post, { desc }) => desc(post.createdAt),
       })) ?? null,
   ),
   create: protectedProcedure

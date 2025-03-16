@@ -101,6 +101,9 @@ export const sessions = createTable(
       .notNull()
       .references(() => users.id),
     expires: timestamp("expires_at").notNull(),
+
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (session) => [index("session_user_id_idx").on(session.userId)],
 );
@@ -139,6 +142,9 @@ export const courses = createTable(
     id: varchar("id", { length: 255 })
       .$defaultFn(() => createId())
       .primaryKey(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+
     title: varchar("title", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }).default(""),
     image: text("image"),
@@ -179,6 +185,8 @@ export const courseContents = createTable(
     courseId: varchar("courseId", { length: 255 })
       .primaryKey()
       .references(() => courses.id),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+
     sections: jsonb("sections")
       .array()
       .$type<CourseSection[]>()
@@ -244,6 +252,8 @@ export const media = createTable("media", {
   id: varchar("id", { length: 255 })
     .$defaultFn(() => createId())
     .primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+
   fileName: varchar("file_name", { length: 255 }).notNull(),
   authorId: varchar("author_id", { length: 255 })
     .notNull()
@@ -269,6 +279,9 @@ export const posts = createTable(
     id: varchar("id", { length: 255 })
       .$defaultFn(() => createId())
       .primaryKey(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+
     authorId: varchar("author_id", { length: 255 })
       .notNull()
       .references(() => users.id),
@@ -276,6 +289,7 @@ export const posts = createTable(
     attachments: varchar("attachments", { length: 255 })
       .references(() => media.id)
       .array()
+      .notNull()
       .default([]),
   },
   (post) => [index("post_author_id_idx").on(post.authorId)],

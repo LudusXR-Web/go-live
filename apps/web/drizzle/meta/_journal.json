@@ -120,6 +120,20 @@
       "when": 1741470902966,
       "tag": "0016_slow_kitty_pryde",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1742073170301,
+      "tag": "0017_yellow_iron_lad",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1742080790624,
+      "tag": "0018_silent_switch",
+      "breakpoints": true
     }
   ]
 }
