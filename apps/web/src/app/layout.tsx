@@ -19,8 +19,8 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} scroll-smooth`}>
-      <body className="bg-primary-foreground relative h-dvh min-h-dvh overflow-visible">
-        <div className="flex min-h-full flex-col items-center justify-between">
+      <body className="bg-primary-foreground relative min-h-dvh overflow-visible">
+        <div className="flex min-h-dvh flex-col items-center justify-between">
           <SessionProvider>
             <TRPCReactProvider>
               <HydrateClient>{children}</HydrateClient>

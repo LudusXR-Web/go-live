@@ -43,11 +43,13 @@ const postsRouter = createTRPCRouter({
     }),
   update: protectedProcedure
     .input(
-      createUpdateSchema(posts).merge(
-        z.object({
-          id: z.string().cuid2(),
-        }),
-      ),
+      createUpdateSchema(posts)
+        .omit({ createdAt: true, updatedAt: true })
+        .merge(
+          z.object({
+            id: z.string().cuid2(),
+          }),
+        ),
     )
     .mutation(
       async ({ ctx, input }) =>
@@ -56,6 +58,7 @@ const postsRouter = createTRPCRouter({
           .set({
             ...input,
             id: undefined,
+            updatedAt: new Date(),
           })
           .where(eq(posts.id, input.id)),
     ),

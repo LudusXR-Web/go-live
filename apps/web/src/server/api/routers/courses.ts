@@ -7,6 +7,7 @@ import {
   courses,
   type CourseSection,
   type CourseContent,
+  usersToCourses,
 } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -46,7 +47,7 @@ const courseRouter = createTRPCRouter({
     publicProcedure
       .input(
         z.object({
-          query: z.string().min(3).max(50),
+          query: z.string().max(160),
           tags: z.array(z.string()),
         }),
       )
@@ -55,10 +56,11 @@ const courseRouter = createTRPCRouter({
           await ctx.db.query.courses.findMany({
             where: (course, { or, ilike }) =>
               or(
-                ilike(course.title, input.query),
-                ilike(course.description, input.query),
+                ilike(course.title, `%${input.query}%`),
+                ilike(course.description, `%${input.query}%`),
                 arrayOverlaps(course.tags, input.tags),
               ),
+            limit: 50,
           }),
       ) ?? null,
   create: protectedProcedure
@@ -101,6 +103,7 @@ const courseRouter = createTRPCRouter({
           .set({
             ...input,
             id: undefined,
+            updatedAt: new Date(),
           })
           .where(eq(courses.id, input.id)),
     ),
@@ -117,12 +120,20 @@ const courseRouter = createTRPCRouter({
         await ctx.db
           .update(courseContents)
           .set({
+            updatedAt: new Date(),
             sections: input.sections as CourseSection[],
             elements: input.elements as CourseContent[],
             courseId: undefined,
           })
           .where(eq(courseContents.courseId, input.courseId)),
     ),
+  enrolUserIntoCourse: protectedProcedure.input(z.string().cuid2()).mutation(
+    async ({ ctx, input }) =>
+      await ctx.db.insert(usersToCourses).values({
+        userId: ctx.session.user.id,
+        courseId: input,
+      }),
+  ),
 });
 
 export default courseRouter;

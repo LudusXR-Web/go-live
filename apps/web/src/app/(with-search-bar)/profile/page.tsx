@@ -37,7 +37,7 @@ export default async function ProfilePage() {
             <div id="avatar-container">
               <ChangeAvatar
                 user={session.user}
-                className="*:border-primary-foreground absolute top-[7rem] left-10 z-40 size-44 *:border-[8px] *:hover:shadow-sm"
+                className="*:border-primary-foreground absolute top-[7rem] left-10 z-40 size-44 *:border-[8px]"
               />
             </div>
             <div className="flex h-fit pt-16 pb-4">

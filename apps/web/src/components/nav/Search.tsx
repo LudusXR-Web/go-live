@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  useEffect,
   useState,
   type DetailedHTMLProps,
   type InputHTMLAttributes,
@@ -9,7 +8,7 @@ import {
 import { TypeAnimation } from "react-type-animation";
 import { Input } from "@repo/ui/input";
 
-import { cn, sleep } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import { useSearchParams } from "next/navigation";
 import redirectForSearch from "~/server/actions/redirectForSearch";
 
@@ -47,7 +46,7 @@ const Search: React.FC<SearchProps> = ({
   return (
     <form
       className={cn(
-        "relative w-[50%] after:absolute after:left-0.5 after:top-0.5 after:-z-10 after:h-12 after:w-full after:rounded-md after:bg-accent",
+        "after:bg-accent relative w-[50%] after:absolute after:top-0.5 after:left-0.5 after:-z-20 after:h-12 after:w-full after:rounded-md",
         className,
       )}
       onSubmit={async (e) => {
@@ -56,26 +55,30 @@ const Search: React.FC<SearchProps> = ({
       }}
     >
       <Input
+        id={inputName}
         name={inputName}
         value={searchValue}
+        maxLength={160}
         onChange={(e) => setSearchValue(e.target.value)}
         className={cn(
-          "absolute h-12 w-full min-w-full border-accent bg-white focus-visible:ring-0",
+          "border-accent absolute h-12 w-full min-w-full bg-white focus-visible:ring-0",
           searchClassName,
         )}
         {...props}
       />
       {!searchValue && (
-        <TypeAnimation
-          sequence={placeholderOptions}
-          wrapper="span"
-          speed={50}
-          repeat={Infinity}
-          className={cn(
-            "absolute -top-2 left-3 text-muted-foreground",
-            typeWriterClassName,
-          )}
-        />
+        <label htmlFor={inputName}>
+          <TypeAnimation
+            sequence={placeholderOptions}
+            wrapper="span"
+            speed={50}
+            repeat={Infinity}
+            className={cn(
+              "text-muted-foreground absolute -top-2 left-3 cursor-pointer select-none",
+              typeWriterClassName,
+            )}
+          />
+        </label>
       )}
     </form>
   );
