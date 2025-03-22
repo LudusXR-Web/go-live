@@ -1,15 +1,23 @@
 import z from "zod";
 import { eq } from "drizzle-orm";
-import {
-  createInsertSchema,
-  createSelectSchema,
-  createUpdateSchema,
-} from "drizzle-zod";
+import { createSelectSchema, createUpdateSchema } from "drizzle-zod";
 
 import { personalDetails, users, userTypeEnum } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const userRouter = createTRPCRouter({
+  getFootprintById: publicProcedure.input(z.string().cuid2()).query(
+    async ({ ctx, input }) =>
+      (await ctx.db.query.users.findFirst({
+        where: (user, { eq }) => eq(user.id, input),
+        columns: {
+          username: true,
+          name: true,
+          type: true,
+          image: true,
+        },
+      })) ?? null,
+  ),
   update: protectedProcedure
     .input(
       createUpdateSchema(users)
@@ -38,16 +46,15 @@ const userRouter = createTRPCRouter({
           .where(eq(users.id, input.id)),
     ),
 
-  getPersonalDetailsById:
-    publicProcedure
-      .input(z.string().cuid2())
-      .output(createSelectSchema(personalDetails))
-      .query(
-        async ({ ctx, input }) =>
-          (await ctx.db.query.personalDetails.findFirst({
-            where: (p, { eq }) => eq(p.userId, input),
-          }))!,
-      ) ?? null,
+  getPersonalDetailsById: publicProcedure
+    .input(z.string().cuid2())
+    .output(createSelectSchema(personalDetails))
+    .query(
+      async ({ ctx, input }) =>
+        (await ctx.db.query.personalDetails.findFirst({
+          where: (p, { eq }) => eq(p.userId, input),
+        }))!,
+    ),
   updatePersonalDetails: protectedProcedure
     .input(
       createUpdateSchema(personalDetails)
@@ -72,6 +79,13 @@ const userRouter = createTRPCRouter({
           })
           .where(eq(personalDetails.userId, input.userId)),
     ),
+
+  getCoursesById: protectedProcedure.input(z.string().cuid2().optional()).query(
+    async ({ ctx, input }) =>
+      (await ctx.db.query.usersToCourses.findMany({
+        where: (link, { eq }) => eq(link.userId, input ?? ctx.session.user.id),
+      })) ?? null,
+  ),
 });
 
 export default userRouter;

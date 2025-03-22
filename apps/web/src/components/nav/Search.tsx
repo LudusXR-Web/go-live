@@ -39,7 +39,8 @@ const Search: React.FC<SearchProps> = ({
   typeWriterClassName,
   ...props
 }) => {
-  const query = useSearchParams().get("q");
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q");
 
   const [searchValue, setSearchValue] = useState(query ?? "");
 
@@ -51,13 +52,17 @@ const Search: React.FC<SearchProps> = ({
       )}
       onSubmit={async (e) => {
         e.preventDefault();
-        await redirectForSearch(new FormData(e.currentTarget));
+        await redirectForSearch({
+          tags: searchParams.get("tags") ?? undefined,
+          q: searchValue,
+        });
       }}
     >
       <Input
         id={inputName}
         name={inputName}
         value={searchValue}
+        // minLength={3} //? consider this
         maxLength={160}
         onChange={(e) => setSearchValue(e.target.value)}
         className={cn(

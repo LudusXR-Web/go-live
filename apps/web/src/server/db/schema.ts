@@ -44,6 +44,7 @@ export const users = createTable("users", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 
   // user details
+  username: varchar("username", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: timestamp("email_verified"),
@@ -144,6 +145,7 @@ export const courses = createTable(
       .primaryKey(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    public: boolean("public").notNull().default(false),
 
     title: varchar("title", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }).default(""),

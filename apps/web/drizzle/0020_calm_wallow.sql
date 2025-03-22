@@ -1,0 +1,1 @@
+ALTER TABLE "golive_users" ALTER COLUMN "username" SET NOT NULL;

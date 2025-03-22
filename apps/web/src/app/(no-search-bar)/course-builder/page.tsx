@@ -39,13 +39,14 @@ export default async function CourseListPage() {
             <Link key={course.id} href={`/course-builder/${course.id}`}>
               <div className="max-w-80 rounded shadow-sm transition-shadow hover:shadow-lg">
                 {course.image ? (
-                  <Image
-                    src={course.image}
-                    alt={course.title}
-                    width={1280}
-                    height={720}
-                    className="h-36 py-3"
-                  />
+                  <div className="h-36 py-3">
+                    <Image
+                      src={course.image}
+                      alt={course.title}
+                      width={1280}
+                      height={720}
+                    />
+                  </div>
                 ) : (
                   <div className="flex h-36 w-full items-center justify-center gap-2 bg-slate-200 px-10 select-none">
                     <CameraOffIcon size={20} />
