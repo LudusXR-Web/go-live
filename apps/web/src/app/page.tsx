@@ -9,9 +9,9 @@ export default async function Home() {
   const session = await auth();
 
   return (
-    <div className="container m-auto flex w-full flex-col">
+    <div className="container mx-auto flex w-full flex-col">
       <Nav session={session} hideSearchBar />
-      <main className="relative w-full grow space-y-16 border-b border-b-slate-200 p-6">
+      <main className="relative w-full grow space-y-16 p-6">
         <div className="flex flex-col items-center justify-center gap-10">
           <h1 className="border-primary border-b-8 text-6xl font-black tracking-tighter max-lg:text-center">
             Find your dream course today!
@@ -21,7 +21,7 @@ export default async function Home() {
             searchClassName="h-16"
           />
         </div>
-        <div className="w-full space-y-8">
+        {/* <div className="w-full space-y-8">
           <FeatureCard
             title="Learn New Skills!"
             actionButton={<Button>Learn cooking!</Button>}
@@ -31,7 +31,7 @@ export default async function Home() {
             side="right"
             actionButton={<Button>Or maybe bartending...</Button>}
           />
-        </div>
+        </div> */}
       </main>
     </div>
   );

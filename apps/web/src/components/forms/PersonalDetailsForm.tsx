@@ -38,7 +38,11 @@ const formSchema = z.object({
   name: z
     .string()
     .min(2, "Your name must be at least 2 characters long")
-    .max(50, "Your pronouns must not be longer than 50 characters"),
+    .max(50, "Your name must not be longer than 50 characters"),
+  username: z
+    .string()
+    .min(2, "Your unique username must be at least 2 characters long")
+    .max(50, "Your unique username must not be longer than 50 characters"),
   email: z.string().email().readonly(),
   type: z.enum(userTypeEnum.enumValues),
 
@@ -71,6 +75,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: serverSession.user.name ?? "",
+      username: serverSession.user.username ?? "",
       email: serverSession.user.email ?? "",
       type: serverSession.user.type,
 
@@ -79,6 +84,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     },
     values: {
       name: sessionQuery.data?.user.name ?? serverSession.user.name ?? "",
+      username: serverSession.user.username ?? "",
       email: sessionQuery.data?.user.email ?? serverSession.user.email ?? "",
       type: sessionQuery.data?.user.type ?? serverSession.user.type,
 
@@ -91,10 +97,19 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
   useEffect(() => setBioLength(bioRef?.length ?? 0), [bioRef?.length]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    await updateUser.mutateAsync({
-      id: serverSession.user.id,
-      ...data,
-    });
+    await updateUser.mutateAsync(
+      {
+        id: serverSession.user.id,
+        ...data,
+      },
+      {
+        onError: () =>
+          form.setError("username", {
+            type: "value",
+            message: "This username is already taken.",
+          }),
+      },
+    );
 
     await updatePersonalDetails.mutateAsync({
       userId: serverSession.user.id,
@@ -123,6 +138,23 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                     </FormControl>
                     <FormDescription>
                       This is your public display name.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Unique Username</FormLabel>
+                    <FormControl>
+                      <Input className="w-full" maxLength={50} {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is your unique username. It can be used by other
+                      users to identify you and tag you in posts.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

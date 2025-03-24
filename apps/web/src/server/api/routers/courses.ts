@@ -54,11 +54,14 @@ const courseRouter = createTRPCRouter({
       .query(
         async ({ ctx, input }) =>
           await ctx.db.query.courses.findMany({
-            where: (course, { or, ilike }) =>
-              or(
-                ilike(course.title, `%${input.query}%`),
-                ilike(course.description, `%${input.query}%`),
-                arrayOverlaps(course.tags, input.tags),
+            where: (course, { and, or, eq, ilike }) =>
+              and(
+                eq(course.public, true),
+                or(
+                  ilike(course.title, `%${input.query}%`),
+                  ilike(course.description, `%${input.query}%`),
+                  arrayOverlaps(course.tags, input.tags),
+                ),
               ),
             limit: 50,
           }),

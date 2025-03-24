@@ -38,6 +38,10 @@ export const authConfig = {
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
+      profile: (profile) => ({
+        username: `${profile.name.toLowerCase().replaceAll(" ", "_")}_${createId()}`,
+        ...profile,
+      }),
     }),
   ],
   adapter: DrizzleAdapter(db, {

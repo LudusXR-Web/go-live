@@ -1,8 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { Button } from "@repo/ui/button";
+import { ArrowRightCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { cn } from "~/lib/utils";
 import { courses } from "~/server/db/schema";
 import { type api } from "~/trpc/server";
 
@@ -11,9 +13,19 @@ type CoursePreviewProps = typeof courses.$inferSelect & {
 };
 
 const CoursePreview: React.FC<CoursePreviewProps> = ({ author, ...course }) => {
+  const shadowColors = ["shadow-accent/50", "shadow-primary/50"];
+  const randomShadow =
+    shadowColors.at(Math.floor(Math.random() * shadowColors.length)) ??
+    "shadow-accent";
+
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl shadow">
-      <div className="px-2 py-3 shadow-inner">
+    <div
+      className={cn(
+        "group flex min-w-80 flex-col overflow-hidden rounded-xl shadow",
+        randomShadow,
+      )}
+    >
+      <div className="flex h-full items-center px-2 py-3 shadow-inner">
         {course.image && (
           <Image
             src={course.image}
@@ -46,9 +58,14 @@ const CoursePreview: React.FC<CoursePreviewProps> = ({ author, ...course }) => {
         </div>
         <Button
           asChild
-          className="group-hover:bg-primary bg-slate-100 text-black group-hover:text-white"
+          className="group-hover:bg-primary relative overflow-hidden bg-slate-100 text-black group-hover:text-white"
         >
-          <Link href={`/course/${course.id}/overview`}>See Course Details</Link>
+          <Link href={`/course/${course.id}/overview`}>
+            <span className="absolute -translate-x-[300%] transition-transform group-hover:static group-hover:translate-0">
+              See Course Details
+            </span>
+            <ArrowRightCircleIcon className="transition-[display_opacity] group-hover:hidden group-hover:opacity-0" />
+          </Link>
         </Button>
       </div>
     </div>

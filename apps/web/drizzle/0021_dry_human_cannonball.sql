@@ -1,0 +1,1 @@
+ALTER TABLE "golive_courses" ADD COLUMN "long_description" varchar(255) DEFAULT '';

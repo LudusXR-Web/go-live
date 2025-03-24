@@ -149,6 +149,7 @@ export const courses = createTable(
 
     title: varchar("title", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }).default(""),
+    longDescription: text("long_description").default(""),
     image: text("image"),
     authorId: varchar("author_id", { length: 255 })
       .notNull()

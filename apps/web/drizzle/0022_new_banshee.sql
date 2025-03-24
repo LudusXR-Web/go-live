@@ -1,0 +1,1 @@
+ALTER TABLE "golive_courses" ALTER COLUMN "long_description" SET DATA TYPE text;

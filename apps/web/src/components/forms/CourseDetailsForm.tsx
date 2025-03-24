@@ -19,6 +19,7 @@ import {
 import { Input } from "@repo/ui/input";
 import { Textarea } from "@repo/ui/textarea";
 import { Button } from "@repo/ui/button";
+import { Switch } from "@repo/ui/switch";
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
@@ -27,7 +28,9 @@ import { type courses } from "~/server/db/schema";
 const formSchema = z.object({
   title: z.string().min(3).max(50),
   description: z.string().max(160),
+  longDescription: z.string(),
   tags: z.set(z.string().min(2).max(32)),
+  public: z.boolean(),
 });
 
 type CourseDetailsFormProps = {
@@ -52,7 +55,9 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
     values: {
       title: defaultValues?.title ?? "",
       description: defaultValues?.description ?? "",
+      longDescription: defaultValues?.longDescription ?? "",
       tags: new Set(tags),
+      public: defaultValues?.public ?? false,
     },
   });
 
@@ -102,24 +107,39 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Short Description</FormLabel>
               <FormControl>
-                <div>
-                  <Textarea maxLength={160} {...field} />
-                  <span
-                    className={cn(
-                      "text-sm font-light",
-                      descriptionLength >= 160
-                        ? "text-red-400"
-                        : "text-slate-300",
-                    )}
-                  >
-                    {descriptionLength}/160
-                  </span>
-                </div>
+                <Textarea maxLength={160} {...field} />
+              </FormControl>
+              <FormDescription className="flex w-full justify-between">
+                <span>Write a short description to the course.</span>
+                <span
+                  className={cn(
+                    "text-sm font-light",
+                    descriptionLength >= 160
+                      ? "text-red-400"
+                      : "text-slate-300",
+                  )}
+                >
+                  {descriptionLength}/160
+                </span>
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="longDescription"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Detailed Description</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
               </FormControl>
               <FormDescription>
-                Write a short description to the course.
+                Write a more detailed description to the course that will be
+                shown to users looking to find out more about the course.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -188,6 +208,28 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
                   />
                 </div>
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="public"
+          render={({ field }) => (
+            <FormItem>
+              <div className="flex gap-2">
+                <FormControl>
+                  <Switch
+                    {...field}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    value={field.value ? "checked" : "unchecked"}
+                  />
+                </FormControl>
+                <FormLabel className="my-auto">
+                  Allow public access to the course
+                </FormLabel>
+              </div>
               <FormMessage />
             </FormItem>
           )}
