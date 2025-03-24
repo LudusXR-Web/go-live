@@ -12,7 +12,7 @@ export default async function SearchPage(props: SearchPageProps) {
 
   const relevantCourses = await api.courses.getByDetails({
     query: searchParams.q ?? "",
-    tags: searchParams.tags?.split(" ") ?? [""],
+    tags: searchParams.tags?.split(" ").filter((t) => !!t.length) ?? [],
   });
   const getAuthorFootprint = async (id: string) =>
     await api.users.getFootprintById(id);

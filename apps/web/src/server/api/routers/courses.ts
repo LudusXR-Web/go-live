@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { arrayOverlaps, eq } from "drizzle-orm";
+import { arrayOverlaps, eq, sql } from "drizzle-orm";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 
 import {
@@ -43,29 +43,30 @@ const courseRouter = createTRPCRouter({
         },
       })) ?? null,
   ),
-  getByDetails:
-    publicProcedure
-      .input(
-        z.object({
-          query: z.string().max(160),
-          tags: z.array(z.string()),
-        }),
-      )
-      .query(
-        async ({ ctx, input }) =>
-          await ctx.db.query.courses.findMany({
-            where: (course, { and, or, eq, ilike }) =>
-              and(
-                eq(course.public, true),
-                or(
-                  ilike(course.title, `%${input.query}%`),
-                  ilike(course.description, `%${input.query}%`),
-                  arrayOverlaps(course.tags, input.tags),
-                ),
+  getByDetails: publicProcedure
+    .input(
+      z.object({
+        query: z.string().max(160),
+        tags: z.array(z.string()),
+      }),
+    )
+    .query(
+      async ({ ctx, input }) =>
+        (await ctx.db.query.courses.findMany({
+          where: (course, { and, or, eq, ilike }) =>
+            and(
+              eq(course.public, true),
+              or(
+                ilike(course.title, `%${input.query}%`),
+                ilike(course.description, `%${input.query}%`),
               ),
-            limit: 50,
-          }),
-      ) ?? null,
+              input.tags.length
+                ? arrayOverlaps(course.tags, input.tags)
+                : undefined,
+            ),
+          limit: 50,
+        })) ?? null,
+    ),
   create: protectedProcedure
     .input(
       createInsertSchema(courses)
