@@ -49,7 +49,7 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
     <div
       className={cn(
         "group relative h-60 w-full overflow-hidden rounded first:[&>label]:hover:opacity-100",
-        imageUrl ? "bg-slate-50" : "bg-slate-200",
+        imageUrl ? "h-fit bg-slate-50" : "bg-slate-200",
       )}
     >
       <label

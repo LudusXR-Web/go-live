@@ -31,7 +31,7 @@ const NewCourseModal: React.FC<NewCourseModalProps> = ({
             journey starts here!
           </DialogDescription>
         </DialogHeader>
-        <CourseDetailsForm serverSession={session} />
+        <CourseDetailsForm serverSession={session} hidePublicSwitch />
       </DialogContent>
     </Dialog>
   );

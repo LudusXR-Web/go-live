@@ -39,7 +39,7 @@ export default async function CourseListPage() {
             <Link key={course.id} href={`/course-builder/${course.id}`}>
               <div className="max-w-80 rounded shadow-sm transition-shadow hover:shadow-lg">
                 {course.image ? (
-                  <div className="h-36 py-3">
+                  <div className="h-fit min-h-36 py-3">
                     <Image
                       src={course.image}
                       alt={course.title}

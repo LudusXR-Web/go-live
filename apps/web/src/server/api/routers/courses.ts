@@ -59,6 +59,7 @@ const courseRouter = createTRPCRouter({
               or(
                 ilike(course.title, `%${input.query}%`),
                 ilike(course.description, `%${input.query}%`),
+                ilike(course.longDescription, `%${input.query}%`),
               ),
               input.tags.length
                 ? arrayOverlaps(course.tags, input.tags)

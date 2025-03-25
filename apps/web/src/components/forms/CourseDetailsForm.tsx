@@ -36,11 +36,13 @@ const formSchema = z.object({
 type CourseDetailsFormProps = {
   serverSession: Session;
   defaultValues?: typeof courses.$inferSelect;
+  hidePublicSwitch?: boolean;
 };
 
 const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
   serverSession,
   defaultValues,
+  hidePublicSwitch = false,
 }) => {
   const createCourse = api.courses.create.useMutation();
   const updateCourse = api.courses.update.useMutation();
@@ -94,9 +96,11 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>
+                Title <span className="text-red-400">*</span>
+              </FormLabel>
               <FormControl>
-                <Input maxLength={50} {...field} />
+                <Input required maxLength={50} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -196,7 +200,7 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
                           });
 
                         const tempTags = tags;
-                        tempTags.add(e.currentTarget.value);
+                        tempTags.add(e.currentTarget.value.toLowerCase());
                         form.setValue("tags", tempTags, {
                           shouldDirty: true,
                           shouldTouch: true,
@@ -212,28 +216,30 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="public"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex gap-2">
-                <FormControl>
-                  <Switch
-                    {...field}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    value={field.value ? "checked" : "unchecked"}
-                  />
-                </FormControl>
-                <FormLabel className="my-auto">
-                  Allow public access to the course
-                </FormLabel>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {!hidePublicSwitch && defaultValues?.image && (
+          <FormField
+            control={form.control}
+            name="public"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Switch
+                      {...field}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      value={field.value ? "checked" : "unchecked"}
+                    />
+                  </FormControl>
+                  <FormLabel className="my-auto">
+                    Allow public access to the course
+                  </FormLabel>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <Button
           type="submit"
           disabled={pending}

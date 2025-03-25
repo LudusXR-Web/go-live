@@ -22,7 +22,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({ searchParams }) => {
 
           if (typeof newTag !== "string") return;
 
-          tags.add(newTag);
+          tags.add(newTag.toLowerCase());
 
           await redirectForSearch({
             q: searchParams.q,
