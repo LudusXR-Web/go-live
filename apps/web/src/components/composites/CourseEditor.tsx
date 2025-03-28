@@ -448,6 +448,8 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
       await upload.execute();
     }
 
+    courseContent.clearPendingUploads();
+
     await updateContentMutation.mutateAsync(courseContent);
 
     setCourse((state) => ({

@@ -2,9 +2,11 @@ import { type NextRequest, NextResponse } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 
+import { localeNames } from "~/app/dictionaries";
+
 export const globalLanguageHeader = "x-golive-locale";
 const defaultLocale = "en";
-const locales = ["en", "da"];
+const locales = Object.keys(localeNames) as [keyof typeof localeNames];
 
 export default function middleware(req: NextRequest) {
   // Language header for determining the locale

@@ -7,6 +7,7 @@ import { type Metadata } from "next";
 import { HydrateClient } from "~/trpc/server";
 import { TRPCReactProvider } from "~/trpc/react";
 import Footer from "~/components/composites/Footer";
+import { getLocaleFromHeaders } from "~/lib/server-utils";
 
 export const metadata: Metadata = {
   title: "Go Live",
@@ -14,11 +15,13 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocaleFromHeaders();
+
   return (
-    <html lang="en" className={`${GeistSans.variable} scroll-smooth`}>
+    <html lang={locale} className={`${GeistSans.variable} scroll-smooth`}>
       <body className="bg-primary-foreground relative min-h-dvh overflow-visible">
         <div className="flex min-h-dvh flex-col items-center justify-between">
           <SessionProvider>

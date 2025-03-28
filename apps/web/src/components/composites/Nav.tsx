@@ -20,6 +20,7 @@ import {
 import Search from "~/components/nav/Search";
 import SignInButton from "~/components/auth/SignInButton";
 import LanguageSelector from "~/components/composites/LanguageSelector";
+import { getLocaleFromHeaders } from "~/lib/server-utils";
 
 type NavProps = {
   session: Session | null;
@@ -27,6 +28,8 @@ type NavProps = {
 };
 
 const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
+  const locale = await getLocaleFromHeaders();
+
   return (
     <header className="px-6 py-4">
       <nav className="mx-auto flex max-w-[2200px] items-center justify-between">
@@ -42,7 +45,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
           <Search searchClassName="relative" typeWriterClassName="top-3" />
         )}
         <div className="inline-grid grid-flow-col items-center gap-3">
-          <LanguageSelector defaultLocale="en" />
+          <LanguageSelector defaultLocale={locale} />
           {session ? (
             <Menubar disableDefaultStyles>
               <MenubarMenu>

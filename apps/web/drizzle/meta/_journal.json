@@ -162,6 +162,13 @@
       "when": 1742854296144,
       "tag": "0022_new_banshee",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1743173519447,
+      "tag": "0023_tricky_cerise",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "golive_users_to_courses" ADD COLUMN "section_views" varchar(255)[] DEFAULT '{}' NOT NULL;

@@ -213,6 +213,10 @@ export const usersToCourses = createTable(
     courseId: varchar("course_id", { length: 255 })
       .notNull()
       .references(() => courses.id),
+    sectionsViewed: varchar("section_views", { length: 255 })
+      .array()
+      .notNull()
+      .default([]),
   },
   (link) => [
     primaryKey({
