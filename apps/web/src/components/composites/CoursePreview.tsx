@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { Button } from "@repo/ui/button";
 import { ArrowRightCircleIcon } from "lucide-react";
 import Image from "next/image";
@@ -6,13 +5,11 @@ import Link from "next/link";
 
 import { cn } from "~/lib/utils";
 import { courses } from "~/server/db/schema";
-import { type api } from "~/trpc/server";
+import AuthorLink from "~/components/composites/AuthorLink";
 
-type CoursePreviewProps = typeof courses.$inferSelect & {
-  author: Awaited<ReturnType<typeof api.users.getFootprintById>>;
-};
+type CoursePreviewProps = typeof courses.$inferSelect;
 
-const CoursePreview: React.FC<CoursePreviewProps> = ({ author, ...course }) => {
+const CoursePreview: React.FC<CoursePreviewProps> = ({ ...course }) => {
   const shadowColors = ["shadow-accent/50", "shadow-primary/50"];
   const randomShadow =
     shadowColors.at(Math.floor(Math.random() * shadowColors.length)) ??
@@ -39,21 +36,7 @@ const CoursePreview: React.FC<CoursePreviewProps> = ({ author, ...course }) => {
       <div className="flex grow flex-col justify-end gap-2 px-2.5 pt-1 pb-3">
         <div className="space-y-1.5">
           <h2 className="text-lg font-semibold">{course.title}</h2>
-          <Button
-            asChild
-            variant="link"
-            className="group/button_link px-0 text-inherit hover:no-underline"
-          >
-            <Link href={`/${author?.username}`}>
-              <Avatar>
-                <AvatarImage src={author?.image ?? ""} />
-                <AvatarFallback>{author?.name.at(0)}</AvatarFallback>
-              </Avatar>
-              <span className="inline group-hover/button_link:underline">
-                By {author?.name}
-              </span>
-            </Link>
-          </Button>
+          <AuthorLink userId={course.authorId} />
           <p>{course.description}</p>
         </div>
         <Button

@@ -14,8 +14,6 @@ export default async function SearchPage(props: SearchPageProps) {
     query: searchParams.q ?? "",
     tags: searchParams.tags?.split(" ").filter((t) => !!t.length) ?? [],
   });
-  const getAuthorFootprint = async (id: string) =>
-    await api.users.getFootprintById(id);
 
   return (
     <main className="divide-accent/55 container flex h-full w-full divide-x-2">
@@ -27,12 +25,8 @@ export default async function SearchPage(props: SearchPageProps) {
         </div>
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-6 pl-5 *:max-w-[30%]">
-        {relevantCourses.map(async (course, idx) => (
-          <CoursePreview
-            key={idx}
-            author={await getAuthorFootprint(course.authorId)}
-            {...course}
-          />
+        {relevantCourses.map((course, idx) => (
+          <CoursePreview key={idx} {...course} />
         ))}
       </div>
     </main>
