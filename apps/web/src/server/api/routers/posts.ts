@@ -52,15 +52,14 @@ const postsRouter = createTRPCRouter({
         ),
     )
     .mutation(
-      async ({ ctx, input }) =>
+      async ({ ctx, input: { id, ...input } }) =>
         await ctx.db
           .update(posts)
           .set({
             ...input,
-            id: undefined,
             updatedAt: new Date(),
           })
-          .where(eq(posts.id, input.id)),
+          .where(eq(posts.id, id)),
     ),
 });
 

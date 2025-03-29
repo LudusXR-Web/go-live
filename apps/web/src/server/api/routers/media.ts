@@ -41,14 +41,8 @@ const mediaRouter = createTRPCRouter({
       createUpdateSchema(media).merge(z.object({ id: z.string().cuid2() })),
     )
     .mutation(
-      async ({ ctx, input }) =>
-        await ctx.db
-          .update(media)
-          .set({
-            ...input,
-            id: undefined,
-          })
-          .where(eq(media.id, input.id)),
+      async ({ ctx, input: { id, ...input } }) =>
+        await ctx.db.update(media).set(input).where(eq(media.id, id)),
     ),
 });
 

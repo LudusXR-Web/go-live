@@ -35,15 +35,14 @@ const userRouter = createTRPCRouter({
         ),
     )
     .mutation(
-      async ({ ctx, input }) =>
+      async ({ ctx, input: { id, ...input } }) =>
         await ctx.db
           .update(users)
           .set({
             ...input,
-            id: undefined,
             updatedAt: new Date(),
           })
-          .where(eq(users.id, input.id)),
+          .where(eq(users.id, id)),
     ),
 
   getPersonalDetailsById: publicProcedure
@@ -69,15 +68,14 @@ const userRouter = createTRPCRouter({
         ),
     )
     .mutation(
-      async ({ ctx, input }) =>
+      async ({ ctx, input: { userId, ...input } }) =>
         await ctx.db
           .update(personalDetails)
           .set({
             ...input,
-            userId: undefined,
             updatedAt: new Date(),
           })
-          .where(eq(personalDetails.userId, input.userId)),
+          .where(eq(personalDetails.userId, userId)),
     ),
 
   getCoursesById: protectedProcedure.input(z.string().cuid2().optional()).query(

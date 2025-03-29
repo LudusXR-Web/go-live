@@ -22,8 +22,8 @@ const FileView: React.FC<FileViewProps> = ({ name, href, removeFile }) => (
         removeFile ? "pr-6" : "",
       )}
     >
-      <FileIcon />
-      <span>{name}</span>
+      <FileIcon className="shrink-0" />
+      <span className="mx-auto">{name}</span>
       <div className="absolute top-3 left-0 flex h-full w-full translate-y-full items-center justify-center gap-x-1 rounded-t-[40%_30%] bg-red-400 text-white transition-transform *:-mt-3 group-hover/file_display:translate-0">
         <ArrowDownToLineIcon size={20} />
         <span>Download</span>

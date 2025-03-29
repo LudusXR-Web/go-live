@@ -6,22 +6,23 @@ import { s3 } from "~/server/aws/s3";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const s3Router = createTRPCRouter({
-  getObjectByKey:
-    publicProcedure
-      .input(
-        z.object({
-          bucket: z.string().default(env.NEXT_PUBLIC_AWS_BUCKET_NAME),
-          key: z.string(),
-        }),
-      )
-      .query(async ({ input }) => {
-        return await s3.send(
+  getObjectByKey: publicProcedure
+    .input(
+      z.object({
+        bucket: z.string().default(env.NEXT_PUBLIC_AWS_BUCKET_NAME),
+        key: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      return (
+        (await s3.send(
           new GetObjectCommand({
             Bucket: input.bucket,
             Key: input.key,
           }),
-        );
-      }) ?? null,
+        )) ?? null
+      );
+    }),
   deleteObjectByKey: protectedProcedure
     .input(
       z.object({

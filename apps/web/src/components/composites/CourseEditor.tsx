@@ -1,6 +1,6 @@
 "use client";
 
-import { type PropsWithChildren, useEffect, useState } from "react";
+import { type PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { createId } from "@paralleldrive/cuid2";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -436,6 +436,8 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
     },
   });
 
+  const RichEditorMemo = useMemo(() => RichEditor, []);
+
   let timer: NodeJS.Timeout;
 
   useEffect(() => {
@@ -647,7 +649,7 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
                           element={element}
                           index={idx}
                         >
-                          <RichEditor
+                          <RichEditorMemo
                             className="min-h-[7rem]"
                             containerClassName="grow"
                             placeholder="What is this section about?"

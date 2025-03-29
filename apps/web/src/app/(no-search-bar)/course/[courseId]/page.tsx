@@ -5,6 +5,7 @@ import { Button } from "@repo/ui/button";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import AuthorLink from "~/components/composites/AuthorLink";
+import Link from "next/link";
 
 type CourseMainPageProps = {
   params: Promise<{ courseId: string }>;
@@ -33,8 +34,9 @@ export default async function CourseMainPage({ params }: CourseMainPageProps) {
       </p>
       <div id="toc" className="space-y-3">
         {course.content.sections.map((section, idx) => (
-          <div
+          <Link
             key={section.id}
+            href={`/course/${courseId}/${section.id}`}
             className="group/section hover:border-accent mx-auto flex w-full max-w-250 items-center justify-between rounded-lg border-2 py-2 pr-3 pl-4 transition-colors"
           >
             <div className="flex items-center gap-4">
@@ -54,7 +56,7 @@ export default async function CourseMainPage({ params }: CourseMainPageProps) {
               )}
               <ArrowRightCircleIcon />
             </Button>
-          </div>
+          </Link>
         ))}
       </div>
     </main>

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { arrayOverlaps, eq, sql } from "drizzle-orm";
+import { and, arrayOverlaps, eq, sql } from "drizzle-orm";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 
 import {
@@ -102,15 +102,14 @@ const courseRouter = createTRPCRouter({
       ),
     )
     .mutation(
-      async ({ ctx, input }) =>
+      async ({ ctx, input: { id, ...input } }) =>
         await ctx.db
           .update(courses)
           .set({
             ...input,
-            id: undefined,
             updatedAt: new Date(),
           })
-          .where(eq(courses.id, input.id)),
+          .where(eq(courses.id, id)),
     ),
   updateContent: protectedProcedure
     .input(
@@ -121,16 +120,16 @@ const courseRouter = createTRPCRouter({
       ),
     )
     .mutation(
-      async ({ ctx, input }) =>
+      async ({ ctx, input: { courseId, ...input } }) =>
         await ctx.db
           .update(courseContents)
           .set({
+            ...input,
             updatedAt: new Date(),
             sections: input.sections as CourseSection[],
             elements: input.elements as CourseContent[],
-            courseId: undefined,
           })
-          .where(eq(courseContents.courseId, input.courseId)),
+          .where(eq(courseContents.courseId, courseId)),
     ),
   enrolUserIntoCourse: protectedProcedure.input(z.string().cuid2()).mutation(
     async ({ ctx, input }) =>
@@ -139,6 +138,27 @@ const courseRouter = createTRPCRouter({
         courseId: input,
       }),
   ),
+  updateEnrolment: protectedProcedure
+    .input(
+      createUpdateSchema(usersToCourses).merge(
+        z.object({
+          userId: z.string().cuid2(),
+          courseId: z.string().cuid2(),
+        }),
+      ),
+    )
+    .mutation(
+      async ({ ctx, input: { userId, courseId, ...input } }) =>
+        await ctx.db
+          .update(usersToCourses)
+          .set(input)
+          .where(
+            and(
+              eq(usersToCourses.userId, userId),
+              eq(usersToCourses.courseId, courseId),
+            ),
+          ),
+    ),
 });
 
 export default courseRouter;
