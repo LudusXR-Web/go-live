@@ -1,0 +1,1 @@
+ALTER TABLE "golive_users_to_courses" ADD COLUMN "rating" smallint;

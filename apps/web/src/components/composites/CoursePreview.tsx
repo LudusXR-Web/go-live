@@ -6,6 +6,7 @@ import Link from "next/link";
 import { cn } from "~/lib/utils";
 import { courses } from "~/server/db/schema";
 import AuthorLink from "~/components/composites/AuthorLink";
+import CourseRating from "~/components/composites/CourseRating";
 
 type CoursePreviewProps = typeof courses.$inferSelect;
 
@@ -33,11 +34,12 @@ const CoursePreview: React.FC<CoursePreviewProps> = ({ ...course }) => {
           />
         )}
       </div>
-      <div className="flex grow flex-col justify-end gap-2 px-2.5 pt-1 pb-3">
-        <div className="space-y-1.5">
+      <div className="flex grow flex-col justify-end gap-3 px-2.5 pt-1 pb-3">
+        <div className="space-y-2">
           <h2 className="text-lg font-semibold">{course.title}</h2>
           <AuthorLink userId={course.authorId} />
           <p>{course.description}</p>
+          <CourseRating />
         </div>
         <Button
           asChild

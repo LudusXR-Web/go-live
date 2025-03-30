@@ -9,6 +9,7 @@ import {
   pgEnum,
   pgTableCreator,
   primaryKey,
+  smallint,
   text,
   timestamp,
   varchar,
@@ -217,6 +218,7 @@ export const usersToCourses = createTable(
       .array()
       .notNull()
       .default([]),
+    rating: smallint("rating"),
   },
   (link) => [
     primaryKey({
