@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, arrayOverlaps, eq, sql } from "drizzle-orm";
+import { and, arrayOverlaps, avg, eq } from "drizzle-orm";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 
 import {
@@ -131,6 +131,16 @@ const courseRouter = createTRPCRouter({
           })
           .where(eq(courseContents.courseId, courseId)),
     ),
+  getAggregatedRating: publicProcedure.input(z.string().cuid2()).query(
+    async ({ ctx, input }) =>
+      await ctx.db
+        .select({
+          rating: avg(usersToCourses.rating),
+        })
+        .from(usersToCourses)
+        .where(eq(usersToCourses.courseId, input))
+        .limit(1),
+  ),
   enrolUserIntoCourse: protectedProcedure.input(z.string().cuid2()).mutation(
     async ({ ctx, input }) =>
       await ctx.db.insert(usersToCourses).values({

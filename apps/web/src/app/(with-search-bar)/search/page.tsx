@@ -1,6 +1,7 @@
 import { api } from "~/trpc/server";
 import TagSelector from "~/components/nav/TagSelector";
 import CoursePreview from "~/components/composites/CoursePreview";
+import getAggregatedCourseRating from "~/server/actions/getAggregatedCourseRating";
 
 type SearchParams = Promise<{ q: string; tags: string }>;
 type SearchPageProps = {
@@ -25,8 +26,12 @@ export default async function SearchPage(props: SearchPageProps) {
         </div>
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-6 pl-5 *:max-w-[30%]">
-        {relevantCourses.map((course, idx) => (
-          <CoursePreview key={idx} {...course} />
+        {relevantCourses.map(async (course, idx) => (
+          <CoursePreview
+            key={idx}
+            rating={await getAggregatedCourseRating(course.id)}
+            {...course}
+          />
         ))}
       </div>
     </main>

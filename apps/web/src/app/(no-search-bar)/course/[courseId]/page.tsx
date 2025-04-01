@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRightCircleIcon, CheckIcon } from "lucide-react";
 import { Button } from "@repo/ui/button";
@@ -5,7 +6,7 @@ import { Button } from "@repo/ui/button";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import AuthorLink from "~/components/composites/AuthorLink";
-import Link from "next/link";
+import CourseRatingSelector from "~/components/composites/CourseRatingSelector";
 
 type CourseMainPageProps = {
   params: Promise<{ courseId: string }>;
@@ -40,10 +41,10 @@ export default async function CourseMainPage({ params }: CourseMainPageProps) {
             className="group/section hover:border-accent mx-auto flex w-full max-w-250 items-center justify-between rounded-lg border-2 py-2 pr-3 pl-4 transition-colors"
           >
             <div className="flex items-center gap-4">
-              <span className="group-hover/section:text-accent text-4xl font-extrabold text-slate-300 transition-colors">
+              <span className="group-hover/section:text-accent w-6 text-center text-4xl font-extrabold text-slate-300 transition-colors">
                 {idx + 1}
               </span>
-              <span>{section.title}</span>
+              <h2 className="font-medium">{section.title}</h2>
             </div>
             <Button
               variant="ghost"
@@ -58,6 +59,16 @@ export default async function CourseMainPage({ params }: CourseMainPageProps) {
             </Button>
           </Link>
         ))}
+      </div>
+      <div className="mx-auto flex w-fit flex-col items-center space-y-3 pt-6">
+        <h2 className="text-lg font-medium">
+          Like this course? Rate it so there are more courses like this!
+        </h2>
+        <CourseRatingSelector
+          courseId={courseId}
+          userId={session.user.id}
+          defaultRating={courseBinding.rating ?? 0}
+        />
       </div>
     </main>
   );

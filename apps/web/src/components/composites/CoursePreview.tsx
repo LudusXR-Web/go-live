@@ -8,9 +8,12 @@ import { courses } from "~/server/db/schema";
 import AuthorLink from "~/components/composites/AuthorLink";
 import CourseRating from "~/components/composites/CourseRating";
 
-type CoursePreviewProps = typeof courses.$inferSelect;
+type CoursePreviewProps = { rating?: number } & typeof courses.$inferSelect;
 
-const CoursePreview: React.FC<CoursePreviewProps> = ({ ...course }) => {
+const CoursePreview: React.FC<CoursePreviewProps> = ({
+  rating = null,
+  ...course
+}) => {
   const shadowColors = ["shadow-accent/50", "shadow-primary/50"];
   const randomShadow =
     shadowColors.at(Math.floor(Math.random() * shadowColors.length)) ??
@@ -39,7 +42,7 @@ const CoursePreview: React.FC<CoursePreviewProps> = ({ ...course }) => {
           <h2 className="text-lg font-semibold">{course.title}</h2>
           <AuthorLink userId={course.authorId} />
           <p>{course.description}</p>
-          <CourseRating />
+          {!!rating && <CourseRating rating={rating} />}
         </div>
         <Button
           asChild
