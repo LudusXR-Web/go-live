@@ -18,6 +18,20 @@ const userRouter = createTRPCRouter({
         },
       })) ?? null,
   ),
+  getFootprintByUsername: publicProcedure
+    .input(z.string().min(2).max(50))
+    .query(
+      async ({ ctx, input }) =>
+        (await ctx.db.query.users.findFirst({
+          where: (user, { eq }) => eq(user.username, input),
+          columns: {
+            id: true,
+            name: true,
+            type: true,
+            image: true,
+          },
+        })) ?? null,
+    ),
   update: protectedProcedure
     .input(
       createUpdateSchema(users)
