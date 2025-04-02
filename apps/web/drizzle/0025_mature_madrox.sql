@@ -1,0 +1,2 @@
+ALTER TABLE "golive_posts" ADD COLUMN "parent_id" varchar(255);--> statement-breakpoint
+ALTER TABLE "golive_posts" ADD CONSTRAINT "golive_posts_parent_id_golive_posts_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."golive_posts"("id") ON DELETE no action ON UPDATE no action;

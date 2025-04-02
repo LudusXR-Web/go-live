@@ -3,19 +3,76 @@ import { eq } from "drizzle-orm";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 
 import { posts } from "~/server/db/schema";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const postsRouter = createTRPCRouter({
   getById: protectedProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
       (await ctx.db.query.posts.findFirst({
         where: (post, { eq }) => eq(post.id, input),
+        with: {
+          author: {
+            columns: {
+              name: true,
+              image: true,
+            },
+          },
+        },
       })) ?? null,
   ),
-  getByAuthorId: protectedProcedure.input(z.string().cuid2()).query(
+  getByIdWithComments: publicProcedure
+    .input(z.string().cuid2())
+    .query(async ({ ctx, input }) => {
+      const postWithAuthor = await ctx.db.query.posts.findFirst({
+        where: (post, { eq }) => eq(post.id, input),
+        with: {
+          author: {
+            columns: {
+              name: true,
+              image: true,
+            },
+          },
+        },
+      });
+
+      if (!postWithAuthor) return null;
+
+      const comments = await ctx.db.query.posts.findMany({
+        where: (post, { eq }) => eq(post.parentId, input),
+        with: {
+          author: {
+            columns: {
+              name: true,
+              image: true,
+            },
+          },
+        },
+      });
+
+      return {
+        ...postWithAuthor,
+        children: comments,
+      };
+    }),
+  getCommentsByParentId: publicProcedure.input(z.string().cuid2()).query(
+    async ({ ctx, input }) =>
+      await ctx.db.query.posts.findMany({
+        where: (post, { eq }) => eq(post.parentId, input),
+        with: {
+          author: {
+            columns: {
+              name: true,
+              image: true,
+            },
+          },
+        },
+      }),
+  ),
+  getByAuthorId: publicProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
       (await ctx.db.query.posts.findMany({
-        where: (post, { eq }) => eq(post.authorId, input),
+        where: (post, { and, eq, isNull }) =>
+          and(eq(post.authorId, input), isNull(post.parentId)),
         orderBy: (post, { desc }) => desc(post.createdAt),
       })) ?? null,
   ),

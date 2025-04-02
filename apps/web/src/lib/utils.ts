@@ -12,7 +12,7 @@ export const months = [
   "Jan",
   "Feb",
   "Mar",
-  "Arp",
+  "Apr",
   "May",
   "Jun",
   "Jul",

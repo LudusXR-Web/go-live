@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/server";
 import Post from "~/components/composites/Post";
+import MultilineText from "~/components/media-display/MultilineText";
 
 type GenericProfilePageProps = {
   params: Promise<{
@@ -34,7 +35,7 @@ export default async function GenericProfilePage({
 
   return (
     <main className="container w-full">
-      <div className="mx-auto flex w-(--breakpoint-lg) flex-col justify-center space-y-6">
+      <div className="mx-auto flex w-(--breakpoint-lg) flex-col justify-center">
         <div
           id="personal-details"
           className="border-b-accent w-full space-y-3 border-b-2"
@@ -90,7 +91,7 @@ export default async function GenericProfilePage({
                 }}
               >
                 {user.details.bio?.length ? (
-                  user.details.bio
+                  <MultilineText>{user.details.bio}</MultilineText>
                 ) : (
                   <i>
                     We don't know much about {user.name.split(" ").at(0)}, but
@@ -102,7 +103,10 @@ export default async function GenericProfilePage({
             </div>
           </div>
         </div>
-        <div id="posts" className="w-full space-y-4 divide-y *:pb-4">
+        <div
+          id="posts"
+          className="w-full divide-y *:pb-4 *:not-first:pt-4 *:first:pt-6"
+        >
           {posts.map((post) => (
             <Post key={post.id} author={user} {...post} />
           ))}

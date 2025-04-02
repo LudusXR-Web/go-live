@@ -6,6 +6,7 @@ import { useUploadFile } from "better-upload/client";
 import { createId } from "@paralleldrive/cuid2";
 import {
   ImageIcon,
+  Loader2Icon,
   PaperclipIcon,
   XCircleIcon,
   ZoomInIcon,
@@ -125,14 +126,28 @@ const usePostAttachments = create<PostAttachments>((set) => ({
   },
 }));
 
-const CreatePostForm: React.FC = () => {
-  const editor = useCustomEditor();
+type CreatePostFormProps = {
+  standalone?: boolean;
+  placeholder?: string;
+  parentId?: string;
+  onSuccess?: () => any;
+};
+
+const CreatePostForm: React.FC<CreatePostFormProps> = ({
+  standalone,
+  placeholder,
+  parentId,
+  onSuccess: onPostSuccess,
+}) => {
+  const editor = useCustomEditor({ placeholder });
   const attachments = usePostAttachments();
   const postMutation = api.posts.create.useMutation({
     onSuccess() {
-      editor!.commands.clearContent(true);
       attachments.clearPendingUploads();
 
+      if (onPostSuccess) return onPostSuccess();
+
+      editor!.commands.clearContent(true);
       revalidatePath("/profile");
     },
   });
@@ -145,6 +160,7 @@ const CreatePostForm: React.FC = () => {
     }
 
     postMutation.mutate({
+      parentId,
       content: editor!.getHTML(),
       attachments: attachments.uploadedFiles,
     });
@@ -153,7 +169,12 @@ const CreatePostForm: React.FC = () => {
   }
 
   return (
-    <form className="border-b-primary rounded-none border-x border-b">
+    <form
+      className={cn(
+        "border-b-primary rounded-none border-x border-b",
+        standalone ? "border-t-accent border-t" : "",
+      )}
+    >
       <RichEditor
         customEditor={editor}
         className="rounded-none border-0 px-1 py-2.5"
@@ -261,7 +282,11 @@ const CreatePostForm: React.FC = () => {
             publishPost();
           }}
         >
-          Post
+          {attachments.uploadInProgress ? (
+            <Loader2Icon className="animate-spin" size={20} />
+          ) : (
+            "Post"
+          )}
         </Button>
       </div>
 

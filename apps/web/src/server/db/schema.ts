@@ -2,6 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import {
+  type AnyPgColumn,
   boolean,
   index,
   integer,
@@ -114,10 +115,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   media: many(media),
   usersToCourses: many(usersToCourses),
-  details: one(personalDetails, {
-    fields: [users.id],
-    references: [personalDetails.userId],
-  }),
+  details: one(personalDetails),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -290,6 +288,9 @@ export const posts = createTable(
       .primaryKey(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    parentId: varchar("parent_id", { length: 255 }).references(
+      (): AnyPgColumn => posts.id,
+    ),
 
     authorId: varchar("author_id", { length: 255 })
       .notNull()
@@ -304,9 +305,13 @@ export const posts = createTable(
   (post) => [index("post_author_id_idx").on(post.authorId)],
 );
 
-export const postsRelations = relations(posts, ({ one }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
   author: one(users, {
     fields: [posts.authorId],
     references: [users.id],
+  }),
+  children: one(posts, {
+    fields: [posts.parentId],
+    references: [posts.id],
   }),
 }));
