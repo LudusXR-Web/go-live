@@ -9,6 +9,7 @@ import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import FileView from "~/components/media-display/FileView";
 import ViewChecker from "./ViewCheker";
+import ImageZoom from "~/components/modals/ImageZoom";
 
 type SectionPageProps = {
   params: Promise<{
@@ -61,13 +62,18 @@ export default async function SectionPage({ params }: SectionPageProps) {
               );
             case "image":
               return (
-                <Image
-                  key={id}
-                  src={`/api/cdn/${element.content}`}
-                  alt=""
-                  width={1920}
-                  height={1080}
-                />
+                <ImageZoom
+                  fileName={"image.png"}
+                  image={`/api/cdn/${element.content}`}
+                >
+                  <Image
+                    key={id}
+                    src={`/api/cdn/${element.content}`}
+                    alt=""
+                    width={1920}
+                    height={1080}
+                  />
+                </ImageZoom>
               );
             case "attachment":
               const fileDetails = await api.media.getByKey(element.content);

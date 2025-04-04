@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/server";
+import { auth } from "~/server/auth";
 import Post from "~/components/composites/Post";
 import MultilineText from "~/components/media-display/MultilineText";
 
@@ -32,6 +33,7 @@ export default async function GenericProfilePage({
   };
 
   const posts = await api.posts.getByAuthorId(user.id);
+  const session = await auth();
 
   return (
     <main className="container w-full">
@@ -108,7 +110,12 @@ export default async function GenericProfilePage({
           className="w-full divide-y *:pb-4 *:not-first:pt-4 *:first:pt-6"
         >
           {posts.map((post) => (
-            <Post key={post.id} author={user} {...post} />
+            <Post
+              key={post.id}
+              author={user}
+              hideCommentButton={!session}
+              {...post}
+            />
           ))}
         </div>
       </div>
