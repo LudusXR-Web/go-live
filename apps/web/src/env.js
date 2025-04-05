@@ -11,6 +11,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
     GOOGLE_API_KEY: z.string(),
+    GOOGLE_REDIRECT_URI: z.string().url(),
     AWS_ACCESS_KEY_ID: z.string(),
     AWS_SECRET_ACCESS_KEY: z.string(),
     NODE_ENV: z
@@ -38,6 +39,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+    GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     NODE_ENV: process.env.NODE_ENV,

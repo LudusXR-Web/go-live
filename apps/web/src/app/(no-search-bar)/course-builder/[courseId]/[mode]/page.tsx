@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MonitorIcon, TableOfContentsIcon } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  MonitorIcon,
+  TableOfContentsIcon,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
 
 import { auth } from "~/server/auth";
@@ -8,8 +12,9 @@ import { api } from "~/trpc/server";
 import CourseDetailsForm from "~/components/forms/CourseDetailsForm";
 import ChangeCourseBanner from "~/components/media-uploaders/ChangeCourseBanner";
 import CourseEditor from "~/components/composites/CourseEditor";
+import DummyButton from "~/components/test/DummyButton";
 
-type CourseBuilderMode = "basic" | "content";
+type CourseBuilderMode = "basic" | "content" | "calendar";
 
 type CourseBuilderPageProps = {
   params: Promise<{ courseId: string; mode: CourseBuilderMode }>;
@@ -42,7 +47,7 @@ export default async function CourseBuilderPage({
           >
             <Link href={`/course-builder/${courseId}/basic`}>
               <MonitorIcon className="opacity-50" size={20} />
-              <span>Basic Information</span>
+              <span>Course Dashboard</span>
             </Link>
           </TabsTrigger>
           <TabsTrigger
@@ -54,6 +59,17 @@ export default async function CourseBuilderPage({
             <Link href={`/course-builder/${courseId}/content`}>
               <TableOfContentsIcon className="opacity-50" size={20} />
               <span>Content Editor</span>
+            </Link>
+          </TabsTrigger>
+          <TabsTrigger
+            asChild
+            disableDefaultStyles
+            value="calendar"
+            className={tabsTriggerStyle}
+          >
+            <Link href={`/course-builder/${courseId}/calendar`}>
+              <CalendarDaysIcon className="opacity-50" size={20} />
+              <span>Events & Meetings</span>
             </Link>
           </TabsTrigger>
         </TabsList>
@@ -69,6 +85,9 @@ export default async function CourseBuilderPage({
                 ...course.content,
               }}
             />
+          </TabsContent>
+          <TabsContent value="calendar">
+            <DummyButton>CALENDAR TESTING</DummyButton>
           </TabsContent>
         </div>
       </main>

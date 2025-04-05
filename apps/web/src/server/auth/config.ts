@@ -41,7 +41,7 @@ export const authConfig = {
       authorization: {
         params: {
           scope:
-            "openid profile email https://www.googleapis.com/auth/calendar",
+            "openid profile email https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/meetings.space.created",
         },
       },
       profile: (profile) => ({
