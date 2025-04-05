@@ -18,7 +18,7 @@ const calendarRouter = createTRPCRouter({
       z.object({
         userId: z.string().cuid2().optional(),
         maxAttendees: z.number().min(2).finite().optional(),
-        sendNotifications: z.boolean().optional(),
+        sendNotifications: z.enum(["none", "externalOnly", "all"]).optional(),
         attendees: z.string().email().array().default([]),
         description: z.string().optional(),
         title: z.string(),
@@ -51,32 +51,32 @@ const calendarRouter = createTRPCRouter({
       await calendar.events.insert({
         auth,
         calendarId: "primary",
-        conferenceDataVersion: 1,
-        maxAttendees: input.maxAttendees,
-        sendUpdates: `${input.sendNotifications ?? false}`,
+        conferenceDataVersion: 0,
+        // maxAttendees: input.maxAttendees,
+        // sendUpdates: input.sendNotifications,
         requestBody: {
           summary: input.title,
-          description: input.description,
-          eventType: "birthday",
+          // description: input.description,
+          // eventType: "birthday",
           start: {
             dateTime: input.start,
           },
           end: {
             dateTime: input.end,
           },
-          attendees: input.attendees.map((email) => ({
-            email,
-          })),
-          conferenceData: {
-            conferenceSolution: {
-              key: {
-                type: "hangoutsMeet",
-              },
-            },
-            createRequest: {
-              requestId: createId(),
-            },
-          },
+          // attendees: input.attendees.map((email) => ({
+          //   email,
+          // })),
+          // conferenceData: {
+          //   conferenceSolution: {
+          //     key: {
+          //       type: "hangoutsMeet",
+          //     },
+          //   },
+          //   createRequest: {
+          //     requestId: createId(),
+          //   },
+          // },
         },
       });
     }),

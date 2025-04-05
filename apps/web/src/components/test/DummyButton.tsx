@@ -22,7 +22,6 @@ const DummyButton: React.FC<DummyButtonProps> = ({ children }) => {
           title: "TESTING EVENT",
           start: new Date("2025-04-06T14:00:00Z").toISOString(),
           end: new Date("2025-04-06T15:00:00Z").toISOString(),
-          sendNotifications: true,
           maxAttendees: 5,
           description: "testing event",
         });
