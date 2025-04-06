@@ -48,37 +48,38 @@ const calendarRouter = createTRPCRouter({
       //@ts-ignore
       auth.setCredentials({ ...userAccount });
 
-      await calendar.events.insert({
+      const res = await calendar.events.insert({
         auth,
         calendarId: "primary",
         conferenceDataVersion: 0,
-        // maxAttendees: input.maxAttendees,
-        // sendUpdates: input.sendNotifications,
+        maxAttendees: input.maxAttendees,
+        sendUpdates: input.sendNotifications,
         requestBody: {
           summary: input.title,
-          // description: input.description,
-          // eventType: "birthday",
+          description: input.description,
           start: {
             dateTime: input.start,
           },
           end: {
             dateTime: input.end,
           },
-          // attendees: input.attendees.map((email) => ({
-          //   email,
-          // })),
-          // conferenceData: {
-          //   conferenceSolution: {
-          //     key: {
-          //       type: "hangoutsMeet",
-          //     },
-          //   },
-          //   createRequest: {
-          //     requestId: createId(),
-          //   },
-          // },
+          attendees: input.attendees.map((email) => ({
+            email,
+          })),
+          conferenceData: {
+            conferenceSolution: {
+              key: {
+                type: "hangoutsMeet",
+              },
+            },
+            createRequest: {
+              requestId: createId(),
+            },
+          },
         },
       });
+
+      return JSON.stringify(res, null, 2);
     }),
 });
 

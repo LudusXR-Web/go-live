@@ -183,6 +183,13 @@
       "when": 1743598769880,
       "tag": "0025_mature_madrox",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1743956934036,
+      "tag": "0026_mysterious_iron_monger",
+      "breakpoints": true
     }
   ]
 }

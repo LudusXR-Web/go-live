@@ -6,13 +6,13 @@ import {
   TableOfContentsIcon,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+import { Calendar } from "@repo/ui/calendar";
 
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import CourseDetailsForm from "~/components/forms/CourseDetailsForm";
 import ChangeCourseBanner from "~/components/media-uploaders/ChangeCourseBanner";
 import CourseEditor from "~/components/composites/CourseEditor";
-import DummyButton from "~/components/test/DummyButton";
 
 type CourseBuilderMode = "basic" | "content" | "calendar";
 
@@ -87,7 +87,7 @@ export default async function CourseBuilderPage({
             />
           </TabsContent>
           <TabsContent value="calendar">
-            <DummyButton>CALENDAR TESTING</DummyButton>
+            <Calendar />
           </TabsContent>
         </div>
       </main>

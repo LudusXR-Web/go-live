@@ -1,12 +1,19 @@
 import "server-only";
 
-import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import { eq } from "drizzle-orm";
+import {
+  type AdapterUser,
+  type Session,
+  type DefaultSession,
+  type NextAuthConfig,
+} from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { createId } from "@paralleldrive/cuid2";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
+import { signIn } from "~/server/auth";
 import { accounts, sessions, users, personalDetails } from "~/server/db/schema";
 
 /**
@@ -27,6 +34,15 @@ declare module "next-auth" {
   type AdapterUser = typeof users.$inferSelect & DefaultSession["user"];
 }
 
+const googleScopes = [
+  "openid",
+  "profile",
+  "email",
+  "https://www.googleapis.com/auth/calendar",
+  "https://www.googleapis.com/auth/meetings.space.created",
+];
+const maxUpdateTime = 1000 * 60 * 30;
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -40,13 +56,18 @@ export const authConfig = {
       allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
-          scope:
-            "openid profile email https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/meetings.space.created",
+          prompt: "consent",
+          access_type: "offline",
+          scope: googleScopes.join(" "),
         },
       },
+      account: (account) => ({
+        ...account,
+      }),
       profile: (profile) => ({
-        username: `${profile.name.toLowerCase().replaceAll(" ", "_")}_${createId()}`,
         ...profile,
+        id: profile.sub,
+        username: `${profile.name.toLowerCase().replaceAll(" ", "_")}_${createId()}`,
       }),
     }),
   ],
@@ -77,14 +98,55 @@ export const authConfig = {
     signOut: "/",
   },
   callbacks: {
-    session: async ({ session, user }) => {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: user.id,
-        },
-      };
+    //@ts-ignore
+    session: async ({
+      session,
+      user,
+    }: {
+      session: Session & { user: AdapterUser };
+      user: AdapterUser;
+    }) => {
+      const updateDelta = +new Date() - +new Date(user.updatedAt);
+
+      if (updateDelta > maxUpdateTime) {
+        const userAccount = await db.query.accounts.findFirst({
+          where: (account, { eq }) => eq(account.userId, user.id),
+          columns: {
+            refresh_token: true,
+          },
+        });
+
+        if (!userAccount || !userAccount.refresh_token)
+          return {
+            error: "Unauthorized",
+          };
+
+        const updatedAccount = await refreshAccessToken(
+          env.GOOGLE_CLIENT_ID,
+          env.GOOGLE_CLIENT_SECRET,
+          userAccount.refresh_token,
+        );
+
+        if (typeof updatedAccount.error === "string") {
+          console.log("[auth][debug]: ", JSON.stringify(updatedAccount.error));
+          signIn("google");
+        }
+
+        await db
+          .update(accounts)
+          .set({
+            access_token: updatedAccount.accessToken,
+            expires_at: updatedAccount.expiresIn,
+            refresh_token: updatedAccount.refreshToken,
+          })
+          .where(eq(accounts.userId, user.id));
+        await db
+          .update(users)
+          .set({ updatedAt: new Date() })
+          .where(eq(users.id, user.id));
+      }
+
+      return session;
     },
   },
   events: {
@@ -93,3 +155,44 @@ export const authConfig = {
     },
   },
 } satisfies NextAuthConfig;
+
+const refreshAccessToken = async (
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+) => {
+  try {
+    const url = new URL("https://oauth2.googleapis.com/token");
+    url.searchParams.set("client_id", clientId);
+    url.searchParams.set("client_secret", clientSecret);
+    url.searchParams.set("grant_type", "refresh_token");
+    url.searchParams.set("refresh_token", refreshToken);
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    const newToken = await response.json();
+
+    if (!response.ok) {
+      throw newToken;
+    }
+
+    return {
+      accessToken: newToken.access_token as string,
+      expiresIn: Math.floor(
+        (+new Date() + Number(newToken.expires_in) * 1000) / 1000,
+      ),
+      refreshToken: newToken.refresh_token as string,
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      error: "RefreshAccessTokenError",
+    };
+  }
+};

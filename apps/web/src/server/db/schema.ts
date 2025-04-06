@@ -56,7 +56,7 @@ export const users = createTable("users", {
 
 export const personalDetails = createTable("personal_details", {
   userId: varchar("user_id", { length: 255 })
-    .references(() => users.id)
+    .references(() => users.id, { onUpdate: "cascade" })
     .primaryKey(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 
@@ -70,7 +70,7 @@ export const accounts = createTable(
   {
     userId: varchar("user_id", { length: 255 })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onUpdate: "cascade" }),
     type: varchar("type", { length: 255 })
       .$type<AdapterAccount["type"]>()
       .notNull(),
@@ -102,7 +102,7 @@ export const sessions = createTable(
       .primaryKey(),
     userId: varchar("user_id", { length: 255 })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onUpdate: "cascade" }),
     expires: timestamp("expires_at").notNull(),
 
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -152,7 +152,7 @@ export const courses = createTable(
     image: text("image"),
     authorId: varchar("author_id", { length: 255 })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onUpdate: "cascade" }),
     tags: varchar("tags", { length: 255 }).array().notNull().default([]),
   },
   (course) => [
@@ -208,7 +208,7 @@ export const usersToCourses = createTable(
   {
     userId: varchar("user_id", { length: 255 })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onUpdate: "cascade" }),
     courseId: varchar("course_id", { length: 255 })
       .notNull()
       .references(() => courses.id),
@@ -264,7 +264,7 @@ export const media = createTable("media", {
   fileName: varchar("file_name", { length: 255 }).notNull(),
   authorId: varchar("author_id", { length: 255 })
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onUpdate: "cascade" }),
   url: text("url").notNull(),
   key: text("key").notNull(),
   public: boolean("public").notNull().default(false),
@@ -294,7 +294,7 @@ export const posts = createTable(
 
     authorId: varchar("author_id", { length: 255 })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onUpdate: "cascade" }),
     content: text("content").notNull().default(""),
     attachments: varchar("attachments", { length: 255 })
       .references(() => media.id)
