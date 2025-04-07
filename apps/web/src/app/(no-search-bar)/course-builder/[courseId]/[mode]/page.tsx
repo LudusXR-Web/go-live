@@ -87,7 +87,7 @@ export default async function CourseBuilderPage({
             />
           </TabsContent>
           <TabsContent value="calendar">
-            <Calendar />
+            <Calendar mode="single" />
           </TabsContent>
         </div>
       </main>
