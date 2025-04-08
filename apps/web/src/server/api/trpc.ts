@@ -105,3 +105,34 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
     },
   });
 });
+
+/**
+ * Google OAuth procedure
+ *
+ * This procedure will provide latest OAuth authentication data from Google to the procedure's context
+ */
+export const OAuthProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const userAccount = (await ctx.db.query.accounts.findFirst({
+    where: (account, { eq }) => eq(account.userId, ctx.session.user.id),
+    columns: {
+      access_token: true,
+      refresh_token: true,
+      scope: true,
+    },
+  })) as { access_token: string; refresh_token: string; scope: string };
+
+  if (
+    !userAccount ||
+    !userAccount.access_token ||
+    !userAccount.refresh_token ||
+    !userAccount.scope
+  ) {
+    throw new TRPCError({ code: "BAD_REQUEST" });
+  }
+
+  return next({
+    ctx: {
+      account: { ...userAccount },
+    },
+  });
+});

@@ -40,7 +40,7 @@ function Calendar({
           "size-7 bg-transparent p-1 opacity-50 hover:opacity-100",
           "absolute right-1"
         ),
-        month_grid: "w-full border-collapse space-x-1 border-r border-b ",
+        month_grid: "w-full border-collapse space-x-1  border-b ",
         weekdays: "flex w-full mb-2",
         weekday: "flex-1",
         head_cell:
@@ -84,11 +84,6 @@ function Calendar({
               <ChevronDown className={cn("size-4", className)} {...props} />
             )}
           </>
-        ),
-        DayButton: ({ day, modifiers, ...props }) => (
-          <button {...props}>
-            <span className="p-1">{day.date.getDate()}</span>
-          </button>
         ),
       }}
       {...props}

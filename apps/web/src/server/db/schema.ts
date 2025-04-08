@@ -305,7 +305,7 @@ export const posts = createTable(
   (post) => [index("post_author_id_idx").on(post.authorId)],
 );
 
-export const postsRelations = relations(posts, ({ one, many }) => ({
+export const postsRelations = relations(posts, ({ one }) => ({
   author: one(users, {
     fields: [posts.authorId],
     references: [users.id],
@@ -313,5 +313,26 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
   children: one(posts, {
     fields: [posts.parentId],
     references: [posts.id],
+  }),
+}));
+
+export const events = createTable("events", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  courseId: varchar("course_id", { length: 255 })
+    .notNull()
+    .references(() => courses.id),
+  authorId: varchar("author_id", { length: 255 })
+    .notNull()
+    .references(() => users.id, { onUpdate: "cascade" }),
+});
+
+export const eventsRelations = relations(events, ({ one }) => ({
+  course: one(courses, {
+    fields: [events.courseId],
+    references: [courses.id],
+  }),
+  author: one(users, {
+    fields: [events.authorId],
+    references: [users.id],
   }),
 }));

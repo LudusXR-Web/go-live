@@ -190,6 +190,13 @@
       "when": 1743956934036,
       "tag": "0026_mysterious_iron_monger",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1744046435863,
+      "tag": "0027_outgoing_living_tribunal",
+      "breakpoints": true
     }
   ]
 }
