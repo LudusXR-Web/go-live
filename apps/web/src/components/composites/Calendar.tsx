@@ -1,13 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { type PropsWithChildren, useEffect, useState } from "react";
 import Link from "next/link";
 import { Calendar } from "@repo/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/popover";
+import { Button } from "@repo/ui/button";
 
-import { cn } from "~/lib/utils";
+import { cn, formatFullDate, formatNumericalDate } from "~/lib/utils";
 import { api } from "~/trpc/react";
+import { ArrowRightCircleIcon } from "lucide-react";
 
-const AdvancedCalendar: React.FC = () => {
+type AdvancedCalendarProps = {
+  course: {
+    id: string;
+    title: string;
+  };
+};
+
+const AdvancedCalendar: React.FC<AdvancedCalendarProps> = ({ course }) => {
   const [month, setMonth] = useState(new Date());
 
   const events = api.calendar.getOwnEvents.useQuery({
@@ -27,11 +37,13 @@ const AdvancedCalendar: React.FC = () => {
       components={{
         Day: ({ day, modifiers, className, ...props }) => (
           <td className={cn(className, "relative h-32!")} {...props}>
-            <button className="hover:bg-primary/10 z-20 flex h-full w-full cursor-pointer px-0.5 transition-colors">
-              <span className="mb-0.5 pt-1 pl-1 text-start">
-                {day.date.getDate()}
-              </span>
-            </button>
+            <NewEventPopover date={day.date} course={course}>
+              <button className="hover:bg-primary/10 z-20 flex h-full w-full cursor-pointer px-0.5 transition-colors">
+                <span className="mb-0.5 pt-1 pl-1 text-start">
+                  {day.date.getDate()}
+                </span>
+              </button>
+            </NewEventPopover>
             <div className="absolute top-6 flex w-full flex-col gap-y-0.5 px-0.5">
               {events.data
                 ?.filter((event) =>
@@ -44,6 +56,7 @@ const AdvancedCalendar: React.FC = () => {
                   <Link
                     key={event.id}
                     href={event.htmlLink!}
+                    role="heading"
                     target="_blank"
                     className="z-50 w-full rounded-sm bg-amber-100 py-0.5 text-xs font-medium"
                   >
@@ -57,6 +70,43 @@ const AdvancedCalendar: React.FC = () => {
       month={month}
       onMonthChange={setMonth}
     />
+  );
+};
+
+type NewEventPopoverProps = {
+  date: Date;
+} & AdvancedCalendarProps &
+  PropsWithChildren;
+
+const NewEventPopover: React.FC<NewEventPopoverProps> = ({
+  children,
+  date,
+  course,
+}) => {
+  const searchParams = new URLSearchParams({
+    date: formatNumericalDate(date),
+    courseId: course.id,
+  });
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent>
+        <div className="space-x-2">
+          <h4 className="inline font-medium">Create an Event</h4>
+          <p className="text-muted-foreground inline text-sm">
+            {formatFullDate(date)}
+          </p>
+        </div>
+        <p className="py-1">Create an event for the {course.title} course.</p>
+        <Button asChild>
+          <Link href={`/calendar/create?${searchParams.toString()}`}>
+            <span>Next</span>
+            <ArrowRightCircleIcon />
+          </Link>
+        </Button>
+      </PopoverContent>
+    </Popover>
   );
 };
 

@@ -23,5 +23,21 @@ export const months = [
   "Dec",
 ];
 
-export const formatPostDate = (date: Date) =>
-  `${months[date.getUTCMonth()]} ${date.getUTCDate()}`;
+export const formatDateNoYear = (date: Date) =>
+  `${months[date.getMonth()]} ${date.getDate()}`;
+
+export const getOrderSuffix = (number: number) => {
+  if (number % 1 !== 0) return;
+
+  if (number >= 11 && number <= 13) return "th";
+  if ((number - 1) % 10 === 0) return "st";
+  if ((number - 2) % 10 === 0) return "nd";
+  if ((number - 3) % 10 === 0) return "rd";
+  return "th";
+};
+
+export const formatFullDate = (date: Date) =>
+  `${months[date.getMonth()]} ${date.getDate()}${getOrderSuffix(date.getDate())} ${date.getFullYear()}`;
+
+export const formatNumericalDate = (date: Date) =>
+  `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;

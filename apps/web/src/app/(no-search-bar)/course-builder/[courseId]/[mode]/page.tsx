@@ -87,7 +87,7 @@ export default async function CourseBuilderPage({
             />
           </TabsContent>
           <TabsContent value="calendar">
-            <AdvancedCalendar />
+            <AdvancedCalendar course={course} />
           </TabsContent>
         </div>
       </main>

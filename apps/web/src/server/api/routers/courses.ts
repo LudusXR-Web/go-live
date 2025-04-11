@@ -11,6 +11,9 @@ import {
 } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
+interface CoursesColumnFilter
+  extends Partial<Record<keyof typeof courses._.columns, boolean>> {}
+
 const courseRouter = createTRPCRouter({
   getById: protectedProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
@@ -18,12 +21,29 @@ const courseRouter = createTRPCRouter({
         where: (course, { eq }) => eq(course.id, input),
       })) ?? null,
   ),
-  getByAuthorId: protectedProcedure.input(z.string().cuid2()).query(
-    async ({ ctx, input }) =>
-      (await ctx.db.query.courses.findMany({
-        where: (course, { eq }) => eq(course.authorId, input),
-      })) ?? null,
-  ),
+  /**
+   *! @summary If input is provided in the shape of `{ id: string; columns: object; }` the output fields will be limited to the fields supplied in the `columns` property.
+   */
+  getByAuthorId: protectedProcedure
+    .input(
+      z
+        .string()
+        .cuid2()
+        .or(
+          z.object({
+            id: z.string().cuid2(),
+            columns: z.custom<CoursesColumnFilter>().optional(),
+          }),
+        ),
+    )
+    .query(
+      async ({ ctx, input }) =>
+        (await ctx.db.query.courses.findMany({
+          where: (course, { eq }) =>
+            eq(course.authorId, typeof input === "string" ? input : input.id),
+          columns: typeof input === "string" ? undefined : input.columns,
+        })) ?? null,
+    ),
   getCourseContentById: protectedProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
       (await ctx.db.query.courseContents.findFirst({

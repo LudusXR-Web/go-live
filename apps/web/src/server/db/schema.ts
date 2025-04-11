@@ -318,9 +318,7 @@ export const postsRelations = relations(posts, ({ one }) => ({
 
 export const events = createTable("events", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  courseId: varchar("course_id", { length: 255 })
-    .notNull()
-    .references(() => courses.id),
+  courseId: varchar("course_id", { length: 255 }).references(() => courses.id),
   authorId: varchar("author_id", { length: 255 })
     .notNull()
     .references(() => users.id, { onUpdate: "cascade" }),

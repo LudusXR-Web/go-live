@@ -4,8 +4,10 @@ import { z } from "zod";
 import { google } from "googleapis";
 import { createId } from "@paralleldrive/cuid2";
 
-import { auth } from "~/server/google/api";
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, OAuthProcedure, protectedProcedure } from "../trpc";
+import { auth } from "~/server/google/api";
+import { events } from "~/server/db/schema";
 
 const calendar = google.calendar({
   version: "v3",
@@ -39,6 +41,7 @@ const calendarRouter = createTRPCRouter({
   }),
   createOwnEvent: OAuthProcedure.input(
     z.object({
+      courseId: z.string().cuid2().optional(),
       maxAttendees: z.number().min(2).finite().optional(),
       sendNotifications: z.enum(["none", "externalOnly", "all"]).optional(),
       attendees: z.string().email().array().default([]),
@@ -50,6 +53,8 @@ const calendarRouter = createTRPCRouter({
   ).mutation(async ({ ctx, input }) => {
     auth.setCredentials({ ...ctx.account });
 
+    const eventId = createId();
+
     const res = await calendar.events.insert({
       auth,
       calendarId: "primary",
@@ -57,6 +62,7 @@ const calendarRouter = createTRPCRouter({
       maxAttendees: input.maxAttendees,
       sendUpdates: input.sendNotifications,
       requestBody: {
+        id: eventId,
         summary: input.title,
         description: input.description,
         start: {
@@ -79,6 +85,15 @@ const calendarRouter = createTRPCRouter({
           },
         },
       },
+    });
+
+    if (res.status !== 200)
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+    await ctx.db.insert(events).values({
+      id: eventId,
+      authorId: ctx.session.user.id,
+      courseId: input.courseId,
     });
   }),
 });

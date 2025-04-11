@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
 import { posts, users } from "~/server/db/schema";
 import { api } from "~/trpc/server";
-import { cn, formatPostDate } from "~/lib/utils";
+import { cn, formatDateNoYear } from "~/lib/utils";
 import ImageZoom from "~/components/modals/ImageZoom";
 import FileView from "~/components/media-display/FileView";
 import CreatePostModal from "~/components/modals/CreatePostModal";
@@ -45,7 +45,7 @@ const Post: React.FC<PostProps> = async ({
         <div className="divide-x divide-slate-300">
           <h3 className="inline pr-1.5 font-medium">{author.name}</h3>
           <span className="inline px-1.5">
-            {formatPostDate(post.createdAt)}
+            {formatDateNoYear(post.createdAt)}
           </span>
           {!hideCommentButton && (
             <CreatePostModal

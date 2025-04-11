@@ -7,6 +7,7 @@
     "./avatar": "./src/components/avatar.tsx",
     "./button": "./src/components/button.tsx",
     "./calendar": "./src/components/calendar.tsx",
+    "./date-picker": "./src/components/date-picker.tsx",
     "./dialog": "./src/components/dialog.tsx",
     "./form": "./src/components/form.tsx",
     "./input": "./src/components/input.tsx",
