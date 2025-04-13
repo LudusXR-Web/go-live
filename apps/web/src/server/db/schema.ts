@@ -13,6 +13,7 @@ import {
   smallint,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
@@ -38,21 +39,25 @@ export const contentDispositionEnum = pgEnum("content_disposition_enum", [
   "attachment",
 ]);
 
-export const users = createTable("users", {
-  id: varchar("id", { length: 255 })
-    .$defaultFn(() => createId())
-    .primaryKey(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+export const users = createTable(
+  "users",
+  {
+    id: varchar("id", { length: 255 })
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
 
-  // user details
-  username: varchar("username", { length: 255 }).notNull().unique(),
-  name: varchar("name", { length: 255 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  emailVerified: timestamp("email_verified"),
-  image: text("image"),
-  type: userTypeEnum("user_type").notNull().default("student"),
-});
+    // user details
+    username: varchar("username", { length: 255 }).notNull().unique(),
+    name: varchar("name", { length: 255 }).notNull(),
+    email: varchar("email", { length: 255 }).notNull().unique(),
+    emailVerified: timestamp("email_verified"),
+    image: text("image"),
+    type: userTypeEnum("user_type").notNull().default("student"),
+  },
+  (user) => [uniqueIndex("user_username_idx").on(user.username)],
+);
 
 export const personalDetails = createTable("personal_details", {
   userId: varchar("user_id", { length: 255 })
@@ -322,6 +327,7 @@ export const events = createTable("events", {
   authorId: varchar("author_id", { length: 255 })
     .notNull()
     .references(() => users.id, { onUpdate: "cascade" }),
+  public: boolean("public").notNull().default(false),
 });
 
 export const eventsRelations = relations(events, ({ one }) => ({

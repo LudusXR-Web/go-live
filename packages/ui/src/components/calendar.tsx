@@ -106,7 +106,7 @@ function DynamicCalendar({
       className={cn("relative", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-y-0 mx-auto",
-        month: "space-y-4",
+        month: "space-y-4 mx-auto",
         month_caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
         nav: "flex items-start",
@@ -132,7 +132,7 @@ function DynamicCalendar({
         ),
         range_end: "range-end",
         selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-md",
+          "bg-primary! text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-md",
         today: "bg-slate-200 rounded-md text-accent-foreground",
         outside:
           "outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",

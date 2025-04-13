@@ -46,7 +46,6 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
 }) => {
   const createCourse = api.courses.create.useMutation();
   const updateCourse = api.courses.update.useMutation();
-  const [descriptionLength, setDescriptionLength] = useState(0);
   const [tags, setTags] = useState<Set<string>>(
     new Set<string>(defaultValues?.tags ?? []),
   );
@@ -62,12 +61,6 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
       public: defaultValues?.public ?? false,
     },
   });
-
-  const descriptionRef = form.watch("description");
-  useEffect(
-    () => setDescriptionLength(descriptionRef?.length ?? 0),
-    [descriptionRef.length],
-  );
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     if (defaultValues)
@@ -120,12 +113,12 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
                 <span
                   className={cn(
                     "text-sm font-light",
-                    descriptionLength >= 160
+                    field.value.length >= 160
                       ? "text-red-400"
                       : "text-slate-300",
                   )}
                 >
-                  {descriptionLength}/160
+                  {field.value.length}/160
                 </span>
               </FormDescription>
               <FormMessage />

@@ -18,6 +18,22 @@ const userRouter = createTRPCRouter({
         },
       })) ?? null,
   ),
+  getMultipleFootprintsById: publicProcedure
+    .input(z.string().cuid2().array())
+    .query(
+      async ({ ctx, input }) =>
+        (await ctx.db.query.users.findMany({
+          where: (user, { eq, or }) =>
+            or(...input.map((id) => eq(user.id, id))),
+          columns: {
+            id: true,
+            name: true,
+            username: true,
+            type: true,
+            image: true,
+          },
+        })) ?? null,
+    ),
   getFootprintByUsername: publicProcedure
     .input(z.string().min(2).max(50))
     .query(
@@ -32,6 +48,24 @@ const userRouter = createTRPCRouter({
           },
         })) ?? null,
     ),
+  searchByUsername: protectedProcedure.input(z.string().min(2).max(50)).query(
+    async ({ ctx, input }) =>
+      (await ctx.db.query.users.findMany({
+        where: (user, { or, ilike }) =>
+          or(
+            ilike(user.username, `%${input}%`),
+            ilike(user.name, `%${input}%`),
+          ),
+        columns: {
+          id: true,
+          name: true,
+          username: true,
+          type: true,
+          image: true,
+        },
+        limit: 10,
+      })) ?? null,
+  ),
   update: protectedProcedure
     .input(
       createUpdateSchema(users)

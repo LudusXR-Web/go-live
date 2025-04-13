@@ -25,6 +25,7 @@ export default async function EventCreatePage({
     columns: {
       id: true,
       title: true,
+      public: true,
     },
   });
 

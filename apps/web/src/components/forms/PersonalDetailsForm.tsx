@@ -69,7 +69,6 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
     serverSession.user.id,
   );
   const pathname = usePathname();
-  const [bioLength, setBioLength] = useState(userDetails.bio?.length ?? 0);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,9 +91,6 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
       bio: detailsQuery.data?.bio ?? userDetails.bio ?? "",
     },
   });
-
-  const bioRef = form.watch("bio");
-  useEffect(() => setBioLength(bioRef?.length ?? 0), [bioRef?.length]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     await updateUser.mutateAsync(
@@ -251,10 +247,12 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                     <span
                       className={cn(
                         "text-sm font-light",
-                        bioLength >= 200 ? "text-red-400" : "text-slate-300",
+                        (field.value?.length ?? 0) >= 200
+                          ? "text-red-400"
+                          : "text-slate-300",
                       )}
                     >
-                      {bioLength}/200
+                      {field.value?.length ?? 0}/200
                     </span>
                   </div>
                 </FormControl>

@@ -31,7 +31,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         void revalidatePath(pathname);
       }}
     >
-      <SelectTrigger className="inline-flex max-w-fit items-center gap-1 border-none shadow-none transition-colors hover:bg-primary/10">
+      <SelectTrigger className="hover:bg-primary/10 inline-flex max-w-fit items-center gap-1 border-none bg-transparent shadow-none transition-colors">
         <GlobeIcon size={18} />
         <SelectValue placeholder={defaultLocale} />
       </SelectTrigger>
@@ -41,7 +41,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             <SelectItem
               key={lang}
               value={lang}
-              className="transition-colors focus:bg-muted"
+              className="focus:bg-muted transition-colors"
             >
               {localeNames[lang as keyof typeof localeNames]}
             </SelectItem>
