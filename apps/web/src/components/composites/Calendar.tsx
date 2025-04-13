@@ -35,15 +35,23 @@ const AdvancedCalendar: React.FC<AdvancedCalendarProps> = ({ course }) => {
         today: "bg-accent/40 hover:bg-transparent transition-colors",
       }}
       components={{
-        Day: ({ day, modifiers, className, ...props }) => (
+        Day: ({ day, className, ...props }) => (
           <td className={cn(className, "relative h-32!")} {...props}>
-            <NewEventPopover date={day.date} course={course}>
-              <button className="hover:bg-primary/10 z-20 flex h-full w-full cursor-pointer px-0.5 transition-colors">
+            {+day.date >= new Date().setHours(0, 0, 0, 0) ? (
+              <NewEventPopover date={day.date} course={course}>
+                <button className="hover:bg-primary/10 z-20 flex h-full w-full cursor-pointer px-0.5 transition-colors">
+                  <span className="mb-0.5 pt-1 pl-1 text-start">
+                    {day.date.getDate()}
+                  </span>
+                </button>
+              </NewEventPopover>
+            ) : (
+              <div className="hover:bg-primary/10 z-20 flex h-full w-full px-0.5 transition-colors">
                 <span className="mb-0.5 pt-1 pl-1 text-start">
                   {day.date.getDate()}
                 </span>
-              </button>
-            </NewEventPopover>
+              </div>
+            )}
             <div className="absolute top-6 flex w-full flex-col gap-y-0.5 px-0.5">
               {events.data
                 ?.filter((event) =>
@@ -98,7 +106,9 @@ const NewEventPopover: React.FC<NewEventPopoverProps> = ({
             {formatFullDate(date)}
           </p>
         </div>
-        <p className="py-1">Create an event for the {course.title} course.</p>
+        <p className="pt-1 pb-2 text-sm">
+          Create an event for the {course.title} course.
+        </p>
         <Button asChild>
           <Link href={`/calendar/create?${searchParams.toString()}`}>
             <span>Next</span>
