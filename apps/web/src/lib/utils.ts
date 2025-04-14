@@ -24,7 +24,7 @@ export const months = [
 ];
 
 export const formatDateNoYear = (date: Date) =>
-  `${months[date.getMonth()]} ${date.getDate()}`;
+  `${months[date.getMonth()]} ${date.getDate()}${getOrderSuffix(date.getDate())}`;
 
 export const getOrderSuffix = (number: number) => {
   if (number % 1 !== 0) return;
@@ -41,3 +41,9 @@ export const formatFullDate = (date: Date) =>
 
 export const formatNumericalDate = (date: Date) =>
   `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+export const formatDatetime = (date: Date) =>
+  `${formatFullDate(date)} ${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}`;
+
+export const formatDatetimeNoYear = (date: Date) =>
+  `${formatDateNoYear(date)} ${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}`;

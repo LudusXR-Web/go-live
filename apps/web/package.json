@@ -48,7 +48,7 @@
     "lucide-react": "^0.487.0",
     "motion": "^12.6.3",
     "negotiator": "^1.0.0",
-    "next": "15.2.4",
+    "next": "15.3.0",
     "next-auth": "5.0.0-beta.25",
     "postgres": "^3.4.5",
     "react": "19.1.0",
@@ -75,15 +75,15 @@
     "@types/eslint": "^9.6.1",
     "@types/negotiator": "^0.6.3",
     "@types/node": "^22.14.0",
-    "@types/react": "19.1.0",
-    "@types/react-dom": "19.1.1",
+    "@types/react": "19.1.1",
+    "@types/react-dom": "19.1.2",
     "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",
     "drizzle-kit": "^0.30.6",
     "drizzle-seed": "^0.3.1",
     "eslint": "^9.24.0",
-    "eslint-config-next": "15.2.4",
+    "eslint-config-next": "15.3.0",
     "eslint-plugin-drizzle": "^0.2.3",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
@@ -94,5 +94,11 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.38.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.1.1",
+      "@types/react-dom": "19.1.2"
+    }
   }
 }

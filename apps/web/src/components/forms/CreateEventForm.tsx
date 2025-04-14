@@ -79,9 +79,20 @@ type CreateEventFormProps = {
     title: string;
     public: boolean;
   }[];
-};
+} & (
+  | {
+      variant?: "default";
+      eventId?: undefined;
+    }
+  | {
+      variant?: "update";
+      eventId: string;
+    }
+);
 
 const CreateEventForm: React.FC<CreateEventFormProps> = ({
+  variant = "default",
+  eventId,
   defaultValues,
   courseFootprints,
 }) => {
@@ -92,14 +103,18 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
       rightFormFlag?: boolean;
     }
   >({});
+  const [isPending, setPending] = useState(false);
 
   const router = useRouter();
 
-  const eventMutation = api.calendar.createOwnEvent.useMutation({
+  const eventMutation = api.calendar[
+    variant === "default" ? "createOwnEvent" : "updateOwnEvent"
+  ].useMutation({
     onSuccess(_, data) {
       if (!data.courseId) router.push("/profile"); //? maybe deal with this later differently
 
       router.push(`/course-builder/${data.courseId}/calendar`);
+      setPending(false);
     },
   });
 
@@ -112,6 +127,11 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
           ...data,
         })),
     );
+
+    formClient.on("submit_form_error", () => {
+      setFormData({});
+      setPending(false);
+    });
 
     formClient.on("submit_full", handleSubmitMutation);
 
@@ -155,11 +175,12 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
   );
 
   function onSubmit(e: FormEvent) {
+    setPending(true);
     e.preventDefault();
     formClient.emit("submit");
   }
 
-  async function handleSubmitMutation(data: z.infer<typeof formSchema>) {
+  function handleSubmitMutation(data: z.infer<typeof formSchema>) {
     const start = data.start_date;
     start.setHours(data.start_hr, data.start_min);
 
@@ -168,6 +189,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
 
     eventMutation.mutate({
       ...data,
+      eventId: eventId ?? "",
       start: start.toISOString(),
       end: end.toISOString(),
       attendees: [...data.attendees],
@@ -178,9 +200,19 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <h1 className="text-lg font-bold">
-        Create a New Event and{" "}
-        <span className="text-primary font-extrabold">Go</span>
-        <span className="text-accent font-extrabold">Live</span>
+        {variant === "update" ? (
+          defaultValues?.title ? (
+            `Update the "${defaultValues.title}" Event`
+          ) : (
+            "Update a previously created event"
+          )
+        ) : (
+          <>
+            Create a New Event and{" "}
+            <span className="text-primary font-extrabold">Go</span>
+            <span className="text-accent font-extrabold">Live</span>
+          </>
+        )}
       </h1>
       {DateForm}
       <div className="flex w-full flex-wrap gap-x-12 gap-y-4 *:flex-1">
@@ -188,8 +220,8 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
         {RightForm}
       </div>
       <div className="flex w-full justify-end">
-        <Button type="submit" disabled={eventMutation.isPending}>
-          {eventMutation.isPending ? (
+        <Button type="submit" disabled={isPending}>
+          {isPending ? (
             <Loader2Icon size={20} className="animate-spin" />
           ) : (
             "Save"
@@ -234,11 +266,14 @@ const IsolatedDateForm: React.FC<IsolatedFormProps> = ({
       const end = formValues.end_date;
       end.setHours(formValues.end_hr, formValues.end_min);
 
-      if (+start >= +end)
+      if (+start >= +end) {
+        client.emit("submit_form_error", { title: "start_date" });
+
         return dateForm.setError("start_date", {
           type: "validate",
           message: "The event start time must be before its end time.",
         });
+      }
 
       dateForm.clearErrors("start_date");
 
@@ -265,6 +300,8 @@ const IsolatedDateForm: React.FC<IsolatedFormProps> = ({
                       inputProps={field}
                       defaultValue={field.value}
                       onDayClick={(date) => field.onChange(date)}
+                      startMonth={new Date()}
+                      constraint="onlyFutureInclToday"
                     />
                   </FormControl>
                   <FormMessage />
@@ -354,6 +391,8 @@ const IsolatedDateForm: React.FC<IsolatedFormProps> = ({
                       inputProps={field}
                       defaultValue={field.value}
                       onDayClick={(date) => field.onChange(date)}
+                      startMonth={new Date()}
+                      constraint="onlyFutureInclToday"
                     />
                   </FormControl>
                   <FormMessage />

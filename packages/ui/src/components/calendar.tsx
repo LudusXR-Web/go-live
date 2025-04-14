@@ -34,12 +34,12 @@ function Calendar({
         nav: "flex items-start pt-1 w-fit gap-1",
         button_previous: cn(
           buttonVariants({ variant: "outline" }),
-          "size-7 bg-transparent p-1 opacity-50 hover:opacity-100",
+          "size-7 bg-transparent p-1 opacity-50 hover:opacity-100 aria-disabled:pointer-events-none z-50",
           "absolute left-1"
         ),
         button_next: cn(
           buttonVariants({ variant: "outline" }),
-          "size-7 bg-transparent p-1 opacity-50 hover:opacity-100",
+          "size-7 bg-transparent p-1 opacity-50 hover:opacity-100 aria-disabled:pointer-events-none z-50",
           "absolute right-1"
         ),
         month_grid: "w-full border-collapse space-x-1  border-b ",
@@ -71,6 +71,7 @@ function Calendar({
         range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         hidden: "invisible",
+
         ...classNames,
       }}
       components={{
@@ -112,12 +113,12 @@ function DynamicCalendar({
         nav: "flex items-start",
         button_previous: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 aria-disabled:pointer-events-none z-50",
           "absolute left-1"
         ),
         button_next: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 aria-disabled:pointer-events-none z-50",
           "absolute right-1"
         ),
         month_grid: "w-full border-collapse space-y-1",

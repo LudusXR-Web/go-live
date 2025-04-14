@@ -34,6 +34,34 @@ const userRouter = createTRPCRouter({
           },
         })) ?? null,
     ),
+  getFootprintByEmail: publicProcedure.input(z.string().email()).query(
+    async ({ ctx, input }) =>
+      (await ctx.db.query.users.findFirst({
+        where: (user, { eq }) => eq(user.email, input),
+        columns: {
+          username: true,
+          name: true,
+          type: true,
+          image: true,
+        },
+      })) ?? null,
+  ),
+  getMultipleFootprintsByEmail: publicProcedure
+    .input(z.string().email().array())
+    .query(
+      async ({ ctx, input }) =>
+        (await ctx.db.query.users.findMany({
+          where: (user, { eq, or }) =>
+            or(...input.map((id) => eq(user.email, id))),
+          columns: {
+            id: true,
+            name: true,
+            username: true,
+            type: true,
+            image: true,
+          },
+        })) ?? null,
+    ),
   getFootprintByUsername: publicProcedure
     .input(z.string().min(2).max(50))
     .query(
