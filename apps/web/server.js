@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
 import next from "next";
 
 import conf from "./next.config.js";
@@ -17,16 +18,19 @@ app.prepare().then(async () => {
 
   const httpServer = createServer(handler);
 
-  const io = new Server(httpServer);
-
-  //TODO implement authentication middleware
-  io.use((_socket, next) => {
-    next();
+  const io = new Server(httpServer, {
+    cors: {
+      origin: ["https://admin.socket.io"],
+      credentials: true,
+    },
   });
 
-  io.on("connection", (socket) => {
-    socket.send("Hello World!");
+  instrument(io, {
+    auth: false,
+    mode: "development",
   });
+
+  globalThis.__io = io;
 
   httpServer
     .once("error", (err) => {

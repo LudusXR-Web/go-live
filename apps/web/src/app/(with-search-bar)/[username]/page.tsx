@@ -1,12 +1,15 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
+import { Button } from "@repo/ui/button";
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/server";
 import { auth } from "~/server/auth";
 import Post from "~/components/composites/Post";
 import MultilineText from "~/components/media-display/MultilineText";
+import Link from "next/link";
+import { MessageCircleMoreIcon } from "lucide-react";
 
 type GenericProfilePageProps = {
   params: Promise<{
@@ -77,31 +80,44 @@ export default async function GenericProfilePage({
                 </Avatar>
               </div>
             </div>
-            <div className="flex h-fit pt-16 pb-4">
-              <div className="border-r-2 pr-6">
-                <h1 className="text-3xl font-bold text-nowrap">{user.name}</h1>{" "}
-                {user.details.pronouns && (
-                  <span className="align-middle text-xl font-light">
-                    {user.details.pronouns}
-                  </span>
-                )}
+            <div className="flex flex-wrap justify-between gap-6 pt-16">
+              <div className="flex h-fit flex-wrap gap-6 pb-4 *:pr-6">
+                <div className="border-r-2">
+                  <h1 className="text-3xl font-bold text-nowrap">
+                    {user.name}
+                  </h1>{" "}
+                  {user.details.pronouns && (
+                    <span className="align-middle text-xl font-light">
+                      {user.details.pronouns}
+                    </span>
+                  )}
+                </div>
+                <p
+                  style={{
+                    wordBreak: "break-all",
+                  }}
+                >
+                  {user.details.bio?.length ? (
+                    <MultilineText>{user.details.bio}</MultilineText>
+                  ) : (
+                    <i>
+                      We don't know much about {user.name.split(" ").at(0)}, but
+                      we are sure, they are a great member of the GoingLive
+                      community!
+                    </i>
+                  )}
+                </p>
               </div>
-              <p
-                className="pl-6"
-                style={{
-                  wordBreak: "break-all",
-                }}
+              <Button
+                asChild
+                variant="ghost"
+                className="hover:bg-primary rounded-full px-2.5 py-0 hover:text-white"
               >
-                {user.details.bio?.length ? (
-                  <MultilineText>{user.details.bio}</MultilineText>
-                ) : (
-                  <i>
-                    We don't know much about {user.name.split(" ").at(0)}, but
-                    we are sure, they are a great member of the GoingLive
-                    community!
-                  </i>
-                )}
-              </p>
+                <Link href={`/chat/${user.id}`}>
+                  <MessageCircleMoreIcon className="scale-130" />
+                  <span className="sr-only">Chat with {user.name}</span>
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

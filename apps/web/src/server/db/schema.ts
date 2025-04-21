@@ -342,3 +342,41 @@ export const eventsRelations = relations(events, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+export const chatRooms = createTable("chat_rooms", {
+  id: varchar("id", { length: 255 })
+    .$defaultFn(() => createId())
+    .primaryKey(),
+  members: varchar("members", { length: 255 })
+    .references(() => users.id, { onUpdate: "cascade" })
+    .array()
+    .notNull()
+    .default([]),
+});
+
+export const chatMessages = createTable("chat_messages", {
+  id: varchar("id", { length: 255 })
+    .$defaultFn(() => createId())
+    .primaryKey(),
+  roomId: varchar("room_id", { length: 255 })
+    .notNull()
+    .references(() => chatRooms.id),
+  authorId: varchar("author_id", { length: 255 })
+    .notNull()
+    .references(() => users.id, { onUpdate: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+
+  content: text("content").notNull(),
+});
+
+export const chatMessageRelations = relations(chatMessages, ({ one }) => ({
+  room: one(chatRooms, {
+    fields: [chatMessages.roomId],
+    references: [chatRooms.id],
+  }),
+  author: one(users, {
+    fields: [chatMessages.authorId],
+    references: [users.id],
+  }),
+}));

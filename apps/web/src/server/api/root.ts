@@ -6,6 +6,7 @@ import courseRouter from "./routers/courses";
 import s3Router from "./routers/s3";
 import mediaRouter from "./routers/media";
 import calendarRouter from "./routers/calendar";
+import chatRouter from "./routers/chats";
 
 /**
  * This is the primary router for your server.
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   s3: s3Router,
   media: mediaRouter,
   calendar: calendarRouter,
+  chat: chatRouter,
 });
 
 // export type definition of API

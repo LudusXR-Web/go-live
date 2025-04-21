@@ -6,11 +6,11 @@ import { type Metadata } from "next";
 
 import { HydrateClient } from "~/trpc/server";
 import { TRPCReactProvider } from "~/trpc/react";
+import { getLocaleFromHeaders, ioInit } from "~/lib/server-utils";
 import Footer from "~/components/composites/Footer";
-import { getLocaleFromHeaders } from "~/lib/server-utils";
 
 export const metadata: Metadata = {
-  title: "Go Live",
+  title: "Going Live",
   description: "",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
@@ -18,6 +18,8 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  if (!globalThis.__IO_SETUP) await ioInit();
+
   const locale = await getLocaleFromHeaders();
 
   return (
