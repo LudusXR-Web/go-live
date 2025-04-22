@@ -368,6 +368,8 @@ export const chatMessages = createTable("chat_messages", {
   content: text("content").notNull(),
 });
 
+export type messageBody = Omit<typeof chatMessages.$inferSelect, "updatedAt">;
+
 export const chatMessageRelations = relations(chatMessages, ({ one }) => ({
   room: one(chatRooms, {
     fields: [chatMessages.roomId],

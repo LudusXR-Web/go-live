@@ -1,12 +1,14 @@
 import "server-only";
 import { headers } from "next/headers";
-import { type Server, type Socket } from "socket.io";
+import { type Server } from "socket.io";
+import Cryptr from "cryptr";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
 import { dictionaries } from "~/app/dictionaries";
 import { globalLanguageHeader } from "~/middleware";
-import { chatMessages } from "~/server/db/schema";
+import { type messageBody } from "~/server/db/schema";
+import { saveMessage } from "~/server/actions/chatActions";
 
 export const getDictionaryFromHeaders = async () =>
   dictionaries[
@@ -16,8 +18,17 @@ export const getDictionaryFromHeaders = async () =>
 export const getLocaleFromHeaders = async () =>
   (await headers()).get(globalLanguageHeader)! as keyof typeof dictionaries;
 
+interface ServerToClientEvents {
+  "message:incoming": (messageBody: messageBody) => void;
+}
+
+interface ClientToServerEvents {
+  "room:join": (roomId: string) => void;
+  "message:new": (messageBody: messageBody) => void;
+}
+
 declare global {
-  var __io: Server;
+  var __io: Server<ClientToServerEvents, ServerToClientEvents>;
   var __IO_SETUP: boolean;
 }
 
@@ -28,13 +39,6 @@ export const ioInit = async () => {
 
   try {
     io.on("connection", async (socket) => {
-      if (
-        env.NODE_ENV === "development" &&
-        socket.handshake.auth.token === "sudo"
-      ) {
-        socket.emit("handshake", Math.floor(Date.now() / 1000));
-      }
-
       const currentSession =
         (await db.query.sessions.findFirst({
           where: (session, { eq, and, gte }) =>
@@ -44,18 +48,25 @@ export const ioInit = async () => {
             ),
         })) ?? null;
 
-      if (!currentSession) socket.disconnect();
+      if (!currentSession && env.NODE_ENV !== "development")
+        socket.disconnect();
 
       socket.on("room:join", (roomId) => {
         socket.join(roomId);
       });
 
-      socket.on(
-        "message:new",
-        (messageBody: Omit<typeof chatMessages.$inferSelect, "updatedAt">) => {
-          //TODO implement message handling
-        },
-      );
+      socket.on("message:new", async (message) => {
+        io.to(message.roomId).emit("message:incoming", message);
+
+        const cryptoModule = new Cryptr(env.AUTH_SECRET);
+
+        await saveMessage({
+          ...message,
+          content: cryptoModule.encrypt(message.content),
+          createdAt: new Date(message.createdAt),
+          updatedAt: new Date(message.createdAt),
+        });
+      });
     });
 
     globalThis.__IO_SETUP = true;

@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import Cryptr from "cryptr";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
+import { env } from "~/env";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import ChatInput from "~/components/composites/ChatInput";
+import ChatView from "~/components/composites/ChatView";
 
 type ChatPageProps = {
   params: Promise<{
@@ -42,12 +45,22 @@ export default async function ChatPage({ params }: ChatPageProps) {
   const recipientFootprints =
     await api.users.getMultipleFootprintsById(recipients);
 
+  const initialMessages = await api.chat.getMessagesByRoomId(room.id);
+  const cryptoModule = new Cryptr(env.AUTH_SECRET);
+
+  for (const message of initialMessages) {
+    message.content = cryptoModule.decrypt(message.content);
+  }
+
   return (
     <main className="container h-full w-full">
-      <div className="mx-auto flex h-full divide-x border-x">
+      <div className="mx-auto flex h-full overflow-hidden rounded-r-md border-x">
         <div className="h-full p-2">chat list here</div>
         <div className="flex h-full grow flex-col">
-          <div id="chat_head" className="bg-primary/15 w-full p-2">
+          <div
+            id="chat_head"
+            className="bg-primary/15 w-full rounded-tl-md p-2"
+          >
             {isGroupChat ? (
               <div className="group/button_link flex items-center gap-2">
                 <Avatar className="border border-slate-300">
@@ -77,8 +90,13 @@ export default async function ChatPage({ params }: ChatPageProps) {
               </Link>
             )}
           </div>
-          <div id="chat_content" className="min-h-[70dvh] w-full grow"></div>
-          <div id="chat_input" className="bg-primary/15 w-full p-4">
+          <div id="chat_content" className="w-full grow *:only:min-h-[70dvh]">
+            <ChatView initialMessages={initialMessages} />
+          </div>
+          <div
+            id="chat_input"
+            className="bg-primary/15 w-full rounded-bl-md p-4"
+          >
             <ChatInput roomId={room.id} session={session} />
           </div>
         </div>

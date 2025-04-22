@@ -2,10 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { type Session } from "next-auth";
-import Cryptr from "cryptr";
 import { SendHorizonalIcon } from "lucide-react";
 
 import { useSocket } from "~/lib/socket";
+import { messageBody } from "~/server/db/schema";
 
 type ChatInputProps = {
   roomId: string;
@@ -18,6 +18,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ roomId, session }) => {
 
   useEffect(() => {
     socket.emit("room:join", roomId);
+
+    socket.on("message:incoming", (message: messageBody) => {
+      console.log("[DEBUG]", message);
+    });
   }, []);
 
   return (
@@ -29,20 +33,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ roomId, session }) => {
         const message = inputRef.current?.value.trim();
 
         if (!message) return;
-
-        const timestamp = Date.now();
-        const key = `${roomId}:${session.user.id}:${timestamp}`;
-
-        const cryptoModule = new Cryptr(key);
+        e.currentTarget.reset();
 
         socket.emit("message:new", {
           roomId,
           authorId: session.user.id,
-          content: cryptoModule.encrypt(message),
-          createdAt: timestamp,
+          content: message,
+          createdAt: Date.now(),
         });
-
-        e.currentTarget.reset();
       }}
     >
       <input

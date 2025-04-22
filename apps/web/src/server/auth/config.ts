@@ -78,7 +78,7 @@ export const authConfig = {
     accountsTable: accounts,
     sessionsTable: sessions,
   }),
-  debug: process.env.NODE_ENV === "development",
+  debug: env.NODE_ENV === "development",
   trustHost: true,
   cookies: {
     sessionToken: {

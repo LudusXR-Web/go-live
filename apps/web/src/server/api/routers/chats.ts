@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 
 import { chatRooms, chatMessages } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { chat } from "googleapis/build/src/apis/chat";
 
 const chatRouter = createTRPCRouter({
   getActionById: protectedProcedure
@@ -74,6 +75,21 @@ const chatRouter = createTRPCRouter({
       (await ctx.db.query.chatRooms.findFirst({
         where: (chat, { eq }) => eq(chat.id, input),
       })) ?? null,
+  ),
+  getMessagesByRoomId: protectedProcedure.input(z.string().cuid2()).query(
+    async ({ ctx, input }) =>
+      (await ctx.db
+        .select({
+          id: chatMessages.id,
+          roomId: chatMessages.roomId,
+          authorId: chatMessages.authorId,
+          createdAt: chatMessages.createdAt,
+          updatedAt: chatMessages.updatedAt,
+          content: chatMessages.content,
+        })
+        .from(chatRooms)
+        .where(arrayContains(chatRooms.members, [ctx.session.user.id]))
+        .rightJoin(chatMessages, eq(chatMessages.roomId, input))) ?? null,
   ),
 });
 
