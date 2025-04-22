@@ -3,11 +3,17 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-export const socket = io();
+const socket = io({ autoConnect: false });
 
-export const useSocket = () => {
+export const useSocket = (sessionToken: string) => {
   const [isReady, setIsReady] = useState(socket.connected);
   const [transport, setTransport] = useState("N/A");
+
+  socket.auth = {
+    token: sessionToken,
+  };
+
+  socket.connect();
 
   useEffect(() => {
     if (socket.connected) {
@@ -34,6 +40,8 @@ export const useSocket = () => {
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
+
+      socket.disconnect();
     };
   }, []);
 

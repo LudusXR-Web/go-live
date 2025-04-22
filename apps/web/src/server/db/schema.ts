@@ -28,11 +28,7 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `golive_${name}`);
 
-export const userTypeEnum = pgEnum("user_type_enum", [
-  "student",
-  "teacher",
-  "VET",
-]);
+export const userTypeEnum = pgEnum("user_type_enum", ["student", "teacher"]);
 
 export const contentDispositionEnum = pgEnum("content_disposition_enum", [
   "inline",
@@ -347,6 +343,8 @@ export const chatRooms = createTable("chat_rooms", {
   id: varchar("id", { length: 255 })
     .$defaultFn(() => createId())
     .primaryKey(),
+  title: varchar("title", { length: 255 }),
+  image: varchar("image", { length: 255 }).references(() => media.id),
   members: varchar("members", { length: 255 })
     .references(() => users.id, { onUpdate: "cascade" })
     .array()

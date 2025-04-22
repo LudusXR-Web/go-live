@@ -2,9 +2,11 @@ import "server-only";
 import { headers } from "next/headers";
 import { type Server, type Socket } from "socket.io";
 
+import { env } from "~/env";
+import { db } from "~/server/db";
 import { dictionaries } from "~/app/dictionaries";
 import { globalLanguageHeader } from "~/middleware";
-import { auth } from "~/server/auth";
+import { chatMessages } from "~/server/db/schema";
 
 export const getDictionaryFromHeaders = async () =>
   dictionaries[
@@ -20,28 +22,46 @@ declare global {
 }
 
 export const ioInit = async () => {
-  const session = await auth();
   const io = globalThis.__io;
 
   if (!io) throw new Error("Websocket server failed to initialise.");
 
   try {
-    io.use(async (socket, next) => {
-      if (session) next();
+    io.on("connection", async (socket) => {
+      if (
+        env.NODE_ENV === "development" &&
+        socket.handshake.auth.token === "sudo"
+      ) {
+        socket.emit("handshake", Math.floor(Date.now() / 1000));
+      }
 
-      io.in(socket.id).disconnectSockets();
+      const currentSession =
+        (await db.query.sessions.findFirst({
+          where: (session, { eq, and, gte }) =>
+            and(
+              eq(session.sessionToken, socket.handshake.auth.token),
+              gte(session.expires, new Date()),
+            ),
+        })) ?? null;
+
+      if (!currentSession) socket.disconnect();
+
+      socket.on("room:join", (roomId) => {
+        socket.join(roomId);
+      });
+
+      socket.on(
+        "message:new",
+        (messageBody: Omit<typeof chatMessages.$inferSelect, "updatedAt">) => {
+          //TODO implement message handling
+        },
+      );
     });
-
-    io.on("connection", (socket) => {
-      io.in(socket.id).emit("handshake", Math.floor(Date.now() / 1000));
-    });
-
-    //TODO
-    io.on("join-room", (socket, roomId) => {});
-    io.on("message", (socket) => {});
 
     globalThis.__IO_SETUP = true;
   } catch (error) {
-    throw new Error("Websocket server failed to initialise.", { cause: error });
+    throw new Error(`Websocket server failed to initialise. ${error}`, {
+      cause: error,
+    });
   }
 };

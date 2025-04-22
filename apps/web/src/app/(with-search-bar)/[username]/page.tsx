@@ -81,7 +81,7 @@ export default async function GenericProfilePage({
               </div>
             </div>
             <div className="flex flex-wrap justify-between gap-6 pt-16">
-              <div className="flex h-fit flex-wrap gap-6 pb-4 *:pr-6">
+              <div className="flex h-fit gap-6 pb-4 *:pr-6">
                 <div className="border-r-2">
                   <h1 className="text-3xl font-bold text-nowrap">
                     {user.name}
@@ -100,11 +100,13 @@ export default async function GenericProfilePage({
                   {user.details.bio?.length ? (
                     <MultilineText>{user.details.bio}</MultilineText>
                   ) : (
-                    <i>
-                      We don't know much about {user.name.split(" ").at(0)}, but
-                      we are sure, they are a great member of the GoingLive
-                      community!
-                    </i>
+                    <em>
+                      <MultilineText>
+                        {`We don't know much about ${user.name.split(" ").at(0)},
+                        but we are sure, they are a great member of the
+                        GoingLive community!`}
+                      </MultilineText>
+                    </em>
                   )}
                 </p>
               </div>

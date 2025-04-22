@@ -24,10 +24,12 @@ import { accounts, sessions, users, personalDetails } from "~/server/db/schema";
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
+    sessionToken: string;
     user: typeof users.$inferSelect & DefaultSession["user"];
   }
 
   interface AdapterSession extends DefaultSession {
+    sessionToken: string;
     user: typeof users.$inferSelect & DefaultSession["user"];
   }
 
