@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { type Session } from "next-auth";
 import { SendHorizonalIcon } from "lucide-react";
 
 import { useSocket } from "~/lib/socket";
-import { messageBody } from "~/server/db/schema";
 
 type ChatInputProps = {
   roomId: string;
@@ -15,14 +14,6 @@ type ChatInputProps = {
 const ChatInput: React.FC<ChatInputProps> = ({ roomId, session }) => {
   const { socket } = useSocket(session.sessionToken);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    socket.emit("room:join", roomId);
-
-    socket.on("message:incoming", (message: messageBody) => {
-      console.log("[DEBUG]", message);
-    });
-  }, []);
 
   return (
     <form

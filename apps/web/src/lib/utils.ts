@@ -43,7 +43,10 @@ export const formatNumericalDate = (date: Date) =>
   `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
 export const formatDatetime = (date: Date) =>
-  `${formatFullDate(date)} ${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}`;
+  `${formatFullDate(date)} ${formatTime(date)}`;
 
 export const formatDatetimeNoYear = (date: Date) =>
-  `${formatDateNoYear(date)} ${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}`;
+  `${formatDateNoYear(date)} ${formatTime(date)}`;
+
+export const formatTime = (date: Date) =>
+  `${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}`;

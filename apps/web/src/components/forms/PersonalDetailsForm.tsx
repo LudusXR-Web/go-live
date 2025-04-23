@@ -185,17 +185,19 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {userTypeEnum.enumValues.map((t) => (
-                            <SelectItem
-                              className="focus:bg-muted"
-                              key={t}
-                              value={t}
-                            >
-                              {/* text-transform doesn't work here for some reason */}
-                              {t.slice(0, 1).toUpperCase()}
-                              {t.slice(1)}
-                            </SelectItem>
-                          ))}
+                          {userTypeEnum.enumValues
+                            .filter((v) => v !== "VET")
+                            .map((t) => (
+                              <SelectItem
+                                className="focus:bg-muted"
+                                key={t}
+                                value={t}
+                              >
+                                {/* text-transform doesn't work here for some reason */}
+                                {t.slice(0, 1).toUpperCase()}
+                                {t.slice(1)}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </FormControl>

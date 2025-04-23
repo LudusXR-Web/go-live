@@ -1,11 +1,12 @@
 import z from "zod";
-import { arrayContained, arrayContains, eq } from "drizzle-orm";
+import { arrayContained, arrayContains, and, asc, eq } from "drizzle-orm";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { TRPCError } from "@trpc/server";
+import Cryptr from "cryptr";
 
+import { env } from "~/env";
 import { chatRooms, chatMessages } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { chat } from "googleapis/build/src/apis/chat";
 
 const chatRouter = createTRPCRouter({
   getActionById: protectedProcedure
@@ -76,6 +77,12 @@ const chatRouter = createTRPCRouter({
         where: (chat, { eq }) => eq(chat.id, input),
       })) ?? null,
   ),
+  getRoomsByMemberId: protectedProcedure.input(z.string().cuid2()).query(
+    async ({ ctx, input }) =>
+      (await ctx.db.query.chatRooms.findMany({
+        where: (room) => arrayContains(room.members, [input]),
+      })) ?? null,
+  ),
   getMessagesByRoomId: protectedProcedure.input(z.string().cuid2()).query(
     async ({ ctx, input }) =>
       (await ctx.db
@@ -88,9 +95,58 @@ const chatRouter = createTRPCRouter({
           content: chatMessages.content,
         })
         .from(chatRooms)
-        .where(arrayContains(chatRooms.members, [ctx.session.user.id]))
-        .rightJoin(chatMessages, eq(chatMessages.roomId, input))) ?? null,
+        .where(
+          and(
+            eq(chatRooms.id, input),
+            arrayContains(chatRooms.members, [ctx.session.user.id]),
+          ),
+        )
+        .rightJoin(chatMessages, eq(chatMessages.roomId, input))
+        .orderBy(asc(chatMessages.createdAt))) ?? null,
   ),
+  getLastMessagesFromMultipleRooms: protectedProcedure
+    .input(z.string().cuid2().array())
+    .query(async ({ ctx, input }) => {
+      const messagePromises = input.map(
+        async (id) =>
+          await ctx.db.query.chatMessages.findFirst({
+            where: (message, { eq }) => eq(message.roomId, id),
+            orderBy: (message, { desc }) => desc(message.createdAt),
+          }),
+      );
+
+      const messages = (await Promise.all(messagePromises)).filter(
+        (message) => !!message,
+      );
+      const cryptoModule = new Cryptr(env.AUTH_SECRET);
+
+      for (const message of messages)
+        message.content = cryptoModule.decrypt(message.content);
+
+      return messages;
+    }),
+
+  create: protectedProcedure
+    .input(createInsertSchema(chatRooms).omit({ id: true }))
+    .mutation(
+      async ({ ctx, input }) =>
+        (
+          await ctx.db
+            .insert(chatRooms)
+            .values({
+              ...input,
+            })
+            .returning({ id: chatRooms.id })
+        ).at(0)!.id,
+    ),
+  update: protectedProcedure
+    .input(
+      createUpdateSchema(chatRooms).merge(z.object({ id: z.string().cuid2() })),
+    )
+    .mutation(
+      async ({ ctx, input: { id, ...input } }) =>
+        await ctx.db.update(chatRooms).set(input).where(eq(chatRooms.id, id)),
+    ),
 });
 
 export default chatRouter;

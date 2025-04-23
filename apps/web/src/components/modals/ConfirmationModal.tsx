@@ -16,12 +16,14 @@ import { Button } from "@repo/ui/button";
 type ConfirmationModalProps = {
   question: React.ReactNode;
   onConfirm: () => any;
+  reversible?: boolean;
 } & PropsWithChildren;
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   question,
   children,
   onConfirm,
+  reversible = false,
 }) => {
   return (
     <Dialog>
@@ -29,7 +31,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{question}</DialogTitle>
-          <DialogDescription>This action is irreversible.</DialogDescription>
+          <DialogDescription>
+            {reversible
+              ? "This action can be reversed later."
+              : "This action is irreversible."}
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
@@ -37,9 +43,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               Cancel
             </Button>
           </DialogClose>
-          <Button variant="destructive" onClick={onConfirm}>
-            Confirm
-          </Button>
+          <DialogClose asChild>
+            <Button variant="destructive" onClick={onConfirm}>
+              Confirm
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

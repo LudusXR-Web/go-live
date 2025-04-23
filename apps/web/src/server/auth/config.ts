@@ -69,7 +69,7 @@ export const authConfig = {
       profile: (profile) => ({
         ...profile,
         id: profile.sub,
-        username: `${profile.name.toLowerCase().replaceAll(" ", "_")}_${createId()}`,
+        username: createId(),
       }),
     }),
   ],

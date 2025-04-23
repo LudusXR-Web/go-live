@@ -33,7 +33,7 @@ const ChangeProfileBanner: React.FC<ChangeProfileBannerProps> = ({
 
       courseMutation.mutate({
         userId: personalDetails.userId,
-        banner: url,
+        banner: `/api/cdn/${file.objectKey}`,
       });
 
       mediaMutation.mutate({

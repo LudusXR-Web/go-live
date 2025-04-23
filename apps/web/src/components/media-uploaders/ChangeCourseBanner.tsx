@@ -31,7 +31,7 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
 
       courseMutation.mutate({
         id: course.id,
-        image: url,
+        image: `/api/cdn/${file.objectKey}`,
       });
 
       mediaMutation.mutate({

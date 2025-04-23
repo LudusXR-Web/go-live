@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AtSignIcon, CheckIcon, Loader2Icon, XIcon } from "lucide-react";
+import { AtSignIcon, Loader2Icon, XIcon } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -32,14 +32,12 @@ import {
 } from "@repo/ui/select";
 import { Input } from "@repo/ui/input";
 import { Textarea } from "@repo/ui/textarea";
-import { Popover, PopoverAnchor, PopoverContent } from "@repo/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { Switch } from "@repo/ui/switch";
 import { Button } from "@repo/ui/button";
 
-import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
-import { type api as serverApi } from "~/trpc/server";
+import MemberSearchPopover from "~/components/composites/MemberSearchPopover";
 
 const dateFormSchema = z.object({
   start_date: z.date(),
@@ -626,11 +624,11 @@ const IsolatedRightForm: React.FC<
           control={rightForm.control}
           name="member_query"
           render={({ field }) => (
-            <FormItem className="relative">
+            <FormItem>
               <FormLabel>Invited Members</FormLabel>
               <FormControl>
                 <div className="border-input rounded-md border bg-white">
-                  <div className="h-18 p-2">
+                  <div className="min-h-18 p-2">
                     {!attendeesValue.size && (
                       <span className="text-muted-foreground text-sm">
                         No attendees invited
@@ -695,9 +693,9 @@ const IsolatedRightForm: React.FC<
                       <MemberSearchPopover
                         open={(field.value?.length ?? 0) >= 2 && queryFocused}
                         memberFootprints={attendeesSearchQuery.data ?? []}
-                        addAttendee={addAttendee}
-                        removeAttendee={removeAttendee}
-                        attendees={attendeesValue}
+                        addMember={addAttendee}
+                        removeMember={removeAttendee}
+                        memberArray={attendeesValue}
                       />
                     </div>
                   </div>
@@ -783,78 +781,5 @@ const IsolatedRightForm: React.FC<
     </Form>
   );
 };
-
-type MemberSearchPopoverProps = {
-  open?: boolean;
-  memberFootprints: Awaited<
-    ReturnType<typeof serverApi.users.searchByUsername>
-  >;
-  addAttendee: (id: string) => void;
-  removeAttendee: (id: string) => void;
-  attendees: Set<string>;
-};
-
-const MemberSearchPopover: React.FC<MemberSearchPopoverProps> = ({
-  open,
-  memberFootprints,
-  addAttendee,
-  removeAttendee,
-  attendees,
-}) => (
-  <Popover open={open}>
-    <PopoverAnchor className="absolute left-44 size-0 select-none" />
-    <PopoverContent
-      className="space-y-2"
-      onOpenAutoFocus={(e) => e.preventDefault()}
-    >
-      {!!memberFootprints.length && (
-        <div className="space-y-0.5">
-          {memberFootprints.map((member) => (
-            <Fragment key={member.id}>
-              <button
-                className={cn(
-                  "flex w-full cursor-pointer items-center justify-between rounded-md p-2 transition-colors",
-                  attendees.has(member.id)
-                    ? "bg-green-100 hover:bg-green-200"
-                    : "hover:bg-muted",
-                )}
-                onClick={() =>
-                  attendees.has(member.id)
-                    ? removeAttendee(member.id)
-                    : addAttendee(member.id)
-                }
-              >
-                <div className="flex gap-x-3">
-                  <Avatar>
-                    <AvatarImage src={member.image ?? ""} />
-                    <AvatarFallback>
-                      {member.name.at(0)!.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="text-sm">
-                    <h4>{member.name}</h4>
-                    <p className="text-muted-foreground text-start">
-                      @{member.username}
-                    </p>
-                  </div>
-                </div>
-                {attendees.has(member.id) && (
-                  <CheckIcon
-                    size={20}
-                    className="justify-self-end text-green-500"
-                  />
-                )}
-              </button>
-              <div className="border-muted mt-1 mb-0 h-1 w-full border-t" />
-            </Fragment>
-          ))}
-        </div>
-      )}
-      <h3 className="text-muted-foreground text-center text-xs">
-        {!memberFootprints.length ? "No members found" : "Search results"}
-      </h3>
-    </PopoverContent>
-  </Popover>
-);
 
 export default CreateEventForm;

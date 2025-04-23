@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { SessionProvider } from "next-auth/react";
 import { type Metadata } from "next";
 
+import { auth } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 import { TRPCReactProvider } from "~/trpc/react";
 import { getLocaleFromHeaders, ioInit } from "~/lib/server-utils";
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  if (!globalThis.__IO_SETUP) await ioInit();
+  if (!globalThis.__IO_SETUP && (await auth())) await ioInit();
 
   const locale = await getLocaleFromHeaders();
 

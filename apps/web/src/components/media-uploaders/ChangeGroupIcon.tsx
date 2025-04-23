@@ -1,26 +1,36 @@
 "use client";
 
 import { type HTMLAttributes, useState } from "react";
-import { type Session } from "next-auth";
 import { useUploadFile } from "better-upload/client";
 import { ImageUpIcon, LoaderCircleIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
 import { api } from "~/trpc/react";
 import { env } from "~/env";
+import { chatRooms } from "~/server/db/schema";
 
-type ChangeAvatarProps = HTMLAttributes<HTMLDivElement> & {
-  user: Session["user"];
+const groupIconStyles = [
+  "bg-red-400 text-white",
+  "bg-amber-400 text-white",
+  "bg-violet-500 text-white",
+  "bg-green-400 text-white",
+];
+
+type ChangeGroupIconProps = HTMLAttributes<HTMLDivElement> & {
+  room: typeof chatRooms.$inferSelect;
 };
 
-const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user, ...props }) => {
-  const [avatarUrl, setAvatarUrl] = useState(user.image);
-  const userMutation = api.users.update.useMutation();
+const ChangeGroupIcon: React.FC<ChangeGroupIconProps> = ({
+  room,
+  ...props
+}) => {
+  const [imageUrl, setImageUrl] = useState(room.image);
+  const chatRoomMutation = api.chat.update.useMutation();
   const mediaMutation = api.media.create.useMutation();
 
   const { isPending, upload, reset } = useUploadFile({
     route: "image",
-    api: "/api/upload/profile-pictures",
+    api: "/api/upload/group-images",
     onUploadError: (error) => {
       console.log(`[UPLOAD_ERROR] ${error.type}\n${error.message}`);
       reset();
@@ -28,8 +38,8 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user, ...props }) => {
     onUploadComplete: ({ file }) => {
       const url = env.NEXT_PUBLIC_AWS_OBJECT_PREFIX + file.objectKey;
 
-      userMutation.mutate({
-        id: user.id,
+      chatRoomMutation.mutate({
+        id: room.id,
         image: `/api/cdn/${file.objectKey}`,
       });
 
@@ -40,7 +50,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user, ...props }) => {
         url,
       });
 
-      setAvatarUrl(url);
+      setImageUrl(url);
     },
   });
 
@@ -74,23 +84,29 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user, ...props }) => {
 
               upload(e.target.files[0], {
                 metadata: {
-                  userId: user.id,
+                  userId: room.id,
                   timestamp: Date.now(),
-                  path: "profile-pictures",
+                  path: "group-images",
                 },
               });
             }
           }}
         />
         <AvatarImage
-          src={avatarUrl ?? undefined}
-          alt="Profile Avatar Image"
+          src={imageUrl ?? undefined}
+          alt={`${room.title!} Group Icon`}
           className="transition-[filter] group-hover:blur-xs"
         />
-        <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+        <AvatarFallback
+          className={groupIconStyles.at(
+            Math.floor(Math.random() * groupIconStyles.length),
+          )}
+        >
+          {room.title!.charAt(0).toUpperCase()}
+        </AvatarFallback>
       </Avatar>
     </div>
   );
 };
 
-export default ChangeAvatar;
+export default ChangeGroupIcon;
