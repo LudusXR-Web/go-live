@@ -28,8 +28,8 @@ interface ClientToServerEvents {
 }
 
 declare global {
-  var __io: Server<ClientToServerEvents, ServerToClientEvents>;
-  var __IO_SETUP: boolean;
+  var __io: Server<ClientToServerEvents, ServerToClientEvents>; //eslint-disable-line no-var
+  var __IO_SETUP: boolean; //eslint-disable-line no-var
 }
 
 export const ioInit = async () => {
@@ -38,17 +38,19 @@ export const ioInit = async () => {
   if (!io) throw new Error("Websocket server failed to initialise.");
 
   try {
-    io.use(async (socket, next) => {
-      const currentSession =
-        (await db.query.sessions.findFirst({
-          where: (session, { eq, and, gte }) =>
-            and(
-              eq(session.sessionToken, socket.handshake.auth.token),
-              gte(session.expires, new Date()),
-            ),
-        })) ?? null;
+    io.use((socket, next) => {
+      void (async () => {
+        const currentSession =
+          (await db.query.sessions.findFirst({
+            where: (session, { eq, and, gte }) =>
+              and(
+                eq(session.sessionToken, socket.handshake.auth.token as string),
+                gte(session.expires, new Date()),
+              ),
+          })) ?? null;
 
-      if (currentSession || env.NODE_ENV === "development") next();
+        if (currentSession || env.NODE_ENV === "development") next();
+      })();
     });
 
     io.on("connection", (socket) => {
@@ -59,8 +61,8 @@ export const ioInit = async () => {
           socket.handshake.time,
         );
 
-      socket.on("room:join", (roomId) => {
-        socket.join(roomId);
+      socket.on("room:join", async (roomId) => {
+        await socket.join(roomId);
       });
 
       socket.on("message:new", async (message) => {
@@ -86,8 +88,11 @@ export const ioInit = async () => {
 
     globalThis.__IO_SETUP = true;
   } catch (error) {
-    throw new Error(`Websocket server failed to initialise. ${error}`, {
-      cause: error,
-    });
+    throw new Error(
+      `Websocket server failed to initialise. ${error as string}`,
+      {
+        cause: error,
+      },
+    );
   }
 };

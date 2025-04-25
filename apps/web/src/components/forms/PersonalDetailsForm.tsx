@@ -1,9 +1,8 @@
 "use client";
 
 import { z } from "zod";
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -114,7 +113,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({
 
     await sessionQuery.refetch();
     await detailsQuery.refetch();
-    revalidatePath(pathname);
+    void revalidatePath(pathname);
   }
 
   return (

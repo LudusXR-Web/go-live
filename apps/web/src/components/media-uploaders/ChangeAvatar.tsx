@@ -72,7 +72,7 @@ const ChangeAvatar: React.FC<ChangeAvatarProps> = ({ user, ...props }) => {
             if (e.target.files?.[0]) {
               if (e.target.files[0].size > 4194304) return;
 
-              upload(e.target.files[0], {
+              void upload(e.target.files[0], {
                 metadata: {
                   userId: user.id,
                   timestamp: Date.now(),

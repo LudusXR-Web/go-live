@@ -1,8 +1,9 @@
 "use client";
 
 import { Fragment, useEffect, useState, type PropsWithChildren } from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,10 +37,9 @@ import {
 import { Input } from "@repo/ui/input";
 
 import { api } from "~/trpc/react";
-import { chatRooms } from "~/server/db/schema";
+import type { chatRooms } from "~/server/db/schema";
 import MemberSearchPopover from "~/components/composites/MemberSearchPopover";
 import ChangeGroupIcon from "~/components/media-uploaders/ChangeGroupIcon";
-import Link from "next/link";
 
 const formSchema = z
   .object({
@@ -102,8 +102,10 @@ const CreateChatModal: React.FC<CreateChatModalProps> = ({
     let timeout: NodeJS.Timeout;
 
     if (recipientsSearchQuery.isLoading)
-      timeout = setTimeout(() => recipientsSearchQuery.refetch(), 500);
-    else recipientsSearchQuery.refetch();
+      timeout = setTimeout(() => {
+        void recipientsSearchQuery.refetch();
+      }, 500);
+    else void recipientsSearchQuery.refetch();
 
     return () => clearTimeout(timeout);
   }, [memberQueryValue]);

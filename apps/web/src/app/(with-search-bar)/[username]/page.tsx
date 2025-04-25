@@ -32,7 +32,7 @@ export default async function GenericProfilePage({
 
   const user = {
     ...userFootprint,
-    details: { ...userDetails! },
+    details: { ...userDetails },
   };
 
   const posts = await api.posts.getByAuthorId(user.id);

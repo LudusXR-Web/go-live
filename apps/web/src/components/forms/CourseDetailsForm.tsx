@@ -3,7 +3,7 @@
 import z from "zod";
 import { useRouter } from "next/navigation";
 import { type Session } from "next-auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircleIcon, XIcon } from "lucide-react";

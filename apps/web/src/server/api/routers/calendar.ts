@@ -65,7 +65,8 @@ const calendarRouter = createTRPCRouter({
       });
 
       const sortedGoogleEvents = res.data.items.sort(
-        (a, b) => +new Date(a.start?.dateTime!) - +new Date(b.start?.dateTime!),
+        (a, b) =>
+          +new Date(a.start?.dateTime ?? 0) - +new Date(b.start?.dateTime ?? 0),
       );
 
       return {
@@ -99,7 +100,7 @@ const calendarRouter = createTRPCRouter({
 
       if (!queriedAccount) throw new TRPCError({ code: "NOT_FOUND" });
 
-      const { authorId, ...account } = queriedAccount as Record<
+      const { authorId: _authorId, ...account } = queriedAccount as Record<
         keyof typeof queriedAccount,
         NonNullable<string>
       >;
@@ -121,7 +122,8 @@ const calendarRouter = createTRPCRouter({
         )
         .sort(
           (a, b) =>
-            +new Date(a.start?.dateTime!) - +new Date(b.start?.dateTime!),
+            +new Date(a.start?.dateTime ?? 0) -
+            +new Date(b.start?.dateTime ?? 0),
         );
 
       if (!fetchedEvents.length) return null;
@@ -264,8 +266,7 @@ const calendarRouter = createTRPCRouter({
         where: (event, { eq }) => eq(event.id, input),
       });
 
-      if (!storedEvent || !storedEvent.public)
-        throw new TRPCError({ code: "NOT_FOUND" });
+      if (!storedEvent?.public) throw new TRPCError({ code: "NOT_FOUND" });
 
       const account = await ctx.db.query.accounts.findFirst({
         where: (account, { eq }) => eq(account.userId, storedEvent.authorId),

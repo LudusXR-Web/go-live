@@ -17,10 +17,10 @@ export async function GET(
   let mediaDetails: typeof media.$inferSelect | null;
 
   try {
-    isIdQuery.success
-      ? (mediaDetails = await api.media.getById(query))
-      : (mediaDetails = await api.media.getByKey(query));
-  } catch (error) {
+    mediaDetails = isIdQuery.success
+      ? await api.media.getById(query)
+      : await api.media.getByKey(query);
+  } catch {
     return NextResponse.json("401 Unauthorized", {
       status: 401,
     });

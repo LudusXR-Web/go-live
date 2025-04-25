@@ -13,6 +13,12 @@ import { cn } from "~/lib/utils";
 import { buttonVariants } from "./button";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type ChevronProps = {
+  className?: string;
+  orientation?: "up" | "down" | "left" | "right";
+  size?: number;
+  disabled?: boolean;
+};
 
 function Calendar({
   className,
@@ -75,7 +81,11 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ className, orientation, ...props }) => (
+        Chevron: ({
+          className,
+          orientation = "left",
+          ...props
+        }: ChevronProps) => (
           <>
             {orientation === "left" ? (
               <ChevronLeft className={cn("size-4", className)} {...props} />
@@ -144,7 +154,11 @@ function DynamicCalendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ className, orientation, ...props }) => (
+        Chevron: ({
+          className,
+          orientation = "left",
+          ...props
+        }: ChevronProps) => (
           <>
             {orientation === "left" ? (
               <ChevronLeft className={cn("size-4", className)} {...props} />

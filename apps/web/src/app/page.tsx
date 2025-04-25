@@ -1,8 +1,5 @@
-import { Button } from "@repo/ui/button";
-
 import { auth } from "~/server/auth";
 import Nav from "~/components/composites/Nav";
-import FeatureCard from "~/components/composites/FeatureCard";
 import Search from "~/components/nav/Search";
 
 export default async function Home() {
@@ -21,17 +18,6 @@ export default async function Home() {
             searchClassName="h-16"
           />
         </div>
-        {/* <div className="w-full space-y-8">
-          <FeatureCard
-            title="Learn New Skills!"
-            actionButton={<Button>Learn cooking!</Button>}
-          />
-          <FeatureCard
-            title="Share Your Knowledge!"
-            side="right"
-            actionButton={<Button>Or maybe bartending...</Button>}
-          />
-        </div> */}
       </main>
     </div>
   );

@@ -36,7 +36,7 @@ const AdvancedCalendar: React.FC<AdvancedCalendarProps> = ({ course }) => {
   });
 
   useEffect(() => {
-    events.refetch();
+    void events.refetch();
   }, [month]);
 
   return (

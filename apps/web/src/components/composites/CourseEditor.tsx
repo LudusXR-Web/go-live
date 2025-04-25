@@ -585,7 +585,8 @@ const CourseEditor: React.FC<CourseEditorProps> = ({
                   question={
                     <>
                       Are you sure you wish to delete section
-                      <br />"{section.title}"?
+                      <br />
+                      &quot;{section.title}&quot;?
                     </>
                   }
                   onConfirm={courseContent.deleteSection.bind(null, section.id)}

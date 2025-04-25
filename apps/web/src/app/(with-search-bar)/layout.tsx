@@ -8,7 +8,7 @@ export default async function SearchBarLayout({ children }: PropsWithChildren) {
 
   return (
     <div className="container mx-auto flex h-full w-full flex-col [&>main]:p-6">
-      <Nav session={session!} />
+      <Nav session={session} />
       {children}
     </div>
   );

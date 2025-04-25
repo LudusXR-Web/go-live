@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "~/lib/utils";
-import { courses } from "~/server/db/schema";
+import type { courses } from "~/server/db/schema";
 import AuthorLink from "~/components/composites/AuthorLink";
 import CourseRating from "~/components/composites/CourseRating";
 

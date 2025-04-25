@@ -62,7 +62,7 @@ export default async function ProfilePage() {
                   <MultilineText>{personalDetails.bio}</MultilineText>
                 ) : (
                   <i>
-                    We don't know much about{" "}
+                    We don&apos;t know much about{" "}
                     {session.user.name.split(" ").at(0)}, but we are sure, they
                     are a great member of the GoingLive community!
                   </i>

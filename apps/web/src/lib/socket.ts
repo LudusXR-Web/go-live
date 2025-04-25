@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
 declare global {
-  var __IO_CACHE: Socket;
+  var __IO_CACHE: Socket; //eslint-disable-line no-var
 }
 
 /**
@@ -23,7 +23,7 @@ export const useSocket = (sessionToken: string) => {
   };
 
   useEffect(() => {
-    if (isReady) {
+    if (socket.connected) {
       onConnect();
     }
 

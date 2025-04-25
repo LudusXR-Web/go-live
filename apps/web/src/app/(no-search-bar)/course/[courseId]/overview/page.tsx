@@ -53,7 +53,7 @@ export default async function CourseOverviewPage({
                 action={async () => {
                   "use server";
 
-                  api.courses.enrolUserIntoCourse(courseId);
+                  await api.courses.enrolUserIntoCourse(courseId);
                   redirect(`/course/${courseId}`);
                 }}
               >

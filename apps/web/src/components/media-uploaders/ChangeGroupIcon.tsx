@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
 import { api } from "~/trpc/react";
 import { env } from "~/env";
-import { chatRooms } from "~/server/db/schema";
+import type { chatRooms } from "~/server/db/schema";
 
 const groupIconStyles = [
   "bg-red-400 text-white",
@@ -82,7 +82,7 @@ const ChangeGroupIcon: React.FC<ChangeGroupIconProps> = ({
             if (e.target.files?.[0]) {
               if (e.target.files[0].size > 4194304) return;
 
-              upload(e.target.files[0], {
+              void upload(e.target.files[0], {
                 metadata: {
                   userId: room.id,
                   timestamp: Date.now(),

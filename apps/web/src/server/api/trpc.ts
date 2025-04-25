@@ -122,10 +122,9 @@ export const OAuthProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   })) as { access_token: string; refresh_token: string; scope: string };
 
   if (
-    !userAccount ||
-    !userAccount.access_token ||
-    !userAccount.refresh_token ||
-    !userAccount.scope
+    !userAccount?.access_token ||
+    !userAccount?.refresh_token ||
+    !userAccount?.scope
   ) {
     throw new TRPCError({ code: "BAD_REQUEST" });
   }

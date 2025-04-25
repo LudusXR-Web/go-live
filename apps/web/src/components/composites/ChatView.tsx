@@ -9,12 +9,7 @@ import { ScrollArea } from "@repo/ui/scroll-area";
 import { type api as serverApi } from "~/trpc/server";
 import { type chatMessages } from "~/server/db/schema";
 import { useSocket } from "~/lib/socket";
-import {
-  cn,
-  formatDateNoYear,
-  formatDatetimeNoYear,
-  formatTime,
-} from "~/lib/utils";
+import { cn, formatDateNoYear, formatTime } from "~/lib/utils";
 
 type Message = typeof chatMessages.$inferSelect;
 

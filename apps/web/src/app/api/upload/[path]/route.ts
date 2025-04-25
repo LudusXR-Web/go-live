@@ -1,5 +1,9 @@
 import { createId } from "@paralleldrive/cuid2";
-import { createUploadRouteHandler, route, Router } from "better-upload/server";
+import {
+  createUploadRouteHandler,
+  route,
+  type Router,
+} from "better-upload/server";
 
 import { s3 } from "~/server/aws/s3";
 import { env } from "~/env";

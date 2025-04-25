@@ -42,8 +42,12 @@ const ChatList: React.FC<ChatListProps> = ({
   useEffect(() => {
     for (const room of rooms) socket.emit("room:join", room.id);
 
-    socket.on("message:incoming", () => lastMessagesQuery.refetch());
-  }, []);
+    socket.on("message:incoming", () => void lastMessagesQuery.refetch());
+
+    return () => {
+      socket.off("message:incoming");
+    };
+  }, [socket]);
 
   return (
     <div>

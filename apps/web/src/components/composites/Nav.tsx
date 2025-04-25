@@ -126,10 +126,4 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
   );
 };
 
-type StyledSearchProps = {
-  className?: string;
-  searchClassName?: string;
-  placeholder?: string;
-};
-
 export default Nav;

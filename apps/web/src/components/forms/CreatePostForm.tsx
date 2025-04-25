@@ -130,7 +130,7 @@ type CreatePostFormProps = {
   standalone?: boolean;
   placeholder?: string;
   parentId?: string;
-  onSuccess?: () => any;
+  onSuccess?: () => unknown;
 };
 
 const CreatePostForm: React.FC<CreatePostFormProps> = ({
@@ -148,7 +148,7 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({
       if (onPostSuccess) return onPostSuccess();
 
       editor!.commands.clearContent(true);
-      revalidatePath("/profile");
+      void revalidatePath("/profile");
     },
   });
 
@@ -279,7 +279,7 @@ const CreatePostForm: React.FC<CreatePostFormProps> = ({
           }
           onClick={(e) => {
             e.preventDefault();
-            publishPost();
+            void publishPost();
           }}
         >
           {attachments.uploadInProgress ? (

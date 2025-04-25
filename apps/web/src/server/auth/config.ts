@@ -1,11 +1,11 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import {
-  type AdapterUser,
-  type Session,
-  type DefaultSession,
-  type NextAuthConfig,
+import type {
+  AdapterUser,
+  Session,
+  DefaultSession,
+  NextAuthConfig,
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
@@ -66,9 +66,12 @@ export const authConfig = {
       account: (account) => ({
         ...account,
       }),
+      //eslint-disable-next-line @typescript-eslint/no-unsafe-return
       profile: (profile) => ({
+        //eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         ...profile,
-        id: profile.sub,
+        //eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        id: profile.sub, //eslint-disable-line @typescript-eslint/no-unsafe-member-access
         username: createId(),
       }),
     }),
@@ -100,7 +103,7 @@ export const authConfig = {
     signOut: "/",
   },
   callbacks: {
-    //@ts-ignore
+    //@ts-expect-error Auth.js Type Mismatch
     session: async ({
       session,
       user,
@@ -118,7 +121,7 @@ export const authConfig = {
           },
         });
 
-        if (!userAccount || !userAccount.refresh_token)
+        if (!userAccount?.refresh_token)
           return {
             error: "Unauthorized",
           };
@@ -131,7 +134,7 @@ export const authConfig = {
 
         if (typeof updatedAccount.error === "string") {
           console.log("[auth][debug]: ", JSON.stringify(updatedAccount.error));
-          signIn("google");
+          await signIn("google");
         }
 
         await db
@@ -147,6 +150,14 @@ export const authConfig = {
           .set({ updatedAt: new Date() })
           .where(eq(users.id, user.id));
       }
+
+      session.user = {
+        ...user,
+        type: user.type ?? "student", // Default type if not provided
+        username: user.username ?? user.id, // Default username if not provided
+        createdAt: user.createdAt ?? new Date(),
+        updatedAt: user.updatedAt ?? new Date(),
+      };
 
       return session;
     },
@@ -177,6 +188,7 @@ const refreshAccessToken = async (
       method: "POST",
     });
 
+    //eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const newToken = await response.json();
 
     if (!response.ok) {
@@ -184,10 +196,13 @@ const refreshAccessToken = async (
     }
 
     return {
+      //eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       accessToken: newToken.access_token as string,
       expiresIn: Math.floor(
+        //eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (+new Date() + Number(newToken.expires_in) * 1000) / 1000,
       ),
+      //eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       refreshToken: newToken.refresh_token as string,
     };
   } catch (error) {

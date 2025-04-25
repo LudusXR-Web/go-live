@@ -11,8 +11,9 @@ import {
 } from "~/server/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
-interface CoursesColumnFilter
-  extends Partial<Record<keyof typeof courses._.columns, boolean>> {}
+type CoursesColumnFilter = Partial<
+  Record<keyof typeof courses._.columns, boolean>
+>;
 
 const courseRouter = createTRPCRouter({
   getById: protectedProcedure.input(z.string().cuid2()).query(

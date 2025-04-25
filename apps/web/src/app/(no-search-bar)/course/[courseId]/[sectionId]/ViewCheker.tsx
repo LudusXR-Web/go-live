@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-import { usersToCourses } from "~/server/db/schema";
+import type { usersToCourses } from "~/server/db/schema";
 import { api } from "~/trpc/react";
 
 type ViewCheckerProps = typeof usersToCourses.$inferSelect & {

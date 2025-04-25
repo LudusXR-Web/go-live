@@ -27,7 +27,7 @@ const ChangeFileElement: React.FC<ChangeFileElementProps> = ({ element }) => {
 
   useEffect(() => {
     if (fileDetailsQuery.data) setFileName(fileDetailsQuery.data.fileName);
-  }, [fileDetailsQuery.isSuccess]);
+  }, [fileDetailsQuery.data]);
 
   const { isPending, upload, reset } = useUploadFile({
     route: "file",

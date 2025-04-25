@@ -13,7 +13,7 @@ import { Input } from "@repo/ui/input";
 import { Label } from "@repo/ui/label";
 
 import { api } from "~/trpc/react";
-import { chatRooms } from "~/server/db/schema";
+import type { chatRooms } from "~/server/db/schema";
 import { exposedRevalidatePath as revalidatePath } from "~/server/actions/exposedRevalidate";
 import ChangeGroupIcon from "~/components/media-uploaders/ChangeGroupIcon";
 
@@ -29,7 +29,7 @@ const UpdateGroupDetailsModal: React.FC<UpdateGroupDetailsModalProps> = ({
   const roomNameInputRef = useRef<HTMLInputElement>(null);
   const chatRoomMutation = api.chat.update.useMutation({
     onSuccess() {
-      revalidatePath(`/chat/${room.id}`);
+      void revalidatePath(`/chat/${room.id}`);
       setOpen(false);
     },
   });

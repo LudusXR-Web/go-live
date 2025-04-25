@@ -15,9 +15,11 @@
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@turbo/gen": "^2.5.0",
+    "@types/eslint": "^9.6.1",
     "@types/node": "^22.14.0",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
+    "eslint": "^9.24.0",
     "react-day-picker": "9.6.5",
     "typescript": "5.8.3"
   },

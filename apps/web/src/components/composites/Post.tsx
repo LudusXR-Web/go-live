@@ -6,8 +6,8 @@ import rehypeRaw from "rehype-raw";
 import { ChevronsDownIcon, MessageCircleIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 
-import { posts, users } from "~/server/db/schema";
 import { api } from "~/trpc/server";
+import type { posts, users } from "~/server/db/schema";
 import { cn, formatDateNoYear } from "~/lib/utils";
 import ImageZoom from "~/components/modals/ImageZoom";
 import FileView from "~/components/media-display/FileView";

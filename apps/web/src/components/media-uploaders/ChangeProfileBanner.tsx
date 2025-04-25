@@ -8,7 +8,7 @@ import { ImageUpIcon, LoaderCircleIcon } from "lucide-react";
 import { env } from "~/env";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
-import { personalDetails } from "~/server/db/schema";
+import type { personalDetails } from "~/server/db/schema";
 
 type ChangeProfileBannerProps = {
   personalDetails: typeof personalDetails.$inferSelect;
@@ -79,7 +79,7 @@ const ChangeProfileBanner: React.FC<ChangeProfileBannerProps> = ({
           if (e.target.files?.[0]) {
             if (e.target.files[0].size > 4194304) return;
 
-            upload(e.target.files[0], {
+            void upload(e.target.files[0], {
               metadata: {
                 courseId: personalDetails.userId,
                 timestamp: Date.now(),

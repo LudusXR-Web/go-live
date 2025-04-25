@@ -8,7 +8,7 @@ import { ImageUpIcon, LoaderCircleIcon } from "lucide-react";
 import { env } from "~/env";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
-import { courses } from "~/server/db/schema";
+import type { courses } from "~/server/db/schema";
 
 type ChangeCourseBannerProps = {
   course: typeof courses.$inferSelect;
@@ -77,7 +77,7 @@ const ChangeCourseBanner: React.FC<ChangeCourseBannerProps> = ({ course }) => {
           if (e.target.files?.[0]) {
             if (e.target.files[0].size > 4194304) return;
 
-            upload(e.target.files[0], {
+            void upload(e.target.files[0], {
               metadata: {
                 courseId: course.id,
                 timestamp: Date.now(),

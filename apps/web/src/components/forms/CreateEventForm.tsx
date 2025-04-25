@@ -153,13 +153,13 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
     () => (
       <IsolatedDateForm defaultValues={defaultValues} client={formClient} />
     ),
-    [formClient],
+    [formClient, defaultValues],
   );
   const LeftForm = useMemo(
     () => (
       <IsolatedLeftForm defaultValues={defaultValues} client={formClient} />
     ),
-    [formClient],
+    [formClient, defaultValues],
   );
   const RightForm = useMemo(
     () => (
@@ -169,7 +169,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
         client={formClient}
       />
     ),
-    [formClient],
+    [formClient, defaultValues],
   );
 
   function onSubmit(e: FormEvent) {
@@ -486,13 +486,13 @@ const IsolatedLeftForm: React.FC<IsolatedFormProps> = ({
   });
 
   useEffect(() => {
-    client.on("submit", () =>
-      leftForm.handleSubmit(
+    client.on("submit", () => {
+      void leftForm.handleSubmit(
         (data) =>
           client.emit("submit_form_response", { ...data, leftFormFlag: true }),
         (errors) => client.emit("submit_form_error", errors),
-      )(),
-    );
+      )();
+    });
   }, []);
 
   return (
@@ -546,13 +546,13 @@ const IsolatedRightForm: React.FC<
   });
 
   useEffect(() => {
-    client.on("submit", () =>
-      rightForm.handleSubmit(
+    client.on("submit", () => {
+      void rightForm.handleSubmit(
         (data) =>
           client.emit("submit_form_response", { ...data, rightFormFlag: true }),
         (errors) => client.emit("submit_form_error", errors),
-      )(),
-    );
+      )();
+    });
   }, []);
 
   const publicValue = rightForm.watch("public");
@@ -577,8 +577,10 @@ const IsolatedRightForm: React.FC<
     let timeout: NodeJS.Timeout;
 
     if (attendeesSearchQuery.isLoading)
-      timeout = setTimeout(() => attendeesSearchQuery.refetch(), 500);
-    else attendeesSearchQuery.refetch();
+      timeout = setTimeout(() => {
+        void attendeesSearchQuery.refetch();
+      }, 500);
+    else void attendeesSearchQuery.refetch();
 
     return () => clearTimeout(timeout);
   }, [memberQueryValue]);
@@ -721,7 +723,7 @@ const IsolatedRightForm: React.FC<
                   {...field}
                   type="number"
                   min={2}
-                  disabled={field.disabled || !publicValue}
+                  disabled={!!field.disabled || !publicValue}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>

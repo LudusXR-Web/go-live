@@ -123,7 +123,7 @@ export default async function CourseMainPage({ params }: CourseMainPageProps) {
                             className="hover:bg-muted"
                           >
                             <Link
-                              href={event.hangoutLink!}
+                              href={event.hangoutLink}
                               target="_blank"
                               className="flex items-center gap-1"
                             >

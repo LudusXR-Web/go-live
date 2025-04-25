@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Fragment,
-  useEffect,
-  useRef,
-  useState,
-  type PropsWithChildren,
-} from "react";
-import { Session } from "next-auth";
+import { Fragment, useEffect, useState, type PropsWithChildren } from "react";
+import type { Session } from "next-auth";
 import { AtSignIcon, XIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import {
@@ -22,7 +16,7 @@ import { Label } from "@repo/ui/label";
 import { Input } from "@repo/ui/input";
 
 import { api } from "~/trpc/react";
-import { chatRooms } from "~/server/db/schema";
+import type { chatRooms } from "~/server/db/schema";
 import MemberSearchPopover from "~/components/composites/MemberSearchPopover";
 import ConfirmationModal from "~/components/modals/ConfirmationModal";
 
@@ -57,8 +51,10 @@ const ManageGroupMembersModal: React.FC<ManageGroupMembersModalProps> = ({
     let timeout: NodeJS.Timeout;
 
     if (recipientsSearchQuery.isLoading)
-      timeout = setTimeout(() => recipientsSearchQuery.refetch(), 500);
-    else recipientsSearchQuery.refetch();
+      timeout = setTimeout(() => {
+        void recipientsSearchQuery.refetch();
+      }, 500);
+    else void recipientsSearchQuery.refetch();
 
     return () => clearTimeout(timeout);
   }, [memberQueryValue]);
@@ -96,7 +92,7 @@ const ManageGroupMembersModal: React.FC<ManageGroupMembersModalProps> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Manage "{room.title}" Memebrs</DialogTitle>
+          <DialogTitle>Manage &quot;{room.title}&quot; Memebrs</DialogTitle>
           <DialogDescription>
             Add and remove members by using the fields below.
           </DialogDescription>

@@ -1,8 +1,8 @@
-import { config } from "@repo/eslint-config/react-internal";
+// const { config: base } = require("@repo/eslint-config/next-js");
 
 /** @type {import("eslint").Linter.Config} */
 const config = {
-  ...config,
+  // ...base,
 
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -53,4 +53,5 @@ const config = {
     ],
   },
 };
+
 module.exports = config;

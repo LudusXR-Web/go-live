@@ -87,15 +87,15 @@ const TextEditor: React.FC<TextEditorProps> = ({
   onUpdate,
   customEditor,
 }) => {
+  const internalCustomEditor = useCustomEditor({
+    internalClassAttributes,
+    defaultContent,
+    placeholder,
+    onUpdate,
+  });
+
   const editor =
-    customEditor !== undefined
-      ? customEditor
-      : useCustomEditor({
-          internalClassAttributes,
-          defaultContent,
-          placeholder,
-          onUpdate,
-        });
+    customEditor !== undefined ? customEditor : internalCustomEditor;
 
   const { setMenuState } = useMenuState();
 

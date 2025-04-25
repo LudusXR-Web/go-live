@@ -15,7 +15,7 @@ import { Button } from "@repo/ui/button";
 
 type ConfirmationModalProps = {
   question: React.ReactNode;
-  onConfirm: () => any;
+  onConfirm: () => unknown;
   reversible?: boolean;
 } & PropsWithChildren;
 
