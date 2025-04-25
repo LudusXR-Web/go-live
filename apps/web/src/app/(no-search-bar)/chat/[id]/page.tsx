@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Cryptr from "cryptr";
+import { UserIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { Button } from "@repo/ui/button";
 
 import { env } from "~/env";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
+import { SocketOpener } from "~/lib/socket";
 import ChatInput from "~/components/composites/ChatInput";
 import ChatView from "~/components/composites/ChatView";
 import ChatList from "~/components/composites/ChatList";
 import UpdateGroupDetailsModal from "~/components/modals/UpdateGroupDetailsModal";
 import ManageGroupMembersModal from "~/components/modals/ManageGroupMembersModal";
-import { UserIcon } from "lucide-react";
 
 type ChatPageProps = {
   params: Promise<{
@@ -132,6 +133,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
             className="w-full grow *:only:max-h-[80dvh] *:only:min-h-[70dvh]"
           >
             <ChatView
+              roomId={id}
               initialMessages={initialMessages}
               session={session}
               memberFootprints={recipientFootprints}
@@ -146,6 +148,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
           </div>
         </div>
       </div>
+      <SocketOpener />
     </main>
   );
 }

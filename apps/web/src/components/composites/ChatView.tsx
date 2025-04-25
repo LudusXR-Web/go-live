@@ -39,6 +39,7 @@ const useChat = create<Chat>((set) => ({
 }));
 
 type ChatViewProps = {
+  roomId: string;
   initialMessages: Message[];
   session: Session;
   memberFootprints: Awaited<
@@ -48,6 +49,7 @@ type ChatViewProps = {
 };
 
 const ChatView: React.FC<ChatViewProps> = ({
+  roomId,
   initialMessages,
   session,
   memberFootprints,
@@ -62,6 +64,8 @@ const ChatView: React.FC<ChatViewProps> = ({
     containerRef.current!.scrollIntoView(false);
 
     socket.on("message:incoming", (message: Message) => {
+      if (message.roomId !== roomId) return;
+
       chat.addMessage({
         ...message,
         createdAt: new Date(message.createdAt),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 
 declare global {
@@ -11,8 +11,24 @@ declare global {
  * Cache the socket connection in development. This avoids creating a new connection on every HMR
  * update.
  */
-const socket = globalThis.__IO_CACHE ?? io();
+const socket = globalThis.__IO_CACHE ?? io({ autoConnect: false });
 if (process.env.NODE_ENV !== "production") globalThis.__IO_CACHE = socket;
+
+export const SocketOpener: React.FC = () => {
+  useSocketConnect();
+
+  return null;
+};
+
+export const useSocketConnect = () => {
+  useEffect(() => {
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+};
 
 export const useSocket = (sessionToken: string) => {
   const [isReady, setIsReady] = useState(false);

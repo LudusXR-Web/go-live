@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm db:migrate && next build",
+    "build": "pnpm db:migrate&&next build",
     "check": "next lint && tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -16,7 +16,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "preview": "next build && pnpm start",
-    "start": "node server.js NODE_ENV=production",
+    "start": "set NODE_ENV=production&& node server.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
