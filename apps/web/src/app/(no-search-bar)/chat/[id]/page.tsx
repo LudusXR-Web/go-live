@@ -50,13 +50,15 @@ export default async function ChatPage({ params }: ChatPageProps) {
   for (const message of initialMessages)
     message.content = cryptoModule.decrypt(message.content);
 
-  const recipients = [
-    ...new Set(
-      initialMessages
-        .map((m) => m.authorId)
-        .filter((memberId) => memberId !== session.user.id),
-    ),
-  ];
+  const recipients = initialMessages.length
+    ? [
+        ...new Set(
+          initialMessages
+            .map((m) => m.authorId)
+            .filter((memberId) => memberId !== session.user.id),
+        ),
+      ]
+    : room.members.filter((memberId) => memberId !== session.user.id);
 
   const recipientFootprints =
     await api.users.getMultipleFootprintsById(recipients);
