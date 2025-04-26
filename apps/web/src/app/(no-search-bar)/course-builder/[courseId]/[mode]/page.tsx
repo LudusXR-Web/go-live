@@ -55,6 +55,7 @@ export default async function CourseBuilderPage({
             disableDefaultStyles
             value="content"
             className={tabsTriggerStyle}
+            disabled={course.external}
           >
             <Link href={`/course-builder/${courseId}/content`}>
               <TableOfContentsIcon className="opacity-50" size={20} />

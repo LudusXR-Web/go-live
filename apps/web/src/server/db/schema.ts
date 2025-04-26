@@ -150,6 +150,8 @@ export const courses = createTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     public: boolean("public").notNull().default(false),
+    external: boolean("external").notNull().default(false),
+    externalUrl: text("external_url"),
 
     title: varchar("title", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }).default(""),

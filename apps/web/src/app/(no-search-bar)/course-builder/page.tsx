@@ -53,7 +53,7 @@ export default async function CourseListPage() {
                     <span className="text-sm">No Course Banner Selected</span>
                   </div>
                 )}
-                <div className="h-18 px-4 py-2">
+                <div className="h-fit min-h-18 px-4 pb-3">
                   <h2 className="text-lg font-semibold">{course.title}</h2>
                   <p className="truncate text-sm font-light">
                     {course.description?.length ? (

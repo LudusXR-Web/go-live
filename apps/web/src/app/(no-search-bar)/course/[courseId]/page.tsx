@@ -40,34 +40,44 @@ export default async function CourseMainPage({ params }: CourseMainPageProps) {
         <div className="w-fit">
           <AuthorLink userId={course.authorId} />
         </div>
-        <p>This course consists of {course.content.sections.length} chapters</p>
-        <div id="toc" className="space-y-3">
-          {course.content.sections.map((section, idx) => (
-            <Link
-              key={section.id}
-              href={`/course/${courseId}/${section.id}`}
-              className="group/section hover:border-accent flex w-full max-w-250 items-center justify-between rounded-lg border-2 py-2 pr-3 pl-4 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <span className="group-hover/section:text-accent w-6 text-center text-4xl font-extrabold text-slate-300 transition-colors">
-                  {idx + 1}
-                </span>
-                <h2 className="font-medium">{section.title}</h2>
-              </div>
-              <Button
-                variant="ghost"
-                className="relative rounded-full px-2 py-0.5 transition-[background-color_shadow] hover:bg-slate-100 hover:shadow"
-              >
-                {courseBinding.sectionsViewed.some((s) => s === section.id) && (
-                  <div className="absolute inset-1/2 grid size-6 -translate-1/2 content-center justify-center rounded-full bg-green-600 transition-[scale] group-hover/section:scale-0">
-                    <CheckIcon className="text-white" />
+        {course.external ? (
+          <iframe src={course.externalUrl!} className="aspect-video w-full" />
+        ) : (
+          <>
+            <p>
+              This course consists of {course.content.sections.length} chapters
+            </p>
+            <div id="toc" className="space-y-3">
+              {course.content.sections.map((section, idx) => (
+                <Link
+                  key={section.id}
+                  href={`/course/${courseId}/${section.id}`}
+                  className="group/section hover:border-accent flex w-full max-w-250 items-center justify-between rounded-lg border-2 py-2 pr-3 pl-4 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="group-hover/section:text-accent w-6 text-center text-4xl font-extrabold text-slate-300 transition-colors">
+                      {idx + 1}
+                    </span>
+                    <h2 className="font-medium">{section.title}</h2>
                   </div>
-                )}
-                <ArrowRightCircleIcon />
-              </Button>
-            </Link>
-          ))}
-        </div>
+                  <Button
+                    variant="ghost"
+                    className="relative rounded-full px-2 py-0.5 transition-[background-color_shadow] hover:bg-slate-100 hover:shadow"
+                  >
+                    {courseBinding.sectionsViewed.some(
+                      (s) => s === section.id,
+                    ) && (
+                      <div className="absolute inset-1/2 grid size-6 -translate-1/2 content-center justify-center rounded-full bg-green-600 transition-[scale] group-hover/section:scale-0">
+                        <CheckIcon className="text-white" />
+                      </div>
+                    )}
+                    <ArrowRightCircleIcon />
+                  </Button>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
         <div className="mx-auto flex w-fit flex-col items-center space-y-3 pt-6">
           <h2 className="text-lg font-medium">
             Like this course? Rate it so there are more courses like this!
