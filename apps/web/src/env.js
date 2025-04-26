@@ -10,6 +10,7 @@ export const env = createEnv({
     AUTH_SECRET: z.string(),
 
     DATABASE_URL: z.string().url(),
+    PUBLIC_DATABASE_URL: z.string().url().optional(),
 
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
@@ -41,6 +42,7 @@ export const env = createEnv({
     AUTH_SECRET: process.env.AUTH_SECRET,
 
     DATABASE_URL: process.env.DATABASE_URL,
+    PUBLIC_DATABASE_URL: process.env.PUBLIC_DATABASE_URL,
 
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
