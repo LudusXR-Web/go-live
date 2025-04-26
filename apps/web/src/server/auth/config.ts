@@ -55,6 +55,8 @@ export const authConfig = {
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+      redirectProxyUrl:
+        env.NODE_ENV === "production" ? env.GOOGLE_REDIRECT_URI : undefined,
       allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
