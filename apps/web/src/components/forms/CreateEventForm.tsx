@@ -153,13 +153,13 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
     () => (
       <IsolatedDateForm defaultValues={defaultValues} client={formClient} />
     ),
-    [formClient, defaultValues],
+    [defaultValues],
   );
   const LeftForm = useMemo(
     () => (
       <IsolatedLeftForm defaultValues={defaultValues} client={formClient} />
     ),
-    [formClient, defaultValues],
+    [defaultValues],
   );
   const RightForm = useMemo(
     () => (
@@ -169,7 +169,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
         client={formClient}
       />
     ),
-    [formClient, defaultValues],
+    [defaultValues, courseFootprints],
   );
 
   function onSubmit(e: FormEvent) {

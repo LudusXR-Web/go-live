@@ -10,9 +10,10 @@ import { env } from "~/env";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ path: string }> },
+  { params }: { params: Promise<{ path: string[] }> },
 ) {
-  const { path } = await params;
+  const { path: pathArray } = await params;
+  const path = pathArray.join("/");
 
   const router: Router = {
     client: s3,
@@ -31,6 +32,15 @@ export async function POST(
         onBeforeUpload: (data) => ({
           metadata: data.clientMetadata,
           objectKey: path + "/" + createId() + data.file.name,
+        }),
+      }),
+      externalContent: route({
+        maxFileSize: 1024 * 1024 * 500,
+        multipleFiles: true,
+        maxFiles: 500,
+        onBeforeUpload: (data) => ({
+          metadata: data.clientMetadata,
+          generateObjectKey: (data) => path + "/" + data.file.name,
         }),
       }),
     },

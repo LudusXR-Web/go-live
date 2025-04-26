@@ -264,64 +264,83 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
               )}
             />
           )}
-        <FormField
-          control={form.control}
-          name="external"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex gap-2">
-                <FormControl>
-                  <Switch
-                    {...field}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    value={field.value ? "checked" : "unchecked"}
-                  />
-                </FormControl>
-                <FormLabel className="my-auto">
-                  Load course content from an external source
-                </FormLabel>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {form.watch("external") && (
-          <FormField
-            control={form.control}
-            name="externalUrl"
-            render={() => (
-              <FormItem>
-                <FormLabel>
-                  External Content
-                  <span className="text-red-400">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="application/zip"
-                    required={form.watch("public")}
-                    onChange={async (e) => {
-                      if (e.target.files?.[0]) {
-                        if (e.target.files[0].size > 524288000) {
-                          return;
-                        }
-
-                        setDialogOpen(true);
-                        setExternalCourseFile(e.target.files[0]);
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-                <ExternalCourseUploadModal
-                  open={isDialogOpen}
-                  onOpenChange={setDialogOpen}
-                  zipFile={externalCourseFile}
-                />
-              </FormItem>
+        {!!defaultValues?.id && (
+          <>
+            <FormField
+              control={form.control}
+              name="external"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Switch
+                        {...field}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        value={field.value ? "checked" : "unchecked"}
+                      />
+                    </FormControl>
+                    <FormLabel className="my-auto">
+                      Load course content from an external source
+                    </FormLabel>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {defaultValues?.externalUrl && (
+              <Alert className="bg-amber-100 text-amber-600">
+                <TriangleAlertIcon />
+                <AlertTitle>
+                  An external set of files is already uploaded to GoingLive
+                  servers
+                </AlertTitle>
+                <AlertDescription className="text-amber-600">
+                  Be aware that uploading new files will result in a complete
+                  replacement of the existing course material.
+                </AlertDescription>
+              </Alert>
             )}
-          />
+            {form.watch("external") && (
+              <FormField
+                control={form.control}
+                name="externalUrl"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>
+                      External Content
+                      <span className="text-red-400">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        accept="application/zip"
+                        required={form.watch("public")}
+                        onChange={async (e) => {
+                          if (e.target.files?.[0]) {
+                            if (e.target.files[0].size > 524288000) {
+                              return;
+                            }
+
+                            setDialogOpen(true);
+                            setExternalCourseFile(e.target.files[0]);
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    <ExternalCourseUploadModal
+                      open={isDialogOpen}
+                      onOpenChange={setDialogOpen}
+                      courseId={defaultValues.id}
+                      shouldDeleteOldFiles={!!defaultValues.externalUrl}
+                      zipFile={externalCourseFile}
+                    />
+                  </FormItem>
+                )}
+              />
+            )}
+          </>
         )}
         <Button
           type="submit"
