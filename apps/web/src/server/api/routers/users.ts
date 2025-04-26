@@ -105,7 +105,7 @@ const userRouter = createTRPCRouter({
           z.object({
             id: z.string().cuid2(),
             email: z.string().email().optional(),
-            image: z.string().url().optional(),
+            image: z.string().optional(),
             type: z.enum(userTypeEnum.enumValues).optional(),
           }),
         ),
@@ -139,7 +139,7 @@ const userRouter = createTRPCRouter({
         .merge(
           z.object({
             userId: z.string().cuid2(),
-            banner: z.string().url().optional(),
+            banner: z.string().optional(),
           }),
         ),
     )
