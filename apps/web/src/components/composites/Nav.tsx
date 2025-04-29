@@ -90,6 +90,7 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                   <MenubarSeparator />
                   <MenubarItem
                     asChild
+                    disabled
                     className="focus:bg-muted transition-colors"
                   >
                     <Link href="/my-courses" className="flex justify-between">
