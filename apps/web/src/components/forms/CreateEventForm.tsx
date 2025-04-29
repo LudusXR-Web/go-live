@@ -153,13 +153,13 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
     () => (
       <IsolatedDateForm defaultValues={defaultValues} client={formClient} />
     ),
-    [defaultValues],
+    [],
   );
   const LeftForm = useMemo(
     () => (
       <IsolatedLeftForm defaultValues={defaultValues} client={formClient} />
     ),
-    [defaultValues],
+    [],
   );
   const RightForm = useMemo(
     () => (
@@ -169,7 +169,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({
         client={formClient}
       />
     ),
-    [defaultValues, courseFootprints],
+    [courseFootprints],
   );
 
   function onSubmit(e: FormEvent) {
@@ -676,7 +676,7 @@ const IsolatedRightForm: React.FC<
                     <span className="border-input bg-muted text-muted-foreground h-full rounded-bl-md border-t border-r px-1.5 py-2">
                       <AtSignIcon size={20} />
                     </span>
-                    <div className="w-full">
+                    <div className="relative w-full">
                       <Input
                         {...field}
                         autoComplete="off"

@@ -30,7 +30,7 @@ const MemberSearchPopover: React.FC<MemberSearchPopoverProps> = ({
   disableMemberRemoval = false,
 }) => (
   <Popover open={open}>
-    <PopoverAnchor className="absolute left-44 size-0 select-none" />
+    <PopoverAnchor className="absolute left-28 size-0 select-none" />
     <PopoverContent
       className="space-y-2"
       onOpenAutoFocus={(e) => e.preventDefault()}

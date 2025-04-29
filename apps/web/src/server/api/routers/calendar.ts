@@ -163,13 +163,15 @@ const calendarRouter = createTRPCRouter({
         end: {
           dateTime: input.end,
         },
-        attendees: await ctx.db.query.users.findMany({
-          where: (user, { or, eq }) =>
-            or(...input.attendees.map((id) => eq(user.id, id))),
-          columns: {
-            email: true,
-          },
-        }),
+        attendees: input.attendees.length
+          ? await ctx.db.query.users.findMany({
+              where: (user, { or, eq }) =>
+                or(...input.attendees.map((id) => eq(user.id, id))),
+              columns: {
+                email: true,
+              },
+            })
+          : [],
         conferenceData: {
           conferenceSolution: {
             key: {

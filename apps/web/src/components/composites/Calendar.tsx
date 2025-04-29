@@ -1,6 +1,6 @@
 "use client";
 
-import React, { type PropsWithChildren, useEffect, useState } from "react";
+import React, { type PropsWithChildren, useState } from "react";
 import Link from "next/link";
 import { ArrowRightCircleIcon, ExternalLinkIcon } from "lucide-react";
 import { Button } from "@repo/ui/button";
@@ -31,13 +31,9 @@ const AdvancedCalendar: React.FC<AdvancedCalendarProps> = ({ course }) => {
   const [month, setMonth] = useState(new Date());
 
   const events = api.calendar.getOwnEvents.useQuery({
-    from: new Date(month.getFullYear(), month.getMonth(), 0).toISOString(),
-    to: new Date(month.getFullYear(), month.getMonth() + 1, 0).toISOString(),
+    from: new Date(month.getFullYear(), month.getMonth(), 1).toISOString(),
+    to: new Date(month.getFullYear(), month.getMonth() + 1, 1).toISOString(),
   });
-
-  useEffect(() => {
-    void events.refetch();
-  }, [month]);
 
   return (
     <Calendar
@@ -63,53 +59,6 @@ const AdvancedCalendar: React.FC<AdvancedCalendarProps> = ({ course }) => {
               </div>
             )}
             <div className="absolute top-6 flex w-full flex-col gap-y-0.5 px-0.5">
-              {events.data?.fetchedEvents
-                .filter(
-                  (event) =>
-                    day.dateLib.isSameDay(
-                      day.date,
-                      new Date(event.start?.dateTime ?? 0),
-                    ) &&
-                    !events.data?.storedEvents.some(
-                      (dbEvent) => event.id === dbEvent.id,
-                    ),
-                )
-                .map((event) => (
-                  <HoverCard key={event.id}>
-                    <HoverCardTrigger asChild>
-                      <Link
-                        href={event.htmlLink!}
-                        role="heading"
-                        target="_blank"
-                        className="z-50 w-full rounded-sm bg-amber-100 py-0.5 text-xs font-medium"
-                      >
-                        {event.summary}
-                      </Link>
-                    </HoverCardTrigger>
-                    <HoverCardContent>
-                      <h4 className="font-medium">{event.summary}</h4>
-                      <p className="text-sm">
-                        <span>
-                          {formatDatetimeNoYear(
-                            new Date(event.start!.dateTime!),
-                          )}
-                          {" - "}
-                          {formatDatetimeNoYear(new Date(event.end!.dateTime!))}
-                        </span>
-                      </p>
-                      <Button variant="link" asChild className="p-0">
-                        <Link
-                          href={event.htmlLink!}
-                          target="_blank"
-                          className="flex items-center gap-1"
-                        >
-                          <span>Event details</span>
-                          <ExternalLinkIcon size={20} />
-                        </Link>
-                      </Button>
-                    </HoverCardContent>
-                  </HoverCard>
-                ))}
               {events.data?.fetchedEvents
                 .filter(
                   (event) =>
@@ -168,6 +117,53 @@ const AdvancedCalendar: React.FC<AdvancedCalendarProps> = ({ course }) => {
                     </HoverCard>
                   );
                 })}
+              {events.data?.fetchedEvents
+                .filter(
+                  (event) =>
+                    day.dateLib.isSameDay(
+                      day.date,
+                      new Date(event.start?.dateTime ?? 0),
+                    ) &&
+                    !events.data?.storedEvents.some(
+                      (dbEvent) => event.id === dbEvent.id,
+                    ),
+                )
+                .map((event) => (
+                  <HoverCard key={event.id}>
+                    <HoverCardTrigger asChild>
+                      <Link
+                        href={event.htmlLink!}
+                        role="heading"
+                        target="_blank"
+                        className="z-50 w-full rounded-sm bg-amber-100 py-0.5 text-xs font-medium"
+                      >
+                        {event.summary}
+                      </Link>
+                    </HoverCardTrigger>
+                    <HoverCardContent>
+                      <h4 className="font-medium">{event.summary}</h4>
+                      <p className="text-sm">
+                        <span>
+                          {formatDatetimeNoYear(
+                            new Date(event.start!.dateTime!),
+                          )}
+                          {" - "}
+                          {formatDatetimeNoYear(new Date(event.end!.dateTime!))}
+                        </span>
+                      </p>
+                      <Button variant="link" asChild className="p-0">
+                        <Link
+                          href={event.htmlLink!}
+                          target="_blank"
+                          className="flex items-center gap-1"
+                        >
+                          <span>Event details</span>
+                          <ExternalLinkIcon size={20} />
+                        </Link>
+                      </Button>
+                    </HoverCardContent>
+                  </HoverCard>
+                ))}
             </div>
           </td>
         ),
