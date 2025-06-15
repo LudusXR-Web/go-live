@@ -1,19 +1,8 @@
-import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import Cryptr from "cryptr";
-import { UserIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
-import { Button } from "@repo/ui/button";
+import { notFound } from "next/navigation";
 
-import { env } from "~/env";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
-import { SocketOpener } from "~/lib/socket";
-import ChatInput from "~/components/composites/ChatInput";
-import ChatView from "~/components/composites/ChatView";
 import ChatList from "~/components/composites/ChatList";
-import UpdateGroupDetailsModal from "~/components/modals/UpdateGroupDetailsModal";
-import ManageGroupMembersModal from "~/components/modals/ManageGroupMembersModal";
 
 export default async function CleanChatPage() {
   const session = await auth();
@@ -51,7 +40,6 @@ export default async function CleanChatPage() {
           </div>
         </div>
       </div>
-      <SocketOpener />
     </main>
   );
 }
