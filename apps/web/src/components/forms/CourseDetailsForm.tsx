@@ -40,7 +40,7 @@ const formSchema = z
   .refine(
     (data) =>
       z.string().url().safeParse(data.externalUrl).success ||
-      (!data.externalUrl && !data.public),
+      (!data.externalUrl && !data.external),
     {
       message: "The external content must be linked using a valid URL",
       path: ["externalUrl"],
@@ -109,7 +109,9 @@ const CourseDetailsForm: React.FC<CourseDetailsFormProps> = ({
               This course is <strong>not</strong> visible to the public.
             </AlertTitle>
             <AlertDescription className="text-amber-600">
-              To publish the course, it must have a title and a banner.
+              {form.getValues("title").length >= 3 && defaultValues?.image
+                ? "The course can be published by flicking the switch at the end of the form."
+                : "The course must have a title and a banner to be published."}
             </AlertDescription>
           </Alert>
         )}
