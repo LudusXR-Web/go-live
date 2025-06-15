@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
+import { SocketOpener } from "~/lib/socket";
 import ChatList from "~/components/composites/ChatList";
 
 export default async function CleanChatPage() {
@@ -40,6 +41,7 @@ export default async function CleanChatPage() {
           </div>
         </div>
       </div>
+      <SocketOpener />
     </main>
   );
 }
