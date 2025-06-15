@@ -23,7 +23,7 @@ type ChatListProps = {
     ReturnType<typeof serverApi.users.getMultipleFootprintsById>
   >;
   session: Session;
-  currentRoomId: string;
+  currentRoomId?: string;
 };
 
 const ChatList: React.FC<ChatListProps> = ({
@@ -132,7 +132,7 @@ const ChatList: React.FC<ChatListProps> = ({
           return (
             <Comp
               key={room.id}
-              href={`./${room.id}`}
+              href={`/chat/${room.id}`}
               className={cn(
                 "flex items-center gap-2 p-3",
                 isCurrentChat ? "bg-primary" : "border-b",

@@ -4,6 +4,7 @@ import type { Session } from "next-auth";
 import {
   BlocksIcon,
   GraduationCapIcon,
+  MessageCircleIcon,
   SettingsIcon,
   UserIcon,
 } from "lucide-react";
@@ -76,6 +77,15 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                     <Link href="/profile" className="flex justify-between">
                       Profile
                       <UserIcon className="opacity-50" size={20} />
+                    </Link>
+                  </MenubarItem>
+                  <MenubarItem
+                    asChild
+                    className="focus:bg-muted transition-colors"
+                  >
+                    <Link href="/chat" className="flex justify-between">
+                      Chats
+                      <MessageCircleIcon className="opacity-50" size={20} />
                     </Link>
                   </MenubarItem>
                   <MenubarItem
