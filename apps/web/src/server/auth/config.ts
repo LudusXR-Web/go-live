@@ -114,43 +114,43 @@ export const authConfig = {
     }) => {
       const updateDelta = +new Date() - +new Date(user.updatedAt);
 
-      if (updateDelta > maxUpdateTime) {
-        const userAccount = await db.query.accounts.findFirst({
-          where: (account, { eq }) => eq(account.userId, user.id),
-          columns: {
-            refresh_token: true,
-          },
-        });
+      // if (updateDelta > maxUpdateTime) {
+      //   const userAccount = await db.query.accounts.findFirst({
+      //     where: (account, { eq }) => eq(account.userId, user.id),
+      //     columns: {
+      //       refresh_token: true,
+      //     },
+      //   });
 
-        if (!userAccount?.refresh_token)
-          return {
-            error: "Unauthorized",
-          };
+      //   if (!userAccount?.refresh_token)
+      //     return {
+      //       error: "Unauthorized",
+      //     };
 
-        const updatedAccount = await refreshAccessToken(
-          env.GOOGLE_CLIENT_ID,
-          env.GOOGLE_CLIENT_SECRET,
-          userAccount.refresh_token,
-        );
+      //   const updatedAccount = await refreshAccessToken(
+      //     env.GOOGLE_CLIENT_ID,
+      //     env.GOOGLE_CLIENT_SECRET,
+      //     userAccount.refresh_token,
+      //   );
 
-        if (typeof updatedAccount.error === "string") {
-          console.log("[auth][debug]: ", JSON.stringify(updatedAccount.error));
-          await signIn("google");
-        }
+      //   if (typeof updatedAccount.error === "string") {
+      //     console.log("[auth][debug]: ", JSON.stringify(updatedAccount.error));
+      //     await signIn("google");
+      //   }
 
-        await db
-          .update(accounts)
-          .set({
-            access_token: updatedAccount.accessToken,
-            expires_at: updatedAccount.expiresIn,
-            refresh_token: updatedAccount.refreshToken,
-          })
-          .where(eq(accounts.userId, user.id));
-        await db
-          .update(users)
-          .set({ updatedAt: new Date() })
-          .where(eq(users.id, user.id));
-      }
+      //   await db
+      //     .update(accounts)
+      //     .set({
+      //       access_token: updatedAccount.accessToken,
+      //       expires_at: updatedAccount.expiresIn,
+      //       refresh_token: updatedAccount.refreshToken,
+      //     })
+      //     .where(eq(accounts.userId, user.id));
+      //   await db
+      //     .update(users)
+      //     .set({ updatedAt: new Date() })
+      //     .where(eq(users.id, user.id));
+      // }
 
       session.user = {
         ...user,

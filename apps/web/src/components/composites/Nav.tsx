@@ -98,28 +98,32 @@ const Nav: React.FC<NavProps> = async ({ session, hideSearchBar = false }) => {
                     </Link>
                   </MenubarItem>
                   <MenubarSeparator />
-                  <MenubarItem
-                    asChild
-                    disabled
-                    className="focus:bg-muted transition-colors"
-                  >
-                    <Link href="/my-courses" className="flex justify-between">
-                      My Courses
-                      <GraduationCapIcon className="opacity-50" size={20} />
-                    </Link>
-                  </MenubarItem>
-                  <MenubarItem
-                    asChild
-                    className="focus:bg-muted transition-colors"
-                  >
-                    <Link
-                      href="/course-builder"
-                      className="flex justify-between"
+                  {session.user.type === "student" && (
+                    <MenubarItem
+                      asChild
+                      disabled
+                      className="focus:bg-muted transition-colors"
                     >
-                      Course Builder
-                      <BlocksIcon className="opacity-50" size={20} />
-                    </Link>
-                  </MenubarItem>
+                      <Link href="/my-courses" className="flex justify-between">
+                        My Courses
+                        <GraduationCapIcon className="opacity-50" size={20} />
+                      </Link>
+                    </MenubarItem>
+                  )}
+                  {session.user.type !== "student" && (
+                    <MenubarItem
+                      asChild
+                      className="focus:bg-muted transition-colors"
+                    >
+                      <Link
+                        href="/course-builder"
+                        className="flex justify-between"
+                      >
+                        Course Builder
+                        <BlocksIcon className="opacity-50" size={20} />
+                      </Link>
+                    </MenubarItem>
+                  )}
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
