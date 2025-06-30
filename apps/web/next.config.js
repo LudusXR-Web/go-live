@@ -5,7 +5,7 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "ludus-golive.s3.eu-north-1.amazonaws.com",
+        hostname: "ludus-goinglive.s3.us-east-1.amazonaws.com",
         pathname: "**",
       },
     ],
